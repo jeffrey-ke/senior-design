@@ -1,4 +1,9 @@
 # senior-design
+## Component block diagram
+![alt text](https://github.com/jeffrey-ke/senior-design/blob/main/documentation/Component%20block%20diagram.png?raw=true)
+
+## Conops
+![alt text](https://github.com/jeffrey-ke/senior-design/blob/main/documentation/multi-robot%20conops.png?raw=true)
 ## Requirements
 
 1. Profiler can be launched from shore or in shallow waters of 100 meters deep.
