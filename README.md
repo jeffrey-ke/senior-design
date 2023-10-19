@@ -1,31 +1,33 @@
 # senior-design
-## Component block diagram
-![alt text](https://github.com/jeffrey-ke/senior-design/blob/main/documentation/Component%20block%20diagram.png?raw=true)
-
-## Conops
-![alt text](https://github.com/jeffrey-ke/senior-design/blob/main/documentation/multi-robot%20conops.png?raw=true)
 ## Requirements
 
 1. Profiler can be launched from shore or in shallow waters of 1m deep water.
-2. Profiler has an operational range of 1 kilometer from shore or 4 hours of continuous operation (Ask Spicer: how long are the dredging shifts? We need to recharge these bad boys.)
-3. While on the surface of the water, Profiler must know its location within 5 meters of accuracy (based on GPS variance).
+2. Profiler has an operational range of 2 kilometers from shore or 4 hours of continuous operation
+3. While on the surface of the water, Profiler must know its location within 5 meters of accuracy.
 4. While on the surface of the water, Profiler must have communication range of 1 kilometer.
-5. While on the surface of the water, Profiler must be able to navigate to remotely commanded GPS waypoints with 5 meters of accuracy.
-6. (TBD) Profiler is capable of station-keeping in rough marine environments of sea-state X within X meters. (Ask Kirkwood what the seastate is in Monterey; Ask Neumann what the seastate is in Tahoe)
-7. (TBD) Profiler completes X water column-profiles in 4 hours **(Ask Reef ppl thru email how many profiles they want; you can also look at the area you can cover in that time (spatial characteristics of the reef), and then figure out approx how many profiles you can do in that area, and pitch that number to them)**
+5. While on the surface of the water, Profiler must be able to navigate to remotely commanded GPS waypoints with 5 meters of accuracy in swell heights of 1 meter.
+6. Profiler completes at least 36 water column-profiles in 4 hours 
 8. On leak or prohibtively low voltage, Profiler returns to the surface and back to the user.
-9. (TBD) Profiler weighs X kilograms and has a volume of X liters; profilers can be lifted by hand and dropped into the water by 100% of typical marine researchers. 
-10. (TBD) While on the surface of the water, Profiler must transmit its location and status (battery voltage, internal pressure) to the user every 15 seconds. 
-11. Upon reaching GPS waypoints, Profiler must dive and descend to a maximum depth of 100 meters.
-12. (TBD) While descending, Profiler must know its depth with 1 meters uncertainty. 
-13. (TBD) While descending, Profiler descends vertically with less than X meters of lateral drifting. **(It's probably ~20meters if the depth is 100m. Maybe look at how wide the reef piles are. Ask Geoff/Kirkwood: How wide are the columns of water/plumes? If they're very narrow, then the profiler should have very little lateral drift; we can probably address this with proper ballasting i.e. the profiler is perfectly vertical.)**
-14. (TBD) While descending, Profiler must know its surface coordinates with X meters of uncertainty. **(Plays into: how wide are the water columns? Ask Kirkwood if lateral drift is a big problem; we put this so that the profiler is relatively sure where in the water it read the data)**
-15. Profiler can be remotely commanded to complete a sequence of dives at commanded GPS waypoints with TCP-spec reliability. **(Pixhawk??)**
-16. (TBD) Profiler can be unpacked, booted up, and be ready for deployment in the water in less than X (20) minutes.
-17. Profiler returns to user after mission ends.
-18. (TBD) While descending, Profiler captures X water-samples at user-commanded depths. **(Ask Reef people and Kirkwood and Thomas)**
-19. (TBD) While descending, Profiler measures turbidity (+- 10 NTU) and temperature (+- 0.01 C) every X seconds. **(Ask reef people what sensing he wants done; Ask Kirkwood or Spicer what level of resolution is typical to measuring turbidity for sediment plume tracking; also ask Kirkwood whether we should build a turbidity sensor, and what hardware he reccomends)**
-20. (Extra credit:) Cluster of profilers capable of following a moving plume of sediment or other scalar readings.
+9. Profiler weighs 10 kilograms and has a volume of 30 liters; profilers can be lifted by dive-hook and dropped into the water by 100% of typical marine researchers. 
+10. While on the surface of the water, Profiler must transmit its location and status (battery voltage, internal pressure) to the user every 15 seconds.
+11. After resurfacing from the dive, Profiler shall transmit recorded water-column parameters to user basestation with TCP-spec reliability.
+12. Upon reaching GPS waypoints, Profiler must dive and descend to user-commanded depths of an accepted range of 0-100 meters.
+13. While descending, Profiler must know its depth with 1 meters uncertainty. 
+14. While descending, Profiler shall not drift laterally more than 20 meters. 
+15. While descending, Profiler must know its surface coordinates with 5 meters of uncertainty.
+16. Profiler can be remotely commanded to complete a sequence of dives at commanded GPS waypoints with TCP-spec reliability.
+17. Profiler can be unpacked, booted up, and be ready for deployment in the water in less than 20 minutes.
+18. Profiler navigates back to user after mission ends.
+19. While descending, Profiler captures 2 water-samples at user-commanded and adaptively-determined depths.
+20. Profiler shall autonomously analyze measured water-column temperatures to determine the depth of the top of the thermocline; profiler shall go-to that depth and capture a water-sample.
+21. While descending, Profiler measures turbidity (+- 10 NTU) and temperature (+- 0.01 C) and depth (+- 0.01m) at 10 Hz
+22. While descending, Profiler shall move at an user-commanded velocity of the accepted range of 0.1 m/s to 5 m/s.
+23. User basestation shall transmit GPS coordinates to Profiler with TCP-spec reliability.
+24. User basestation shall remotely command profilers with TCP-spec reliability to descend at a velocity within the accepted range and to descend to a depth within the accepted range.
+25. User basestation shall display the current locations of the profilers every five minutes.
+26. User basestation shall record water-column parameters of each dive transmitted by the profilers into separate data-files labeled by date, time, and coordinates.
+27. User basestation shall graph water-column parameters of each dive.
+28. Cluster of profilers shall be capable of following moving countours and extremums of scalar fields such as sediment plumes.
 
 ## Hardware
 
