@@ -5,30 +5,25 @@
 #define MasterComputeBridge_h
 #include "Arduino.h" 
 #include "Constants.h"
-#include ".GPSDriver/GPSDriver.h"
-//#include "IMUDriver.h"
-//#include "PingDriver.h"
-#include "ThrusterDriver/ThrusterDriver.h"
+#include "_GPSDriver.h"
+#include "IMUDriver.h"
+#include "PingDriver.h"
+#include "ThrusterDriver.h"
 #include "SoftwareSerial.h"
-
-//Pinouts
-
-
-
 class MasterComputeBridge{
   private:
-    ThrusterDriver thruster1{7};
-    ThrusterDriver thruster2{7};
-    ThrusterDriver thruster3{7};
-    ThrusterDriver thruster4{7};
+    ThrusterDriver thruster1;
+    ThrusterDriver thruster2;
+    ThrusterDriver thruster3;
+    ThrusterDriver thruster4;
     IMUDriver IMU;
-    //PingDriver ping;
-    GPSDriver GPS;
+    PingDriver ping;
+    _GPSDriver GPS;
   public:
-    MasterComputeBridge(Stream *GPSport){ }
-    void IMUSetup(){ }
-    void thrusterSetup(){ }
-    void giveCommand(){ }
-    char * returnCommand(){ }
+    MasterComputeBridge();
+    void IMUSetup();
+    void thrusterSetup();
+    void giveCommand(String command);
+    char * returnCommand();
 };
 #endif

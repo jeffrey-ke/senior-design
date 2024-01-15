@@ -1,12 +1,7 @@
-#ifndef GPSDriver_h
-#define GPSDriver_h
-#include "Arduino.h" 
-#include <Adafruit_GPS.h>
-#include "SoftwareSerial.h"
+#include "_GPSDriver.h"
 
-GPSDriver::GPSDriver(Stream *port){
-    GPSSerial = port;
-    Adafruit_GPS GPS = new Adafruit_GPS(GPSSerial);
+_GPSDriver::_GPSDriver(){
+    Adafruit_GPS GPS = Adafruit_GPS(&GPSSerial);
     //GPS Initialization
     GPS.begin(9600);
     // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
@@ -18,10 +13,11 @@ GPSDriver::GPSDriver(Stream *port){
     delay(1000);
     // Ask for firmware version
     GPSSerial.println(PMTK_Q_RELEASE);
+    DebugSerial.println("GPS initialized succesfully");
 }
 
 
-void GPSDriver::getData(){
+void _GPSDriver::getData(){
     char c = GPS.read();
     /*if (GPS.newNMEAreceived()) {
         PISerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
@@ -42,4 +38,3 @@ void GPSDriver::getData(){
         PISerial.print("Antenna status: "); Serial.println((int)GPS.antenna);
     }*/
 }
-#endif

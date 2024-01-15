@@ -2,12 +2,14 @@
 #define ThrusterDriver_h
 #include "Arduino.h" 
 #include <Servo.h>
+#include "Constants.h"
 class ThrusterDriver{
   private:
     Servo thruster;
   public:
-    ThrusterDriver(int servoPin){ }
-    void setVelocity(int vel){ }
+    ThrusterDriver();
+    ThrusterDriver(const int servoPin);
+    void setVelocity(int vel);
 
 };
 #endif

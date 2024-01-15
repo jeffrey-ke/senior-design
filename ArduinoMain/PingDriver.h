@@ -2,14 +2,14 @@
 #define PingDriver_h
 #include "Arduino.h" 
 #include "ping1d.h"
-
-#define DebugSerial Serial3
-
+#include "SoftwareSerial.h"
+#include "Constants.h"
+static Ping1D ping { PingSerial }; 
 class PingDriver{
 private:
-  Ping1D ping; //Ping Sensor Object
+  //Ping Sensor Object
 public:
-  PingDriver(){ }
-  int getData(){ }
+  PingDriver();
+  int getData();
 };
 #endif

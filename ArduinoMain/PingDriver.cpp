@@ -1,16 +1,16 @@
-#include "Arduino.h”
 #include "PingDriver.h"
 
 PingDriver::PingDriver(){
-    ping = new Ping1D(PingSerial);
+  PingSerial.begin(9600);
     if(!ping.initialize()) {
         DebugSerial.println("\nPing device failed to initialize!");
         DebugSerial.println(PingSerial);
     }
+    DebugSerial.println("Ping initialized succesfully");
 }
 int PingDriver::getData(){
     if (ping.update()) {
-        return ping.distance());
+        return ping.distance();
         //ping.confidence();
     }
     else return -1;
