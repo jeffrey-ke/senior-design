@@ -1,0 +1,6 @@
+"I": 
+  type: "geometry_msgs/Quaternion"
+  desc: "IMU data"
+"G": 
+  type: "geometry_msgs/Point"
+  desc: "GNSS data"
