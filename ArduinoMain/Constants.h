@@ -1,3 +1,7 @@
+/*  This file acts as a centralized place for all constants, ports, and pin numbers.
+    simply change the value here to reflect it in rest of program. Make sure to 
+    #include this file in all other files
+*/
 #ifndef Constants_h
 #define Constants_h
 #include "Arduino.h"
@@ -6,10 +10,9 @@
 #define GPSSerial Serial3
 #define PingSerial Serial2
 #define DebugSerial Serial
-// DebugSerial.begin(115200);
-#define RFM95_CS 4
-#define RFM95_RST 2
-#define RFM95_INT 3
+const int RFM95_CS = 4;
+const int RFM95_RST = 2;
+const int RFM95_INT = 3;
 const int TPIN1 = 7;
 const int TPIN2 = 8;
 const int TPIN3 = 9;

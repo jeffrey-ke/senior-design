@@ -17,24 +17,28 @@ _GPSDriver::_GPSDriver(){
 }
 
 
-void _GPSDriver::getData(){
-    char c = GPS.read();
-    /*if (GPS.newNMEAreceived()) {
-        PISerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
-        if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
-        return; // we can fail to parse a sentence in which case we should just wait for another
-    }
-    PISerial.print("Fix: "); Serial.print((int)GPS.fix);
-    PISerial.print(" quality: "); Serial.println((int)GPS.fixquality);
-    if (GPS.fix) {
-        PISerial.print("Location: ");
-        PISerial.print(GPS.latitude, 4); Serial.print(GPS.lat);
-        PISerial.print(", ");
-        PISerial.print(GPS.longitude, 4); Serial.println(GPS.lon);
-        PISerial.print("Speed (knots): "); Serial.println(GPS.speed);
-        PISerial.print("Angle: "); Serial.println(GPS.angle);
-        PISerial.print("Altitude: "); Serial.println(GPS.altitude);
-        PISerial.print("Satellites: "); Serial.println((int)GPS.satellites);
-        PISerial.print("Antenna status: "); Serial.println((int)GPS.antenna);
-    }*/
+double * _GPSDriver::getData(){
+  char c = GPS.read();
+  if (GPS.newNMEAreceived()) {
+      DebugSerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
+      if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
+      return; // we can fail to parse a sentence in which case we should just wait for another
+  }
+  DebugSerial.print("Fix: "); Serial.print((int)GPS.fix);
+  DebugSerial.print(" quality: "); Serial.println((int)GPS.fixquality);
+  if (GPS.fix) {
+      DebugSerial.print("Location: ");
+      DebugSerial.print(GPS.latitude, 4); Serial.print(GPS.lat);
+      DebugSerial.print(", ");
+      DebugSerial.print(GPS.longitude, 4); Serial.println(GPS.lon);
+      DebugSerial.print("Speed (knots): "); Serial.println(GPS.speed);
+      DebugSerial.print("Angle: "); Serial.println(GPS.angle);
+      DebugSerial.print("Altitude: "); Serial.println(GPS.altitude);
+      DebugSerial.print("Satellites: "); Serial.println((int)GPS.satellites);
+      DebugSerial.print("Antenna status: "); Serial.println((int)GPS.antenna);
+  }
+  double latlong[2];
+  latlong[0] = GPS.latitude;
+  latlong[1] = GPS.longitude;
+  return latlong;
 }

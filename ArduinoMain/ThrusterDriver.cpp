@@ -14,8 +14,5 @@ ThrusterDriver::ThrusterDriver(const int servoPin){
 }
 void ThrusterDriver::setVelocity(int vel){
     thruster.writeMicroseconds(vel);
-    DebugSerial.print("Wrote ");
-    DebugSerial.print(vel);
-    DebugSerial.println(" to thruster");
 }
 

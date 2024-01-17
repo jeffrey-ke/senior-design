@@ -9,6 +9,7 @@
 #include "IMUDriver.h"
 #include "PingDriver.h"
 #include "ThrusterDriver.h"
+//#include "RadioDriver.h"
 #include "SoftwareSerial.h"
 class MasterComputeBridge{
   private:
@@ -19,11 +20,13 @@ class MasterComputeBridge{
     IMUDriver IMU;
     PingDriver ping;
     _GPSDriver GPS;
+    //RadioDriver Lora;
+    String functionReturn;
   public:
     MasterComputeBridge();
     void IMUSetup();
     void thrusterSetup();
     void giveCommand(String command);
-    char * returnCommand();
+    String returnCommand();
 };
 #endif

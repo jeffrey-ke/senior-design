@@ -1,7 +1,6 @@
 #include "MasterComputeBridge.h"
 #include "Constants.h"
 
-
 void setup() {
   // put your setup code here, to run once:
   DebugSerial.begin(115200);
@@ -16,6 +15,7 @@ void setup() {
       DebugSerial.println(data);
       bridge.giveCommand(data);
     }
+    DebugSerial.println(bridge.returnCommand());
   }
 }
 

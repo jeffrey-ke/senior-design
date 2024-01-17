@@ -9,6 +9,6 @@ private:
   Adafruit_GPS GPS;
 public:
   _GPSDriver();
-  void getData();
+  double* getData();
 };
 #endif
