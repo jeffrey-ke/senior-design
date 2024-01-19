@@ -35,7 +35,10 @@ void MasterComputeBridge::giveCommand(String command){
   //Parse and execute Radio command
   else if(command.substring(0,seperator) == "R"){
     String msg = command.substring(seperator+1);
-   //Lora.transmitMessage(msg);
+    Lora.transmitMessage(msg);
+    functionReturn = "R:"; //Build return string
+    functionReturn.concat(msg);
+    DebugSerial.println(functionReturn);
   }
   //Parse and execute Ping command
   else if(command.substring(0,seperator) == "P"){

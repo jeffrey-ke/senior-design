@@ -16,6 +16,7 @@ void setup() {
       bridge.giveCommand(data);
       PISerial.println(bridge.returnCommand());
     }
+    //Need to listen for radio input
   }
 }
 

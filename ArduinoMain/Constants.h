@@ -10,9 +10,9 @@
 #define GPSSerial Serial3
 #define PingSerial Serial2
 #define DebugSerial Serial
-const int RFM95_CS = 4;
-const int RFM95_RST = 2;
-const int RFM95_INT = 3;
+const int RFM95_CS = 6;
+const int RFM95_RST = 3;
+const int RFM95_INT = 2;
 const int TPIN1 = 7;
 const int TPIN2 = 8;
 const int TPIN3 = 9;
