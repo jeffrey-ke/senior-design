@@ -14,8 +14,8 @@ void setup() {
       DebugSerial.print("You sent me: ");
       DebugSerial.println(data);
       bridge.giveCommand(data);
+      PISerial.println(bridge.returnCommand());
     }
-    DebugSerial.println(bridge.returnCommand());
   }
 }
 

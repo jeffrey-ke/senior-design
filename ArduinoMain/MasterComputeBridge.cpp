@@ -39,7 +39,9 @@ void MasterComputeBridge::giveCommand(String command){
   }
   //Parse and execute Ping command
   else if(command.substring(0,seperator) == "P"){
-      
+    functionReturn = "P:"; //Build return string
+    functionReturn.concat(String(ping.getData()));
+    DebugSerial.println(functionReturn);
   }
   //Parse and execute IMU command
   else if(command.substring(0,seperator) == "I"){
