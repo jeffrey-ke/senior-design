@@ -1,34 +1,93 @@
-from geometry_msgs.msg import Quaternion
 
 from collections import deque
 
 class MessageCreator():
+    from MessageCreator import ParserConverter
+    from geometry_msgs.msg import Quaternion, Point
+    
     def __init__(self) -> None:
         self.raw_msgs_ = deque()
+        self.parser_ = ParserConverter()
+        self
 
-    def Translate(self, raw_msg):
+    def Queue(self, raw_msg):
         self.raw_msgs_.append(raw_msg)
+    
+    def CreateMessage(self, raw):
+        parsed = self.parser_.ParseConvert(raw)
+        type = parsed["type"]
+        data = parsed["data"]
+
+        if type == "G":
+            return self.CreatePoint(data)
+
+        elif type == "I":
+            return self.CreateQuaternion(data)
+
+    def CreatePoint(self, data):
+        lat, long = data["lat"], data["long"]
+        x, y, z = self.TranslateToCartesian(lat, long)
+        return Point(x=x, y=y, z=z)
+
+    def CreateQuaternion(self, data):
+        x, y, z = data["x"], data["y"], data["z"]
+        q_w, q_x, q_y, q_z = self.TranslateToQuaternion(z, y, z)
+ 
+        return Quaternion(x=q_x, y=q_y, z=q_z, w=q_w)
 
     def Spin(self):
+        # create message
+            #Get the parsed
+            #create a message
         pass
 
+    def TranslateToQuaternion(self, x, y, z):
+        return (w, x, y, z)
 
-class Identifier():
-    import yaml
-    from ament_index_python.packages import get_package_share_directory
-    table_ = {}
-    def __init__(self) -> None:
-        #read from yaml file to populate table
-        share_directory = get_package_share_directory('hardware_bridge')
+    def TranslateToCartesian(self, lat, long):
+        return (x, y, z)
 
-        with open(share_directory + "/config/msg_types.yaml") as config_file:
-            self.table_ = yaml.safe_load(config_file)
-
-    def Ideentify(self, raw_msg) -> str:
-        # look at first byte to see what the message is
-        id = raw_msg[0]
-
-        # read from yaml file to find out what the message type should be
-        return self.table_[id]["type"]
+    
         
 
+class ParserConverter():
+    def __init__(self) -> None:
+        pass
+
+    def Identify(self, raw):
+        id = raw[0]
+        raw_sliced = raw.split(":")[1]
+        return (id, raw_sliced)
+
+    def ParseConvert(self, raw):
+        id, raw_sliced = self.Identify(raw)
+        tokenized = raw_sliced.split(",")
+
+        """
+        GPS:
+            G:lat,long
+        IMU:
+            I:x,y,z
+        Thruster:
+
+        """
+
+        if (id == "G"):
+            return {"type" : "G", 
+                    "data" : 
+                        {
+                            "lat" : float(tokenized[0]), 
+                            "long" : float(tokenized[1])
+                        }
+                    }
+        elif (id == "I"):
+            return {"type": "I",
+                    "data" : 
+                        {
+                            "x" : float(tokenized[0]),
+                            "y" : float(tokenized[1]),
+                            "z" : float(tokenized[2])
+                        }
+                    }
+
+ 
