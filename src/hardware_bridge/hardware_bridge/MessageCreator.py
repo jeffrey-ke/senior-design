@@ -1,14 +1,13 @@
 
 from collections import deque
+from geometry_msgs.msg import Quaternion, Point
 
 class MessageCreator():
-    from MessageCreator import ParserConverter
-    from geometry_msgs.msg import Quaternion, Point
+    
     
     def __init__(self) -> None:
         self.raw_msgs_ = deque()
         self.parser_ = ParserConverter()
-        self
 
     def Queue(self, raw_msg):
         self.raw_msgs_.append(raw_msg)
@@ -45,7 +44,25 @@ class MessageCreator():
         return (w, x, y, z)
 
     def TranslateToCartesian(self, lat, long):
-        return (x, y, z)
+        from math import sin, cos
+        EARTH_RADIUS_METERS = 6.378137e6
+        dec_lat, dec_long = self.LatLongDegreesToDecimal(lat, long)
+        return (EARTH_RADIUS_METERS * cos(dec_long) * cos(dec_lat), 
+                EARTH_RADIUS_METERS * sin(dec_long) * cos(dec_lat),
+                EARTH_RADIUS_METERS * sin(dec_lat))
+    
+    """
+        NMEA format: DDMM.MMMM
+    """
+    def LatLongDegreesToDecimal(self, lat, long):
+        degs_lat = lat // 100 # extracts DD
+        minutes_lat = lat % 100 # extracts MM.MMMM
+
+        degs_long = long // 100
+        minutes_long = long % 100
+
+        return (degs_lat + minutes_lat / 60, degs_long + minutes_long / 60)
+        
 
     
         
