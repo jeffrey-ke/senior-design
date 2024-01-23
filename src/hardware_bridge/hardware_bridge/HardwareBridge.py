@@ -21,8 +21,8 @@ class HardwareBridge:
     def Send(self, msg):
         self.QueueOutgoing(msg)
     
-    def Read(self) -> str:
-        return self.DequeueIncoming() if self.IsIncomingMessageAvailable() else "No message available!"
+    def Read(self):
+        return self.DequeueIncoming() if self.IsIncomingMessageAvailable() else None
         
     def IsOutgoingMessageAvailable(self) -> bool:
         return len(self.outgoing_msg_q_) > 0
