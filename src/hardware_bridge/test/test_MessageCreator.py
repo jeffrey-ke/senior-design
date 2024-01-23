@@ -8,7 +8,7 @@ def test_add_raw():
     assert len(mc.raw_msgs_) == 0
 
     raw = "G:10,10"
-    mc.Queue(raw)
+    mc.EnqueueRaw(raw)
 
     assert len(mc.raw_msgs_) == 1
 
@@ -56,9 +56,9 @@ def test_parse_convert():
 """
     We are converting lat long to cartesian
 """
-def test_create_msg():
+def test_create_point_msg():
     from math import sin,cos
-    from geometry_msgs.msg import Quaternion, Point
+    from geometry_msgs.msg import Point
 
     mc = MessageCreator()
     raw = "G:1010.10,1010.10"
@@ -76,6 +76,34 @@ def ArePointsClose(p1, p2, tolerance=1e-2) -> bool:
     from numpy import allclose
     return allclose([p1.x, p1.y, p1.z], [p2.x, p2.y, p2.z], atol=tolerance)
         
+def test_create_quat_msg():
+    from geometry_msgs.msg import Quaternion
+
+    mc = MessageCreator()
+    
+    raw = "I:10,20,30"
+
+    assert AreQuatsClose(mc.CreateMessage(raw), 
+                         Quaternion(w=0.52005444, x=-0.51089824, y=0.64045922, z=0.24153336))
+
+def AreQuatsClose(q1, q2) -> bool:
+    from numpy import allclose
+    return allclose([q1.w, q1.x, q1.y, q1.z], [q2.w, q2.x, q2.y, q2.z])
+
+def test_spin():
+    from geometry_msgs.msg import Point as P
+    from geometry_msgs.msg import Quaternion as Q
+    mc = MessageCreator()
+
+
+    raws = ["G:10,20", "I:10,20,30", "G:15,20", "I:1,2,3", "G:-20,-30"]
+    correct_msgs = [mc.CreateMessage(raw) for raw in raws]
+    for raw in raws:
+        mc.EnqueueRaw(raw)
+
+    for correct in correct_msgs:
+        mc.Spin()
+        assert correct == mc.Read()
+
 
     
-
