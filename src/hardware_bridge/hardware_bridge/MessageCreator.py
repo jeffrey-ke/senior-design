@@ -7,11 +7,18 @@ class MessageCreator():
     
     def __init__(self) -> None:
         self.raw_msgs_ = deque()
+        self.msgs_ = deque()
         self.parser_ = ParserConverter()
 
-    def Queue(self, raw_msg):
+    def EnqueueRaw(self, raw_msg):
         self.raw_msgs_.append(raw_msg)
     
+    def DequeueRaw(self):
+        return self.raw_msgs_.popleft() if len(self.raw_msgs_) > 0 else None
+   
+    def Read(self):
+        return self.msgs_.popleft() if len(self.msgs_) > 0 else None
+
     def CreateMessage(self, raw):
         parsed = self.parser_.ParseConvert(raw)
         type = parsed["type"]
@@ -30,18 +37,18 @@ class MessageCreator():
 
     def CreateQuaternion(self, data):
         x, y, z = data["x"], data["y"], data["z"]
-        q_w, q_x, q_y, q_z = self.TranslateToQuaternion(z, y, z)
+        q_w, q_x, q_y, q_z = self.TranslateToQuaternion(x, y, z)
  
         return Quaternion(x=q_x, y=q_y, z=q_z, w=q_w)
 
     def Spin(self):
-        # create message
-            #Get the parsed
-            #create a message
-        pass
-
+        raw = self.DequeueRaw()
+        if raw is not None:
+            self.msgs_.append(self.CreateMessage(raw))
+   
     def TranslateToQuaternion(self, x, y, z):
-        return (w, x, y, z)
+        from transforms3d._gohlketransforms import quaternion_from_euler
+        return quaternion_from_euler(x, y, z)
 
     def TranslateToCartesian(self, lat, long):
         from math import sin, cos
