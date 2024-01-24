@@ -1,5 +1,7 @@
 from serial import Serial
 from collections import deque
+from multiprocessing import Lock
+
 class HardwareBridge:
 
     incoming_msg_q_ = deque()
@@ -7,9 +9,11 @@ class HardwareBridge:
     serial_ = None
 
 
-    def __init__(self, port, baud, timeout) -> None:
+    def __init__(self, port, baud, timeout, incoming_buf_lock=Lock(), outgoing_buf_lock=Lock()) -> None:
         self.serial_ = Serial('/dev/{}'.format(port), baud, timeout=timeout)
         self.serial_.reset_input_buffer()
+        self.incoming_buf_lock_ = incoming_buf_lock
+        self.outgoing_buf_lock_ = outgoing_buf_lock
 
     def Spin(self):
         if (self.IsOutgoingMessageAvailable()):
@@ -25,19 +29,25 @@ class HardwareBridge:
         return self.DequeueIncoming() if self.IsIncomingMessageAvailable() else None
         
     def IsOutgoingMessageAvailable(self) -> bool:
-        return len(self.outgoing_msg_q_) > 0
+        with self.outgoing_buf_lock_:
+            return len(self.outgoing_msg_q_) > 0
 
     def IsIncomingMessageAvailable(self) -> bool:
-        return len(self.incoming_msg_q_) > 0
+        with self.incoming_buf_lock_:    
+            return len(self.incoming_msg_q_) > 0
 
     def QueueIncoming(self, msg):
-        self.incoming_msg_q_.append(msg)
+        with self.incoming_buf_lock_:
+            self.incoming_msg_q_.append(msg)
         
     def QueueOutgoing(self, msg):
-        self.outgoing_msg_q_.append(msg)
+        with self.outgoing_buf_lock_:
+            self.outgoing_msg_q_.append(msg)
 
     def DequeueIncoming(self) -> str:
-        return self.incoming_msg_q_.popleft()
+        with self.incoming_buf_lock_:
+            return self.incoming_msg_q_.popleft()
     
     def DequeueOutgoing(self) -> str:
-        return self.outgoing_msg_q_.popleft()
+        with self.outgoing_buf_lock_:
+            return self.outgoing_msg_q_.popleft()
