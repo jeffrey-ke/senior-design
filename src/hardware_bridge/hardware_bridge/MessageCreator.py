@@ -1,23 +1,33 @@
 
 from collections import deque
 from geometry_msgs.msg import Quaternion, Point
+from multiprocessing import Lock
 
 class MessageCreator():
     
     
-    def __init__(self) -> None:
+    def __init__(self, raws_buf_lock=Lock(), processed_buf_lock=Lock()) -> None:
         self.raw_msgs_ = deque()
         self.msgs_ = deque()
         self.parser_ = ParserConverter()
+        self.raw_msgs_lock_ = raws_buf_lock
+        self.msgs_lock_ = processed_buf_lock
 
     def EnqueueRaw(self, raw_msg):
-        self.raw_msgs_.append(raw_msg)
+        with self.raw_msgs_lock_:
+            self.raw_msgs_.append(raw_msg)
     
     def DequeueRaw(self):
-        return self.raw_msgs_.popleft() if len(self.raw_msgs_) > 0 else None
+        with self.raw_msgs_lock_:
+            return self.raw_msgs_.popleft() if len(self.raw_msgs_) > 0 else None
+        
+    def EnqueueProcessedMsg(self, procs_msg):
+        with self.msgs_lock_:
+            self.msgs_.append(procs_msg)
    
     def Read(self):
-        return self.msgs_.popleft() if len(self.msgs_) > 0 else None
+        with self.msgs_lock_:
+            return self.msgs_.popleft() if len(self.msgs_) > 0 else None
 
     def CreateMessage(self, raw):
         parsed = self.parser_.ParseConvert(raw)
@@ -44,7 +54,7 @@ class MessageCreator():
     def Spin(self):
         raw = self.DequeueRaw()
         if raw is not None:
-            self.msgs_.append(self.CreateMessage(raw))
+            self.EnqueueProcessedMsg(self.CreateMessage(raw))
    
     def TranslateToQuaternion(self, x, y, z):
         from transforms3d._gohlketransforms import quaternion_from_euler
