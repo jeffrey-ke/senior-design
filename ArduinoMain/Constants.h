@@ -6,10 +6,10 @@
 #define Constants_h
 #include "Arduino.h"
 
-#define PISerial Serial1
+#define PISerial Serial
 #define GPSSerial Serial3
 #define PingSerial Serial2
-#define DebugSerial Serial
+#define DebugSerial Serial1
 const int RFM95_CS = 6;
 const int RFM95_RST = 3;
 const int RFM95_INT = 2;

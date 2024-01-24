@@ -1,6 +1,6 @@
 #include "MasterComputeBridge.h"
 #include "Constants.h"
-
+uint16_t MIN_DELAY = 1000;
 void setup() {
   // put your setup code here, to run once:
   DebugSerial.begin(115200);
@@ -9,14 +9,22 @@ void setup() {
   DebugSerial.println("Initialization Done");
   
   while(true){
-    while(DebugSerial.available() > 0) {
-      String data = DebugSerial.readStringUntil('\n');
-      DebugSerial.print("You sent me: ");
-      DebugSerial.println(data);
+    unsigned long tStart = micros(); //get time
+    String data = PISerial.readStringUntil('\n');
+    DebugSerial.print("You sent me: ");
+    DebugSerial.println(data);
+    if(data.length()>0){
       bridge.giveCommand(data);
       PISerial.println(bridge.returnCommand());
     }
-    //Need to listen for radio input
+    bridge.giveCommand("G:");
+    PISerial.println(bridge.returnCommand());
+    bridge.giveCommand("I:");
+    PISerial.println(bridge.returnCommand());
+    bridge.giveCommand("P:");
+    PISerial.println(bridge.returnCommand());
+    while ((micros() - tStart) < (MIN_DELAY * 1000))
+    {  }
   }
 }
 
