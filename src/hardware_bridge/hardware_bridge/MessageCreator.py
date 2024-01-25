@@ -14,6 +14,8 @@ class MessageCreator():
         self.msgs_lock_ = processed_buf_lock
 
     def EnqueueRaw(self, raw_msg):
+        if(raw_msg == None):
+            return
         with self.raw_msgs_lock_:
             self.raw_msgs_.append(raw_msg)
     
