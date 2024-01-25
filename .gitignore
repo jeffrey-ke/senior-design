@@ -3,3 +3,9 @@ venv/
 __pycache__/
 
 *.pyc
+
+build/
+documentation/
+install/
+
+log/
