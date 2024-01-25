@@ -10,7 +10,7 @@ class HardwareBridge:
 
 
     def __init__(self, port, baud, timeout, incoming_buf_lock=Lock(), outgoing_buf_lock=Lock()) -> None:
-        self.serial_ = Serial('/dev/{}'.format(port), baud, timeout=timeout)
+        self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
         self.serial_.reset_input_buffer()
         self.incoming_buf_lock_ = incoming_buf_lock
         self.outgoing_buf_lock_ = outgoing_buf_lock
