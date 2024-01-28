@@ -6,14 +6,22 @@ class HardwareBridge:
 
     incoming_msg_q_ = deque()
     outgoing_msg_q_ = deque()
-    serial_ = None
-
 
     def __init__(self, port, baud, timeout, incoming_buf_lock=Lock(), outgoing_buf_lock=Lock()) -> None:
         self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
+        self.port_ = port
+        self.timeout_ = timeout
+        self.baud_ = baud
+
+        self.init_successful_ = self.serial_.is_open
+
         self.serial_.reset_input_buffer()
         self.incoming_buf_lock_ = incoming_buf_lock
         self.outgoing_buf_lock_ = outgoing_buf_lock
+
+    def TryInit(self):
+        self.serial_ = Serial('/dev/tty{}'.format(self.port_), self.baud_, timeout=self.timeout_)
+        self.init_successful_ = self.serial_.is_open
 
     def Spin(self):
         if (self.IsOutgoingMessageAvailable()):
@@ -51,3 +59,4 @@ class HardwareBridge:
     def DequeueOutgoing(self) -> str:
         with self.outgoing_buf_lock_:
             return self.outgoing_msg_q_.popleft()
+        
