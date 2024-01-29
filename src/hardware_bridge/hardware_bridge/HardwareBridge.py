@@ -28,7 +28,9 @@ class HardwareBridge:
             self.serial_.write(self.DequeueOutgoing())
 
         if (self.serial_.in_waiting > 0):
-            self.QueueIncoming(self.serial_.readline().decode('utf-8').rstrip())      
+            msg = self.serial_.readline().decode('utf-8').rstrip()
+            print("\t\traw: " + str(msg))
+            self.QueueIncoming(msg)      
 
     def Send(self, msg):
         self.QueueOutgoing(msg)
