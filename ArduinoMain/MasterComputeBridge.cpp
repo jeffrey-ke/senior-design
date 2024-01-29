@@ -30,7 +30,7 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat(String(id));
     functionReturn.concat(",");
     functionReturn.concat(String(vel));
-    DebugSerial.println(functionReturn);
+    // DebugSerial.println(functionReturn);
   }
   //Parse and execute Radio command
   else if(command.substring(0,seperator) == "R"){
@@ -41,7 +41,7 @@ void MasterComputeBridge::giveCommand(String command){
   else if(command.substring(0,seperator) == "P"){
     functionReturn = "P:"; //Build return string
     functionReturn.concat(String(ping.getData()));
-    DebugSerial.println(functionReturn);
+    // DebugSerial.println(functionReturn);
   }
   //Parse and execute IMU command
   else if(command.substring(0,seperator) == "I"){
@@ -52,7 +52,7 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat(String(orientationData.orientation.y));
     functionReturn.concat(",");
     functionReturn.concat(String(orientationData.orientation.z));
-    DebugSerial.println(functionReturn);
+    // DebugSerial.println(functionReturn);
   }
   //Parse and execute GPS command
   else if(command.substring(0,seperator) == "G"){
