@@ -22,7 +22,7 @@ def waypointToVelocity(currentPoint: Tuple[float, float, float], goalPoint: Tupl
   if (headingError < -PI):
     headingError = headingError + (2 * PI)
  
-  distanceToWaypoint = getDistanceToWaypoint()
+  distanceToWaypoint = getDistanceToWaypoint(currentPoint,goalPoint)
 
   if (abs(distanceToWaypoint) > distanceTolerance):    
     # If the robot's heading is off, fix it.
@@ -40,7 +40,7 @@ def getDistanceToWaypoint(currentPoint: Tuple[float, float, float], goalPoint: T
     goalPoint[0] - currentPoint[0], 2))
 
 #Takes in desired velocity as (lx,ly,lz,ax,ay,az) and returns PMU commands for thruster as (FL,FR,DL,DR)
-def velocityToPMU(vel: Tuple[float, float, float, float, float, float]) -> Tuple[float, float, float, float]:
+def velocityToPWM(vel: Tuple[float, float, float, float, float, float]) -> Tuple[float, float, float, float]:
     #cap velocity values to 10m/s across water and 2m/s while diving
     if(vel[0]>10.0):
         vel[0]=10
@@ -55,9 +55,9 @@ def velocityToPMU(vel: Tuple[float, float, float, float, float, float]) -> Tuple
     elif(vel[5]<-2.0):
         vel[5]=-2
     
-    #determine PMU commands
+    #determine PWM commands
     if(vel[3]==0 and vel[4]==0 and vel[5]==0): #no angular change
-        return (vel[0]*10,vel[0]*10,vel[1]*10,vel[1]*10)
+        return (vel[0]*10,vel[0]*10,0,0)
     elif(vel[5]!=0):
-        return (-0.5*vel[5],0.5*vel[5],0.0,0.0)
+        return (-5*vel[5],5*vel[5],0.0,0.0)
     
