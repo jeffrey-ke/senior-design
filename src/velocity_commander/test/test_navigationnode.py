@@ -1,6 +1,6 @@
-from hardware_bridge import NavigationNode
-from hardware_bridge.NavigationNode import waypointToVelocity
-from hardware_bridge.NavigationNode import velocityToPWM
+from velocity_commander import NavigationNode
+from velocity_commander.NavigationNode import waypointToVelocity
+from velocity_commander.NavigationNode import velocityToPWM
 
 def test_navigationnode():
     temp = waypointToVelocity((3,6,0),(7,6,0),5.786)
