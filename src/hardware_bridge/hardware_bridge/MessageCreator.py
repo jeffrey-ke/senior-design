@@ -1,6 +1,7 @@
 
 from collections import deque
-from geometry_msgs.msg import Quaternion, Point
+from geometry_msgs.msg import Quaternion
+from geographic_msgs.msg import GeoPoint
 from multiprocessing import Lock
 
 class MessageCreator():
@@ -44,8 +45,8 @@ class MessageCreator():
 
     def CreatePoint(self, data):
         lat, long = data["lat"], data["long"]
-        x, y, z = self.TranslateToCartesian(lat, long)
-        return Point(x=x, y=y, z=z)
+        dec_lat, dec_long = self.LatLongDegreesToDecimal(lat, long)
+        return GeoPoint(latitude=dec_lat, longitude=dec_long, altitude=0.0)
 
     def CreateQuaternion(self, data):
         x, y, z = data["x"], data["y"], data["z"]
