@@ -34,6 +34,11 @@ def getDistanceToWaypoint(lat1, long1, lat2, long2) -> float:
   c = 2 * atan2(sqrt(a), sqrt(1 - a))
   return RADIUS_EARTH * c
 
+def waypointToPwm(lat1, long1, lat2, long2, current_heading):
+   velocity = waypointToVelocity(lat1, long1, lat2, long2, current_heading)
+   pwm = velocityToPWM(velocity)
+   return pwm
+
 #takes in the current point and goal point as x,y,z as well as heading and returns the linear and angular velocity as (lx,ly,lz,ax,ay,az)
 def waypointToVelocity(lat1, long1, lat2, long2, current_heading) -> Tuple[float, float, float, float, float, float]: 
 #Get the heading error i.e. how many radians does the robot need to turn to head towards the waypoint 
@@ -72,7 +77,13 @@ def velocityToPWM(vel: Tuple[float, float, float, float, float, float]) -> Tuple
     
     #determine PWM commands
     if(vel[3]==0 and vel[4]==0 and vel[5]==0): #no angular change
-        return (vel[0]*10,vel[0]*10,0,0)
+        return (vel[0]*10, 
+                vel[0]*10,
+                0.0,
+                0.0)
     elif(vel[5]!=0):
-        return (-5*vel[5],5*vel[5],0.0,0.0)
+        return (-5*vel[5],
+                5*vel[5],
+                0.0,
+                0.0)
     
