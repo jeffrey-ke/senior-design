@@ -37,6 +37,10 @@ class HardwareBridge:
 
     def Send(self, msg):
         self.QueueOutgoing(msg)
+
+    def Kill(self):
+        with self.serial_lock_:
+            self.serial_.write("K\n".encode("utf-8"))
     
     def Read(self):
         return self.DequeueIncoming() if self.IsIncomingMessageAvailable() else None
