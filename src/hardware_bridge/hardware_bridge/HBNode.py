@@ -6,6 +6,8 @@ from .HardwareBridge import HardwareBridge
 from .MessageCreator import MessageCreator
 from geometry_msgs.msg import Quaternion
 from geographic_msgs.msg import GeoPoint
+from profiler_msgs.msg import Pwm
+from std_msgs.msg import Int16
 
 
 BRIDGE_SPIN_FREQUENCY = 10 # Hz, make this a ros2 param
@@ -30,6 +32,9 @@ class HBNode(Node):
             self.get_logger().info("INIT FAILED! SHUTTING DOWN")
             self.Shutdown()
     
+        #####################
+        # Timers  ###########
+        #####################
         # timer to spin bridge
         self.bridge_spin_timer_ = self.create_timer(1/BRIDGE_SPIN_FREQUENCY, 
                                                     self.BridgeSpin, 
@@ -48,9 +53,28 @@ class HBNode(Node):
                                                     self.ReadFromMessageCreatorAndPublish, 
                                                     callback_group=self.msg_cr_callback_g_)
         
+
+        ###################
+        # Publishers ######
+        ###################
         self.raw_GPS_pub_ = self.create_publisher(GeoPoint, "/gps", 10)
         self.raw_IMU_pub_ = self.create_publisher(Quaternion, "/imu", 10)
-        # subscribers that feed the bridge
+
+        ##################
+        # Subscribers ####
+        ##################
+        self.create_subscription(Pwm, "/pwm", self.SendPwm, 10)
+        self.create_subscription(Int16, "/KILL", self.SendKill, 10)
+        #T:
+
+
+    def SendKill(self, msg):
+        if msg.data == 1:
+            self.bridge_.Kill()
+
+    def SendPwm(self, msg):
+        fl, fr, dl, dr = msg.forward_l_pwm, msg.forward_r_pwm, msg.down_l_pwm, msg.down_r_pwm
+        self.bridge_.Send("T:{},{},{},{}".format(fl, fr, dl, dr))
 
     def BridgeSpin(self):
         self.get_logger().info("\tBridge spinning..")
