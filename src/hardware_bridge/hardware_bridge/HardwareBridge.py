@@ -6,6 +6,7 @@ class HardwareBridge:
 
     incoming_msg_q_ = deque()
     outgoing_msg_q_ = deque()
+    serial_lock_ = Lock()
 
     def __init__(self, port, baud, timeout, incoming_buf_lock=Lock(), outgoing_buf_lock=Lock()) -> None:
         self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
@@ -25,7 +26,9 @@ class HardwareBridge:
 
     def Spin(self):
         if (self.IsOutgoingMessageAvailable()):
-            self.serial_.write(self.DequeueOutgoing())
+            msg = self.DequeueOutgoing() + "\n"
+            with self.serial_lock_:
+                self.serial_.write(msg.encode('utf-8'))
 
         if (self.serial_.in_waiting > 0):
             msg = self.serial_.readline().decode('utf-8').rstrip()
