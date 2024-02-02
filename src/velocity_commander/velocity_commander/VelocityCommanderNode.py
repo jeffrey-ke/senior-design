@@ -53,3 +53,12 @@ class VelocityCommanderNode(Node):
 
     def UpdateLatLonHeading(self, msg):
         self.lat_, self.lon_, self.heading_ = msg.latitude, msg.longitude, msg.altitude
+
+def main(args=None):
+    rclpy.init()
+    rclpy.spin(VelocityCommanderNode())
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
