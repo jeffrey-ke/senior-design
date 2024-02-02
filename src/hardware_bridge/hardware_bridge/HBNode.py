@@ -4,7 +4,9 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from .HardwareBridge import HardwareBridge
 from .MessageCreator import MessageCreator
-from geometry_msgs.msg import Point, Quaternion
+from geometry_msgs.msg import Quaternion
+from geographic_msgs.msg import GeoPoint
+
 
 BRIDGE_SPIN_FREQUENCY = 10 # Hz, make this a ros2 param
 BRIDGE_READ_FREQUENCY = 10
@@ -46,8 +48,8 @@ class HBNode(Node):
                                                     self.ReadFromMessageCreatorAndPublish, 
                                                     callback_group=self.msg_cr_callback_g_)
         
-        self.raw_GPS_pub_ = self.create_publisher(Point, "/raw_gps", 10)
-        self.raw_IMU_pub_ = self.create_publisher(Quaternion, "/raw_imu", 10)
+        self.raw_GPS_pub_ = self.create_publisher(GeoPoint, "/gps", 10)
+        self.raw_IMU_pub_ = self.create_publisher(Quaternion, "/imu", 10)
         # subscribers that feed the bridge
 
     def BridgeSpin(self):
@@ -88,7 +90,7 @@ class HBNode(Node):
         msg = self.msg_creator_.Read()
         if (msg is None):
             return
-        if isinstance(msg, Point):
+        if isinstance(msg, GeoPoint):
             self.raw_GPS_pub_.publish(msg)
         elif isinstance(msg, Quaternion):
             self.raw_IMU_pub_.publish(msg)
