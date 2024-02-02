@@ -25,20 +25,22 @@ def test_identify():
 def test_parse_convert():
     pc = ParserConverter()        
 
-    raw = "G:10,10"
+    raw = "G:10,10,10"
     assert pc.ParseConvert(raw) == {"type" : "G", 
                                     "data" : 
                                         {
                                             "lat" : 10.0, 
-                                            "long" : 10.0
+                                            "long" : 10.0,
+                                            "heading": 10.0
                                         }
                                     }
-    raw = "G:69,69"
+    raw = "G:69,69,69"
     assert pc.ParseConvert(raw) == {"type" : "G", 
                                     "data" : 
                                         {
                                             "lat" : 69.0, 
-                                            "long" : 69.0
+                                            "long" : 69.0,
+                                            "heading": 69.0
                                         }
                                     }
 
@@ -61,11 +63,11 @@ def test_create_point_msg():
     from geographic_msgs.msg import GeoPoint
 
     mc = MessageCreator()
-    raw = "G:1010.10,1010.10"
-    assert ArePointsClose(mc.CreateMessage(raw),GeoPoint(latitude=(10 + 10.1/60), longitude=(10 + 10.1/60),altitude=0.0))
+    raw = "G:1010.10,1010.10,69.0"
+    assert ArePointsClose(mc.CreateMessage(raw),GeoPoint(latitude=(10 + 10.1/60), longitude=(10 + 10.1/60),altitude=69.0))
 
-    raw = "G:2020.20,3030.30"
-    assert ArePointsClose(mc.CreateMessage(raw),GeoPoint(latitude=(20 + 20.20/60), longitude=(30 + 30.30/60), altitude=0.0))
+    raw = "G:2020.20,3030.30,69.0"
+    assert ArePointsClose(mc.CreateMessage(raw),GeoPoint(latitude=(20 + 20.20/60), longitude=(30 + 30.30/60), altitude=69.0))
 
 
 def ArePointsClose(p1, p2, tolerance=1e-2) -> bool:
@@ -92,7 +94,7 @@ def test_spin():
     mc = MessageCreator()
 
 
-    raws = ["G:10,20", "I:10,20,30", "G:15,20", "I:1,2,3", "G:-20,-30"]
+    raws = ["G:10,20,69", "I:10,20,30", "G:15,20,69", "I:1,2,3", "G:-20,-30,69"]
     correct_msgs = [mc.CreateMessage(raw) for raw in raws]
     for raw in raws:
         mc.EnqueueRaw(raw)
