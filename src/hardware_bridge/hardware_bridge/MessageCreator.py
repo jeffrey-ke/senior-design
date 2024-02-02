@@ -44,9 +44,9 @@ class MessageCreator():
             return self.CreateQuaternion(data)
 
     def CreatePoint(self, data):
-        lat, long = data["lat"], data["long"]
+        lat, long, heading = data["lat"], data["long"], data["heading"]
         dec_lat, dec_long = self.LatLongDegreesToDecimal(lat, long)
-        return GeoPoint(latitude=dec_lat, longitude=dec_long, altitude=0.0)
+        return GeoPoint(latitude=dec_lat, longitude=dec_long, altitude=heading)
 
     def CreateQuaternion(self, data):
         x, y, z = data["x"], data["y"], data["z"]
@@ -102,7 +102,7 @@ class ParserConverter():
 
         """
         GPS:
-            G:lat,long
+            G:lat,long, heading
         IMU:
             I:x,y,z
         Thruster:
@@ -114,7 +114,8 @@ class ParserConverter():
                     "data" : 
                         {
                             "lat" : float(tokenized[0]), 
-                            "long" : float(tokenized[1])
+                            "long" : float(tokenized[1]),
+                            "heading": float(tokenized[2])
                         }
                     }
         elif (id == "I"):
