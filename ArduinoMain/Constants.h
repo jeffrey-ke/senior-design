@@ -9,14 +9,14 @@
 #define PISerial Serial
 #define GPSSerial Serial3
 #define PingSerial Serial2
-#define DebugSerial Serial1
-const int RFM95_CS = 6;
+#define DebugSerial Serial
+const int RFM95_CS = 4;
 const int RFM95_RST = 3;
 const int RFM95_INT = 2;
-const int TPIN1 = 7;
-const int TPIN2 = 8;
-const int TPIN3 = 9;
-const int TPIN4 = 10;
+const int TPIN1 = 8;
+const int TPIN2 = 9;
+const int TPIN3 = 10;
+const int TPIN4 = 11;
 #define RF95_FREQ 915.0 //Standard frequency for use in the US
 
 #endif

@@ -6,7 +6,9 @@ PingDriver::PingDriver(){
         DebugSerial.println("\nPing device failed to initialize!");
         DebugSerial.println(PingSerial);
     }
-    DebugSerial.println("Ping initialized succesfully");
+    else{
+      DebugSerial.println("Ping initialized succesfully");
+    }
 }
 int PingDriver::getData(){
     if (ping.update()) {

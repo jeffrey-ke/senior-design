@@ -24,21 +24,22 @@ double * _GPSDriver::getData(){
       if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
       return; // we can fail to parse a sentence in which case we should just wait for another
   }
-  DebugSerial.print("Fix: "); Serial.print((int)GPS.fix);
-  DebugSerial.print(" quality: "); Serial.println((int)GPS.fixquality);
+  DebugSerial.print("Fix: "); DebugSerial.print((int)GPS.fix);
+  DebugSerial.print(" quality: "); DebugSerial.println((int)GPS.fixquality);
   if (GPS.fix) {
       DebugSerial.print("Location: ");
-      DebugSerial.print(GPS.latitude, 4); Serial.print(GPS.lat);
+      DebugSerial.print(GPS.latitude, 4); DebugSerial.print(GPS.lat);
       DebugSerial.print(", ");
-      DebugSerial.print(GPS.longitude, 4); Serial.println(GPS.lon);
-      DebugSerial.print("Speed (knots): "); Serial.println(GPS.speed);
-      DebugSerial.print("Angle: "); Serial.println(GPS.angle);
-      DebugSerial.print("Altitude: "); Serial.println(GPS.altitude);
-      DebugSerial.print("Satellites: "); Serial.println((int)GPS.satellites);
-      DebugSerial.print("Antenna status: "); Serial.println((int)GPS.antenna);
+      DebugSerial.print(GPS.longitude, 4); DebugSerial.println(GPS.lon);
+      DebugSerial.print("Speed (knots): "); DebugSerial.println(GPS.speed);
+      DebugSerial.print("Angle: "); DebugSerial.println(GPS.angle);
+      DebugSerial.print("Altitude: "); DebugSerial.println(GPS.altitude);
+      DebugSerial.print("Satellites: "); DebugSerial.println((int)GPS.satellites);
+      DebugSerial.print("Antenna status: "); DebugSerial.println((int)GPS.antenna);
   }
-  double latlong[2];
+  double latlong[3];
   latlong[0] = GPS.latitude;
   latlong[1] = GPS.longitude;
+  latlong[2] = GPS.angle;
   return latlong;
 }
