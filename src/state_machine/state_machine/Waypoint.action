@@ -1,5 +1,0 @@
-double[] waypointCoords
----
-bool arrivedAtWaypoint
----
-double distanceToWaypoint

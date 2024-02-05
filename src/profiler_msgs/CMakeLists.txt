@@ -11,10 +11,19 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-# Generating my message
+#Find custom interface files
 find_package(rosidl_default_generators REQUIRED)
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(msg_files
   "msg/Pwm.msg"
+  )
+set(action_files
+  "action/Profile.action"
+  "action/Waypoint.action"
+  )
+# Generating all custom interfaces
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${action_files}
 )
 
 

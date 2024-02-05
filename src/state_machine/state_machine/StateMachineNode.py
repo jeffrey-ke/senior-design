@@ -3,10 +3,12 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from time import time
 from geographic_msgs.msg import GeoPoint
-from std_msgs.msg import Int16
+from std_msgs.msg import float64
+from std_msgs.msg import int16
 from std_msgs.msg import String
-from Waypoint.action import Waypoint
-from Profile.action import Profile
+from profiler_msgs.action import Waypoint
+from profiler_msgs.action import Profile
+
 
 
 MAX_DURATION_SECONDS = 600
@@ -54,7 +56,7 @@ class StateMachineNode(Node):
             splitcoords = splitmsg.split(',')
             waypoints.append(splitcoords[0],splitcoords[1])
         elif(splitmsg[0]=="K"):
-            self.kill_pub_.publish(1) #kill command
+            self.kill_pub_.publish((Int16)1) #kill command
         elif(splitmsg[0]=="S"):
             if(len(waypoints)>0):
                 state = "waypoint" #once arduino sends message that it is ready standby complete
@@ -70,7 +72,6 @@ class StateMachineNode(Node):
             self.state_pub_.publish(state)
 
     def cancel_waypoint(self):
-        self.waypoint_client_.wait_for_server()
         self.waypoint_result = self.waypoint_client_.cancel_goal_async()
         self.waypoint_result.add_done_callback(self.waypoint_cancel_response)
     def waypoint_cancel_response(self,future):
@@ -79,7 +80,6 @@ class StateMachineNode(Node):
             self.cancel_waypoint()
 
     def cancel_profile(self):
-        self.profile_client_.wait_for_server()
         self.profile_result = self.profile_client_.cancel_goal_async()
         self.profile_result.add_done_callback(self.profile_cancel_response)
     def profile_cancel_response(self,future):
@@ -90,7 +90,7 @@ class StateMachineNode(Node):
     #Waypoint functions
     def send_waypoint(self, coords):
         goal_msg = Waypoint.Goal()
-        goal_msg.waypointCoords = coords
+        goal_msg.waypoint_coords = coords #Geopoint
 
         self.waypoint_client_.wait_for_server()
 
@@ -144,7 +144,7 @@ class StateMachineNode(Node):
             if(len(waypoints)>0):
                     state = "waypoint" #once arduino sends message that it is ready standby complete
                     self.state_pub_.publish(state)
-                    coords = [waypoints[0][0],waypoints[0][1]]
+                    coords = CreatePoint([waypoints[0][0],waypoints[0][1],0.0])
                     self.send_waypoint(coords)
             else:
                 state="return"
@@ -164,6 +164,10 @@ class StateMachineNode(Node):
     def ShouldDie(self):
         return self.cur_time_ - self.start_time_ > MAX_DURATION_SECONDS
             
+    def CreatePoint(self, data):
+        lat, long, heading = data[0], data[1], data[2]
+        dec_lat, dec_long = self.LatLongDegreesToDecimal(lat, long)
+        return GeoPoint(latitude=dec_lat, longitude=dec_long, altitude=heading)
         
 def main(args=None):
     rclpy.init()
