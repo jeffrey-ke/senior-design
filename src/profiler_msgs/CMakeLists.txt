@@ -13,8 +13,17 @@ find_package(ament_cmake REQUIRED)
 
 # Generating my message
 find_package(rosidl_default_generators REQUIRED)
+find_package(geometry_msgs)
+find_package(std_msgs)
+find_package(geographic_msgs)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Pwm.msg"
+  "srv/GetDepth.srv"
+  "srv/GetGnss.srv"
+  "srv/GetOrientation.srv"
+  "srv/SendKill.srv"
+  "srv/SendPwm.srv"
+  DEPENDENCIES geographic_msgs geometry_msgs std_msgs
 )
 
 

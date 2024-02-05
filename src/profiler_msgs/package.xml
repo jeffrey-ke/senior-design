@@ -7,6 +7,11 @@
   <maintainer email="jke@scu.edu">ubuntu</maintainer>
   <license>TODO: License declaration</license>
 
+
+  <depend>geographic_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <!-- These 3 lines needed to generate my custom message -->
