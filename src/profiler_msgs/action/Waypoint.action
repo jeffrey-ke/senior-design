@@ -1,4 +1,4 @@
-geographic_msgs/GeoPoint waypoint_coords
+float64[2] waypoint_coords
 ---
 bool arrived_at_waypoint
 ---
