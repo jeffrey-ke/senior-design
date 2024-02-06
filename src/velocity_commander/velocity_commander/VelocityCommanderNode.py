@@ -1,14 +1,17 @@
 import rclpy
-
+from rclpy.action import ActionServer
 from rclpy.node import Node
 from geographic_msgs.msg import GeoPoint
-from .NavigationNode import NavigationNode
+from NavigationNode import *
 from profiler_msgs.msg import Pwm
+from profiler_msgs.action import Waypoint
+from profiler_msgs.action import Profile
 
 # 37.429518,-121.982590 are the of a point approximately 10 meters out from the dock 
 
 SPIN_FREQUENCY = 10 # Hz
 
+currentCoords = []
 
 class VelocityCommanderNode(Node):
     def __init__(self):
@@ -17,15 +20,17 @@ class VelocityCommanderNode(Node):
         # Subscribers ###
         #################
         self.create_subscription(GeoPoint, "/gps", self.UpdateLatLon, 10)  
-        self.create_subscription(GeoPoint, "/waypoint", self.UpdateWaypoint, 10)
-
-        
 
         #################
         # Publishers ####
         #################
         self.pwm_pub_ = self.create_publisher(Pwm, "/pwm", 10)
 
+        ##################
+        # Actions ########
+        ##################
+        self._action_server = ActionServer(self,Waypoint,'waypoint', self.waypoint_callback)
+        self._action_server = ActionServer(self,Profile,'profile', self.profile_callback)
 
         #################
         # Timers ########
@@ -38,6 +43,27 @@ class VelocityCommanderNode(Node):
         ################
         self.navigator_ = NavigationNode()
 
+    def waypoint_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        coords = goal_handle.request.waypoint_coords 
+
+        feedback_msg = Waypoint.Feedback()
+        feedback_msg.distance_to_waypoint = getDistanceToWaypoint(currentCoords[0], currentCoords[1], coords[0], coords[1])
+        goal_handle.publish_feedback(feedback_msg)
+        goal_handle.succeed()
+        result = Waypoint.Result()
+        result.arrived_at_waypoint = True
+        return result
+    
+    def profile_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        depth = goal_handle.request.desired_depth
+
+
+        goal_handle.succeed()
+        result = Profile.Result()
+        result.ending_depth = 0.0
+        return result
 
     def Spin(self):
         pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
