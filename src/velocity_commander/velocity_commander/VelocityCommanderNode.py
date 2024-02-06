@@ -2,7 +2,7 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 from geographic_msgs.msg import GeoPoint
-from NavigationNode import *
+from .NavigationNode import NavigationNode
 from profiler_msgs.msg import Pwm
 from profiler_msgs.action import Waypoint
 from profiler_msgs.action import Profile
@@ -19,7 +19,8 @@ class VelocityCommanderNode(Node):
         ##################
         # Subscribers ###
         #################
-        self.create_subscription(GeoPoint, "/gps", self.UpdateLatLon, 10)  
+        #self.gps_sub_ = self.create_subscription(GeoPoint, "/gps", self.gps_callback, 10)  
+        #self.gps_sub_
 
         #################
         # Publishers ####
@@ -43,12 +44,16 @@ class VelocityCommanderNode(Node):
         ################
         self.navigator_ = NavigationNode()
 
+    def gps_callback(self,msg):
+        currentCoords[0] = GeoPoint[0]
+        currentCoords[1] = GeoPoint[1]
+
     def waypoint_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
         coords = goal_handle.request.waypoint_coords 
 
         feedback_msg = Waypoint.Feedback()
-        feedback_msg.distance_to_waypoint = getDistanceToWaypoint(currentCoords[0], currentCoords[1], coords[0], coords[1])
+        feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(currentCoords[0], currentCoords[1], coords[0], coords[1])
         goal_handle.publish_feedback(feedback_msg)
         goal_handle.succeed()
         result = Waypoint.Result()

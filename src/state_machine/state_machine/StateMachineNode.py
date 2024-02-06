@@ -49,6 +49,12 @@ class StateMachineNode(Node):
         self.start_time_ = time()
         self.cur_time_ = self.start_time_
 
+        if(len(waypoints)>0):
+                state = "waypoint" #once arduino sends message that it is ready standby complete
+                self.state_pub_.publish(String(data=state))
+                coords = {5.0,8.4}
+                self.send_waypoint(coords)
+
     #Parse command from base station 
     def command_callback(self, msg):
         splitmsg = msg.split(':')
@@ -56,11 +62,11 @@ class StateMachineNode(Node):
             splitcoords = splitmsg.split(',')
             waypoints.append(splitcoords[0],splitcoords[1])
         elif(splitmsg[0]=="K"):
-            self.kill_pub_.publish(1) #kill command
+            self.kill_pub_.publish(Int16(data=1)) #kill command
         elif(splitmsg[0]=="S"):
             if(len(waypoints)>0):
                 state = "waypoint" #once arduino sends message that it is ready standby complete
-                self.state_pub_.publish(state)
+                self.state_pub_.publish(String(data=state))
                 coords = [waypoints[0][0],waypoints[0][1]]
                 self.send_waypoint(coords)
 
@@ -69,7 +75,7 @@ class StateMachineNode(Node):
             self.cancel_waypoint()
             self.cancel_profile()
             state = "return"
-            self.state_pub_.publish(state)
+            self.state_pub_.publish(String(data=state))
 
     def cancel_waypoint(self):
         self.waypoint_result = self.waypoint_client_.cancel_goal_async()
@@ -114,7 +120,7 @@ class StateMachineNode(Node):
         if(result): #made it to waypoint 
             waypoints.pop(0)
             state="profiling"
-            self.state_pub_.publish(state)
+            self.state_pub_.publish(String(data=state))
             self.send_profile(maxDepth)
     #profile functions
     def send_profile(self, depth):
@@ -143,19 +149,19 @@ class StateMachineNode(Node):
         if(result<1):#if on surface
             if(len(waypoints)>0):
                     state = "waypoint" #once arduino sends message that it is ready standby complete
-                    self.state_pub_.publish(state)
+                    self.state_pub_.publish(String(data=state))
                     coords = self.CreatePoint([waypoints[0][0],waypoints[0][1],0.0])
                     self.send_waypoint(coords)
             else:
                 state="return"
-                self.state_pub_.publish(state)
+                self.state_pub_.publish(String(data=state))
 
     def Spin(self):
         self.UpdateTime()
-        if (self.ShouldDie()):
-            self.kill_pub_.publish(Int16(data=1))
-        else:
-            self.kill_pub_.publish(Int16(data=0))
+        #if (self.ShouldDie()):
+        #    self.kill_pub_.publish(Int16(data=1))
+        #else:
+        #    self.kill_pub_.publish(Int16(data=0))
 
     def UpdateTime(self):
         self.cur_time_ = time()
