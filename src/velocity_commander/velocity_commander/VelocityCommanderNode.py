@@ -9,13 +9,16 @@ from profiler_msgs.action import Profile
 
 # 37.429518,-121.982590 are the of a point approximately 10 meters out from the dock 
 
-SPIN_FREQUENCY = 10 # Hz
-
-currentCoords = []
-
 class VelocityCommanderNode(Node):
-    def __init__(self):
+    lat_ = 0.0
+    wp_lat_ = 0.0
+    lon_ = 0.0
+    wp_lon_ = 0.0
+    heading_ = 0.0
+    depth = 0.0
 
+    def __init__(self):
+        super().__init__('VelocityCommanderNode') #Important!
         ##################
         # Subscribers ###
         #################
@@ -33,51 +36,81 @@ class VelocityCommanderNode(Node):
         self._action_server = ActionServer(self,Waypoint,'waypoint', self.waypoint_callback)
         self._action_server = ActionServer(self,Profile,'profile', self.profile_callback)
 
-        #################
-        # Timers ########
-        #################
-        self.spin_timer_ = self.create_timer(1/SPIN_FREQUENCY, self.Spin)
-
-
         ################
         # Workers ######
         ################
         self.navigator_ = NavigationNode()
 
     def gps_callback(self,msg):
-        currentCoords[0] = GeoPoint[0]
-        currentCoords[1] = GeoPoint[1]
+        self.lat_ = msg.latitude
+        self.lon_ = msg.longitude
 
     def waypoint_callback(self, goal_handle):
-        self.get_logger().info('Executing goal...')
+        self.get_logger().debug('traveling to waypoint...')
         coords = goal_handle.request.waypoint_coords 
+        wp_lat_ = coords.latitude
+        wp_lon_ = coords.longitude
+        pwm = [1,1,1,1] #explicit type definition
+        while(pwm[0]!=0 and pwm[1]!=0): #while not at waypoint 
+            #update gnss
+            pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
+                                                self.wp_lat_, self.wp_lon_,
+                                                self.heading_)
+            self.pwm_pub_.publish(Pwm(forward_l_pwm=pwm[0],
+                                    forward_r_pwm=pwm[1],
+                                    down_l_pwm=pwm[2],
+                                    down_r_pwm=pwm[3]))
+            feedback_msg = Waypoint.Feedback()
+            feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)
+            goal_handle.publish_feedback(feedback_msg)
 
-        feedback_msg = Waypoint.Feedback()
-        feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(currentCoords[0], currentCoords[1], coords[0], coords[1])
-        goal_handle.publish_feedback(feedback_msg)
+            #testing
+            self.lat_ += (self.wp_lat_-self.lat_)/5
+            self.lon_ += (self.wp_lon_-self.lon_)/5
+
         goal_handle.succeed()
         result = Waypoint.Result()
         result.arrived_at_waypoint = True
         return result
     
     def profile_callback(self, goal_handle):
-        self.get_logger().info('Executing goal...')
-        depth = goal_handle.request.desired_depth
+        self.get_logger().debug('profiling water column...')
+        desiredDepth = goal_handle.request.desired_depth
+        self.htovFlip() #flip orientation
+        pwm = [1,1,1,1] #explicit type definition
+        while(self.depth>=desiredDepth): #or close to sea floor
+            #update depth
+            pwm = self.navigator_.descendToPwm(self.depth, desiredDepth, self.heading_)
 
+            self.pwm_pub_.publish(Pwm(forward_l_pwm=pwm[0],
+                                    forward_r_pwm=pwm[1],
+                                    down_l_pwm=pwm[2],
+                                    down_r_pwm=pwm[3]))
+            self.depth += 0.5  #testing               
 
+        while(self.depth<1.0):
+            #update depth
+            #get and log sensor data
+            pwm = self.navigator_.ascendToPwm(self.depth, desiredDepth, self.heading_)
+            self.pwm_pub_.publish(Pwm(forward_l_pwm=pwm[0],
+                                    forward_r_pwm=pwm[1],
+                                    down_l_pwm=pwm[2],
+                                    down_r_pwm=pwm[3]))
+            self.depth -= 0.5   #testing
+
+        self.vtohFlip() #flip orientation back
         goal_handle.succeed()
         result = Profile.Result()
-        result.ending_depth = 0.0
+        result.ending_depth = self.depth
         return result
+        
 
-    def Spin(self):
-        pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
-                                            self.wp_lat_, self.wp_lon_,
-                                            self.heading_)
-        self.pwm_pub_.publish(Pwm(forward_l_pwm=pwm[0],
-                                  forward_r_pwm=pwm[1],
-                                  down_l_pwm=pwm[2],
-                                  down_r_pwm=pwm[3]))
+    def htovFlip(self): #script to flip profiler horizontal to vertical
+        self.get_logger().debug('gamer flip')
+
+
+    def vtohFlip(self): #script to flip profiler vertical to horizontal
+        self.get_logger().debug('gamer flip back')
 
     def UpdateWaypoint(self, msg):
         self.wp_lat_, self.wp_lon_ = msg.latitude, msg.longitude

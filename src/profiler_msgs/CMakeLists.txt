@@ -13,6 +13,9 @@ find_package(ament_cmake REQUIRED)
 
 #Find custom interface files
 find_package(rosidl_default_generators REQUIRED)
+find_package(geometry_msgs)
+find_package(std_msgs)
+find_package(geographic_msgs)
 set(msg_files
   "msg/Pwm.msg"
   )
@@ -24,6 +27,7 @@ set(action_files
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   ${action_files}
+  DEPENDENCIES geographic_msgs geometry_msgs std_msgs
 )
 
 

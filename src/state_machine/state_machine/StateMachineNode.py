@@ -4,6 +4,7 @@ from rclpy.action import ActionClient
 from time import time
 from geographic_msgs.msg import GeoPoint
 from std_msgs.msg import Float64
+from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Int16
 from std_msgs.msg import String
 from profiler_msgs.action import Waypoint
@@ -15,12 +16,12 @@ MAX_DURATION_SECONDS = 600
 SPIN_FREQUENCY = 100
 
 state = "standby"
-maxDepth = 20 #ideal dive depth in meters, may want to tie it to individual waypoints
+maxDepth = 20.0 #ideal dive depth in meters, may want to tie it to individual waypoints
 waypoints = [] #stack of waypoints push new ones to back pop old ones from front
 
 class StateMachineNode(Node):
     def __init__(self):
-        super().__init__('StateMachineNode')
+        super().__init__('StateMachineNode') #Important!
         ###################
         # Publishers ######
         ###################
@@ -48,12 +49,13 @@ class StateMachineNode(Node):
 
         self.start_time_ = time()
         self.cur_time_ = self.start_time_
-
+        self.get_logger().info('init succesful')
+        waypoints.append(GeoPoint(latitude=6.8, longitude=4.2, altitude=0.0)) #testing
         if(len(waypoints)>0):
-                state = "waypoint" #once arduino sends message that it is ready standby complete
-                self.state_pub_.publish(String(data=state))
-                coords = {5.0,8.4}
-                self.send_waypoint(coords)
+            state = "waypoint" #once arduino sends message that it is ready standby complete
+            self.state_pub_.publish(String(data=state))
+            coords = waypoints[0]
+            self.send_waypoint(coords)
 
     #Parse command from base station 
     def command_callback(self, msg):
@@ -67,7 +69,7 @@ class StateMachineNode(Node):
             if(len(waypoints)>0):
                 state = "waypoint" #once arduino sends message that it is ready standby complete
                 self.state_pub_.publish(String(data=state))
-                coords = [waypoints[0][0],waypoints[0][1]]
+                coords = waypoints[0]
                 self.send_waypoint(coords)
 
     def health_callback(self,msg):
@@ -97,13 +99,13 @@ class StateMachineNode(Node):
     def send_waypoint(self, coords):
         goal_msg = Waypoint.Goal()
         goal_msg.waypoint_coords = coords #Geopoint
-
+        self.get_logger().debug('preparing to send waypoint')
         self.waypoint_client_.wait_for_server()
 
         self.waypoint_result = self.waypoint_client_.send_goal_async(goal_msg)
 
         self.waypoint_result.add_done_callback(self.waypoint_goal_response)
-
+        self.get_logger().debug('waypoint sent')
     def waypoint_goal_response(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
@@ -116,7 +118,7 @@ class StateMachineNode(Node):
         self.waypoint_result_future.add_done_callback(self.waypoint_result_callback)
 
     def waypoint_result_callback(self, future):
-        result = future.result().result
+        result = future.result().result.arrived_at_waypoint
         if(result): #made it to waypoint 
             waypoints.pop(0)
             state="profiling"
@@ -124,8 +126,8 @@ class StateMachineNode(Node):
             self.send_profile(maxDepth)
     #profile functions
     def send_profile(self, depth):
-        goal_msg = Waypoint.Goal()
-        goal_msg.desiredDepth = depth
+        goal_msg = Profile.Goal()
+        goal_msg.desired_depth = depth
 
         self.profile_client_.wait_for_server()
 
@@ -145,13 +147,13 @@ class StateMachineNode(Node):
         self.profile_result_future.add_done_callback(self.profile_result_callback)
 
     def profile_result_callback(self, future):
-        result = future.result().result
-        if(result<1):#if on surface
+        result = future.result().result.ending_depth
+        if(result<1.0):#if on surface
             if(len(waypoints)>0):
-                    state = "waypoint" #once arduino sends message that it is ready standby complete
-                    self.state_pub_.publish(String(data=state))
-                    coords = self.CreatePoint([waypoints[0][0],waypoints[0][1],0.0])
-                    self.send_waypoint(coords)
+                state = "waypoint" #once arduino sends message that it is ready standby complete
+                self.state_pub_.publish(String(data=state))
+                coords = waypoints[0]
+                self.send_waypoint(coords)
             else:
                 state="return"
                 self.state_pub_.publish(String(data=state))

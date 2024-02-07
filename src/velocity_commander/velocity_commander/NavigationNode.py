@@ -9,7 +9,7 @@ class NavigationNode:
   angleTolerance = 0.1 
 
 
-  def getHeadingError(lat1, long1, lat2, long2, current_heading):
+  def getHeadingError(self, lat1, long1, lat2, long2, current_heading) -> float:
     y = sin(long2 - long1) * sin(lat2) 
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(long2 - long1)
     bearing = atan2(y, x)
@@ -22,7 +22,7 @@ class NavigationNode:
 
     return h_err
 
-  def getDistanceToWaypoint(lat1, long1, lat2, long2) -> float:
+  def getDistanceToWaypoint(self, lat1, long1, lat2, long2) -> float:
     RADIUS_EARTH = 6378.1370e3
     lat1 = radians(lat1)
     long1 = radians(long1)  
@@ -62,7 +62,7 @@ class NavigationNode:
 
 
   #Takes in desired velocity as (lx,ly,lz,ax,ay,az) and returns PMU commands for thruster as (FL,FR,DL,DR)
-  def velocityToPWM(vel: Tuple[float, float, float, float, float, float]) -> Tuple[float, float, float, float]:
+  def velocityToPWM(self, vel: Tuple[float, float, float, float, float, float]) -> Tuple[float, float, float, float]:
       #cap velocity values to 10m/s across water and 2m/s while diving
       if(vel[0]>10.0):
           vel[0]=10
@@ -88,4 +88,10 @@ class NavigationNode:
                   5*vel[5],
                   0.0,
                   0.0)
-      
+  def descendToPwm(self, currentDepth, desiredDepth, heading):
+    print('descending')
+    return (0.0,0.0,0.0,0.0)
+
+  def ascendToPwm(self, currentDepth, desiredDepth, heading):
+    print('ascending')
+    return (0.0,0.0,0.0,0.0)
