@@ -9,7 +9,7 @@
 #define PISerial Serial
 #define GPSSerial Serial3
 #define PingSerial Serial2
-#define DebugSerial Serial
+#define DebugSerial Serial1
 const int RFM95_CS = 4;
 const int RFM95_RST = 3;
 const int RFM95_INT = 2;
