@@ -1,6 +1,6 @@
-Float32 forward_l_pwm
-Float32 forward_r_pwm
-Float32 down_l_pwm
-Float32 down_r_pwm
+float32 forward_l_pwm
+float32 forward_r_pwm
+float32 down_l_pwm
+float32 down_r_pwm
 ---
 bool success
