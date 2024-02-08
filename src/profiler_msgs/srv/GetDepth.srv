@@ -1,3 +1,4 @@
 
 ---
-float32 depth
+Float32 depth
+bool success
