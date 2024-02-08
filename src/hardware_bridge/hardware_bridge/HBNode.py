@@ -14,7 +14,7 @@ class HBNode(Node):
         self.create_service(SendKill, 'send_kill', self.SendKill)
         self.create_service(SendPwm, 'send_pwm', self.SendPwm)
 
-        self.bridge_ = HardwareBridge()
+        self.bridge_ = HardwareBridge("ACM0", 9600, 5)
 
     def SendPwm(self, request, response):
         FL, FR, DL, DR = request.forward_l_pwm, request.forward_r_pwm, request.down_l_pwm, request.down_r_pwm
@@ -54,12 +54,12 @@ class HBNode(Node):
     def RequestDepth(self, request, response):
         pass
         
-    def main(args=None):
-        rclpy.init(args=args)
-        rclpy.spin(HBNode())
+def main(args=None):
+    rclpy.init(args=args)
+    rclpy.spin(HBNode())
 
-        rclpy.shutdown()
+    rclpy.shutdown()
 
-    if __name__ == '__main__':
-        main()
+if __name__ == '__main__':
+    main()
         

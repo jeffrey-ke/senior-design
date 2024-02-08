@@ -1,11 +1,10 @@
 from serial import Serial
 from time import time
-from HardwareBridge import Timer
 from .MessageCreator import MessageCreator
  
 
 class HardwareBridge:
-    def __init__(self, port, baud, timeout,) -> None:
+    def __init__(self, port, baud, timeout) -> None:
         self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
         self.port_ = port
         self.timeout_ = timeout
@@ -43,11 +42,11 @@ class HardwareBridge:
 
 
     def _ReadWithCheck(self, timeout):
-        Timer.Start()
-        while (Timer.TimeElapsed() < timeout):
-            if self.serial_.in_waiting <= 0:
+        self.timer_.Start()
+        while (self.timer_.TimeElapsed() < timeout):
+            if self.serial_.in_waiting > 0:
                 msg = self.serial_.readline()
-                return msg if msg[-1] is '\n' else None
+                return msg if msg[-1] == '\n' else None
         return None
         
 

@@ -53,7 +53,7 @@ class VelocityCommanderNode(Node):
         req = GetGnss.Request()
         self.future = self.gnss_srv_.call_async(req)
         rclpy.spin_until_future_complete(self, self.future)
-        return CreatePoint(self.future.result().gnss)
+        return self.future.result().gnss
 
     def CreatePoint(self, geo):
         lat, long, heading = geo.latitude, geo.longitude, geo.altitude
