@@ -1,131 +1,65 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
+
+from profiler_msgs.srv import GetDepth, GetGnss, GetOrientation, SendKill, SendPwm
+
 from .HardwareBridge import HardwareBridge
-from .MessageCreator import MessageCreator
-from geometry_msgs.msg import Quaternion
-from geographic_msgs.msg import GeoPoint
-from profiler_msgs.msg import Pwm
-from std_msgs.msg import Int16
-
-
-BRIDGE_SPIN_FREQUENCY = 10 # Hz, make this a ros2 param
-BRIDGE_READ_FREQUENCY = 10
-MSG_CR_SPIN_FREQUENCY = 10
-MSG_CR_READ_FREQUENCY = 10
-
 
 class HBNode(Node):
-
-    
-
-    bridge_callback_g_ = ReentrantCallbackGroup()
-    msg_cr_callback_g_ = ReentrantCallbackGroup()
-
-
     def __init__(self):
-        super().__init__("HBNode")
+        super().__init__("hardware_bridge_node")
+        self.create_service(GetDepth, 'get_depth', self.RequestDepth)
+        self.create_service(GetGnss, 'get_gnss', self.RequestGnss)
+        self.create_service(GetOrientation, 'get_orientation', self.RequestOrientation)
+        self.create_service(SendKill, 'send_kill', self.SendKill)
+        self.create_service(SendPwm, 'send_pwm', self.SendPwm)
 
+        self.bridge_ = HardwareBridge()
+
+    def SendPwm(self, request, response):
+        FL, FR, DL, DR = request.forward_l_pwm, request.forward_r_pwm, request.down_l_pwm, request.down_r_pwm
+        result = self.bridge_.SendPWM(FL, FR, DL, DR)
+        response.success = True if result is not None else False
+        return response
+
+    def SendKill(self, request, response):
+        pass
+
+    def RequestOrientation(self, request, response):
+        from geometry_msgs.msg import Quaternion
+        result = self.bridge_.AskForIMU()
+        success = True
+        if result is None:
+            result = Quaternion()
+            success = False
+        response.orientation = result
+        response.success = success
+        return response
+
+
+    def RequestGnss(self, request, response):
+        from geographic_msgs.msg import GeoPoint
+        result = self.bridge_.AskForGps()
+        success = True
+
+        if result is None:
+            result = GeoPoint()
+            success = False
+
+        response.gnss = result
+        response.success = success
+        return response
+
+
+    def RequestDepth(self, request, response):
+        pass
         
-        if (self.InitAll() is False):
-            self.get_logger().info("INIT FAILED! SHUTTING DOWN")
-            self.Shutdown()
-    
-        #####################
-        # Timers  ###########
-        #####################
-        # timer to spin bridge
-        self.bridge_spin_timer_ = self.create_timer(1/BRIDGE_SPIN_FREQUENCY, 
-                                                    self.BridgeSpin, 
-                                                    callback_group=self.bridge_callback_g_)
+    def main(args=None):
+        rclpy.init(args=args)
+        rclpy.spin(HBNode())
 
-        # timer to read from bridge and publish
-        self.bridge_read_timer_ = self.create_timer(1/BRIDGE_READ_FREQUENCY, 
-                                                    self.BridgeReadCb, 
-                                                    callback_group=self.bridge_callback_g_)
-        
-        self.msg_cr_spin_timer_ = self.create_timer(1/MSG_CR_SPIN_FREQUENCY,
-                                                    self.MsgCrSpin,
-                                                    callback_group=self.msg_cr_callback_g_)
-         
-        self.msg_cr_read_timer_ = self.create_timer(1/MSG_CR_READ_FREQUENCY,
-                                                    self.ReadFromMessageCreatorAndPublish, 
-                                                    callback_group=self.msg_cr_callback_g_)
-        
-
-        ###################
-        # Publishers ######
-        ###################
-        self.raw_GPS_pub_ = self.create_publisher(GeoPoint, "/gps", 10)
-        self.raw_IMU_pub_ = self.create_publisher(Quaternion, "/imu", 10)
-
-        ##################
-        # Subscribers ####
-        ##################
-        self.create_subscription(Pwm, "/pwm", self.SendPwm, 10)
-        self.create_subscription(Int16, "/KILL", self.SendKill, 10)
-        #T:
-
-
-    def SendKill(self, msg):
-        if msg.data == 1:
-            self.bridge_.Kill()
-
-    def SendPwm(self, msg):
-        fl, fr, dl, dr = msg.forward_l_pwm, msg.forward_r_pwm, msg.down_l_pwm, msg.down_r_pwm
-        self.bridge_.Send("T:{},{},{},{}".format(fl, fr, dl, dr))
-
-    def BridgeSpin(self):
-        self.get_logger().info("\tBridge spinning..")
-        self.bridge_.Spin()
-
-    def MsgCrSpin(self):
-        self.get_logger().info("\tMsg Cr Spinning..")
-        self.msg_creator_.Spin()
-
-    def Shutdown(self):
         rclpy.shutdown()
 
-    def InitAll(self) -> bool:
-        bridge_init = self.InitBridge()
-        msg_cr_init = self.InitMsgCr()
-        print("Bridge init: " + str(bridge_init))
-        print("Message Creator init: " + str(msg_cr_init))
-
-        return (bridge_init is True) and (msg_cr_init is True)
-
-
-    def InitBridge(self) -> bool:
-        self.bridge_ = HardwareBridge("ACM0", 115200, 1) #Add port and baud and timeout
-        return self.bridge_.init_successful_
-
-    def InitMsgCr(self) -> bool:
-        self.msg_creator_ = MessageCreator()
-        return True
-        
-    def BridgeReadCb(self):
-        raw = self.bridge_.Read()
-        self.msg_creator_.EnqueueRaw(raw)
-        self.get_logger().info("msg: " + str(raw))
-        
-    # Publishers
-    def ReadFromMessageCreatorAndPublish(self):
-        msg = self.msg_creator_.Read()
-        if (msg is None):
-            return
-        if isinstance(msg, GeoPoint):
-            self.raw_GPS_pub_.publish(msg)
-        elif isinstance(msg, Quaternion):
-            self.raw_IMU_pub_.publish(msg)
-
-def main(args=None):
-    rclpy.init()
-    executor = MultiThreadedExecutor()
-    executor.add_node(HBNode())
-    executor.spin()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+    if __name__ == '__main__':
+        main()
         
