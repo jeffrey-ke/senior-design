@@ -1,71 +1,73 @@
 from serial import Serial
-from collections import deque
-from multiprocessing import Lock
+from time import time
+from HardwareBridge import Timer
+from .MessageCreator import MessageCreator
+ 
 
 class HardwareBridge:
-
-    incoming_msg_q_ = deque()
-    outgoing_msg_q_ = deque()
-    serial_lock_ = Lock()
-
-    def __init__(self, port, baud, timeout, incoming_buf_lock=Lock(), outgoing_buf_lock=Lock()) -> None:
+    def __init__(self, port, baud, timeout,) -> None:
         self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
         self.port_ = port
         self.timeout_ = timeout
         self.baud_ = baud
-
         self.init_successful_ = self.serial_.is_open
-
         self.serial_.reset_input_buffer()
-        self.incoming_buf_lock_ = incoming_buf_lock
-        self.outgoing_buf_lock_ = outgoing_buf_lock
+        self.timer_ = Timer()
+        self.msg_creator_ = MessageCreator()
 
     def TryInit(self):
         self.serial_ = Serial('/dev/tty{}'.format(self.port_), self.baud_, timeout=self.timeout_)
         self.init_successful_ = self.serial_.is_open
 
-    def Spin(self):
-        if (self.IsOutgoingMessageAvailable()):
-            msg = self.DequeueOutgoing() + "\n"
-            with self.serial_lock_:
-                self.serial_.write(msg.encode('utf-8'))
-
-        if (self.serial_.in_waiting > 0):
-            msg = self.serial_.readline().decode('utf-8').rstrip()
-            print("\t\traw: " + str(msg))
-            self.QueueIncoming(msg)      
-
-    def Send(self, msg):
-        self.QueueOutgoing(msg)
-
-    def Kill(self):
-        with self.serial_lock_:
-            self.serial_.write("K\n".encode("utf-8"))
-    
-    def Read(self):
-        return self.DequeueIncoming() if self.IsIncomingMessageAvailable() else None
+    def AskForGps(self, timeout=1):
+        self._Send("G:")
+        msg = self._ReadWithCheck(timeout=timeout)
+        return self._CreateMessageOrNone(msg)
         
-    def IsOutgoingMessageAvailable(self) -> bool:
-        with self.outgoing_buf_lock_:
-            return len(self.outgoing_msg_q_) > 0
-
-    def IsIncomingMessageAvailable(self) -> bool:
-        with self.incoming_buf_lock_:    
-            return len(self.incoming_msg_q_) > 0
-
-    def QueueIncoming(self, msg):
-        with self.incoming_buf_lock_:
-            self.incoming_msg_q_.append(msg)
         
-    def QueueOutgoing(self, msg):
-        with self.outgoing_buf_lock_:
-            self.outgoing_msg_q_.append(msg)
+    def AskForIMU(self, timeout=1):
+        self._Send("I:")
+        msg = self._ReadWithCheck(timeout=timeout)
+        return self._CreateMessageOrNone(msg)
 
-    def DequeueIncoming(self) -> str:
-        with self.incoming_buf_lock_:
-            return self.incoming_msg_q_.popleft()
-    
-    def DequeueOutgoing(self) -> str:
-        with self.outgoing_buf_lock_:
-            return self.outgoing_msg_q_.popleft()
+    def SendPWM(self, FL, FR, DL, DR, timeout=1):
+        self._Send("T:{},{},{},{}".format(FL, FR, DL, DR))
+        msg = self._ReadWithCheck(timeout=timeout)
+        return msg is not None
+
+    def _CreateMessageOrNone(self, msg):
+        if msg is None:
+            return None
+        else:
+            return self.msg_creator_.CreateMessage(msg)
+
+
+    def _ReadWithCheck(self, timeout):
+        Timer.Start()
+        while (Timer.TimeElapsed() < timeout):
+            if self.serial_.in_waiting <= 0:
+                msg = self.serial_.readline()
+                return msg if msg[-1] is '\n' else None
+        return None
         
+
+    def _Send(self, msg):
+        msg = msg + "\n"
+        self.serial_.write(msg.encode("utf-8"))
+"""
+G:
+I:
+T:1,2,3,4
+
+"""
+
+class Timer():
+    from time import time
+    def __init__(self) -> None:
+        pass
+
+    def Start(self):
+        self.start = time()
+
+    def TimeElapsed(self):
+        return time() - self.start
