@@ -1,46 +1,26 @@
 
-from collections import deque
 from geometry_msgs.msg import Quaternion
 from geographic_msgs.msg import GeoPoint
-from multiprocessing import Lock
 
 class MessageCreator():
     
     
-    def __init__(self, raws_buf_lock=Lock(), processed_buf_lock=Lock()) -> None:
-        self.raw_msgs_ = deque()
-        self.msgs_ = deque()
+    def __init__(self) -> None:
         self.parser_ = ParserConverter()
-        self.raw_msgs_lock_ = raws_buf_lock
-        self.msgs_lock_ = processed_buf_lock
-
-    def EnqueueRaw(self, raw_msg):
-        if(raw_msg == None):
-            return
-        with self.raw_msgs_lock_:
-            self.raw_msgs_.append(raw_msg)
-    
-    def DequeueRaw(self):
-        with self.raw_msgs_lock_:
-            return self.raw_msgs_.popleft() if len(self.raw_msgs_) > 0 else None
-        
-    def EnqueueProcessedMsg(self, procs_msg):
-        with self.msgs_lock_:
-            self.msgs_.append(procs_msg)
-   
-    def Read(self):
-        with self.msgs_lock_:
-            return self.msgs_.popleft() if len(self.msgs_) > 0 else None
 
     def CreateMessage(self, raw):
         parsed = self.parser_.ParseConvert(raw)
-        type = parsed["type"]
+
+        if parsed is None:
+            return None
+        
+        msg_id = parsed["type"]
         data = parsed["data"]
 
-        if type == "G":
+        if msg_id == "G":
             return self.CreatePoint(data)
 
-        elif type == "I":
+        elif msg_id == "I":
             return self.CreateQuaternion(data)
 
     def CreatePoint(self, data):
@@ -54,11 +34,7 @@ class MessageCreator():
  
         return Quaternion(x=q_x, y=q_y, z=q_z, w=q_w)
 
-    def Spin(self):
-        raw = self.DequeueRaw()
-        if raw is not None:
-            self.EnqueueProcessedMsg(self.CreateMessage(raw))
-   
+
     def TranslateToQuaternion(self, x, y, z):
         from transforms3d._gohlketransforms import quaternion_from_euler
         return quaternion_from_euler(x, y, z)
@@ -89,28 +65,30 @@ class MessageCreator():
 
 class ParserConverter():
     def __init__(self) -> None:
-        pass
+        self._AllowedIds = ["I", "G", "T"]
+        self._MsgLengths = {
+            "I": 3, # x y z
+            "G": 3 # lat long heading
+        }
 
     def Identify(self, raw):
-        id = raw[0]
+        msg_id = raw[0]
         raw_sliced = raw.split(":")[1]
-        return (id, raw_sliced)
+        return (msg_id, raw_sliced)
+    
+    def _CheckMsgTokenized(self, msg_id, tokenized):
+        return msg_id  in self._AllowedIds and self._MsgLengths[msg_id] == len(tokenized)
+         
 
     def ParseConvert(self, raw):
-        id, raw_sliced = self.Identify(raw)
+        msg_id, raw_sliced = self.Identify(raw)
         tokenized = raw_sliced.split(",")
 
-        """
-        GPS:
-            G:lat,long, heading
-        IMU:
-            I:x,y,z
-        Thruster:
+        if self._CheckMsgTokenized(msg_id, tokenized) is False:
+            return None
 
-        """
-
-        if (id == "G"):
-            return {"type" : "G", 
+        if (msg_id == "G"):
+            return {"msg_id" : "G", 
                     "data" : 
                         {
                             "lat" : float(tokenized[0]), 
@@ -118,8 +96,8 @@ class ParserConverter():
                             "heading": float(tokenized[2])
                         }
                     }
-        elif (id == "I"):
-            return {"type": "I",
+        elif (msg_id == "I"):
+            return {"msg_id": "I",
                     "data" : 
                         {
                             "x" : float(tokenized[0]),
