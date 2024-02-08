@@ -7,19 +7,21 @@
   <maintainer email="jke@scu.edu">ubuntu</maintainer>
   <license>TODO: License declaration</license>
 
-
-  <depend>geographic_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
   <depend>geometry_msgs</depend>
-
+  <depend>geographic_msgs</depend>
+  <depend>geographic_info</depend>
+  
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <!-- These 3 lines needed to generate my custom message -->
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
+  <depend>action_msgs</depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
   <!-- Man, they should make a better interface for this -->
-
+  
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

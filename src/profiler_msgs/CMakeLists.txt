@@ -11,18 +11,31 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-# Generating my message
+#Find custom interface files
 find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs)
 find_package(std_msgs)
 find_package(geographic_msgs)
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(msg_files
   "msg/Pwm.msg"
+  )
+set(action_files
+  "action/Profile.action"
+  "action/Waypoint.action"
+  )
+set(srv_files
   "srv/GetDepth.srv"
   "srv/GetGnss.srv"
   "srv/GetOrientation.srv"
   "srv/SendKill.srv"
   "srv/SendPwm.srv"
+  )
+# Generating all custom interfaces
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${action_files}
+  ${srv_files}
+  
   DEPENDENCIES geographic_msgs geometry_msgs std_msgs
 )
 
