@@ -22,6 +22,10 @@ class NavigationNode:
 
     return h_err
 
+  def atWaypoint(self, lat1, long1, lat2, long2) -> bool:
+    if(getDistanceToWaypoint(lat1, long1, lat2, long2)<distanceTolerance):
+      return True
+    return False
   def getDistanceToWaypoint(self, lat1, long1, lat2, long2) -> float:
     RADIUS_EARTH = 6378.1370e3
     lat1 = radians(lat1)
