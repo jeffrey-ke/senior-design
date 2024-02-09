@@ -3,7 +3,7 @@
 */
 #include "MasterComputeBridge.h"
 
-MasterComputeBridge::MasterComputeBridge(){
+MasterComputeBridge::MasterComputeBridge(): GPS(){
   thrusterSetup();
 }
 void MasterComputeBridge::thrusterSetup(){
@@ -107,4 +107,7 @@ String MasterComputeBridge::returnCommand(){
   String temp = functionReturn;
   functionReturn = "";
   return temp;
+}
+void MasterComputeBridge::spinGPS(){
+  GPS.spin();
 }

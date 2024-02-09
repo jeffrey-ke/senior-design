@@ -2,15 +2,9 @@
 
 RadioDriver::RadioDriver(): rf95(RFM95_CS, RFM95_INT){
   pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
-  digitalWrite(RFM95_RST, LOW);
-  delay(10);
-  digitalWrite(RFM95_RST, HIGH);
-  delay(10);
 
-  while (!rf95.init()) {
+  if(!rf95.init()) {
     DebugSerial.println("LoRa radio init failed");
-    while (1);
   }
   DebugSerial.println("LoRa radio initialized");
 

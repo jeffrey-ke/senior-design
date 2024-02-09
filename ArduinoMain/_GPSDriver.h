@@ -1,7 +1,6 @@
 #ifndef _GPSDriver_h
 #define _GPSDriver_h
 #include <Adafruit_GPS.h>
-#include "SoftwareSerial.h"
 #include "Constants.h"
 
 class _GPSDriver{
@@ -10,5 +9,6 @@ private:
 public:
   _GPSDriver();
   double* getData();
+  void spin();
 };
 #endif

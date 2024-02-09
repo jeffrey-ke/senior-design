@@ -8,7 +8,7 @@ ThrusterDriver::ThrusterDriver(const int servoPin){
 
     thruster.write(1500); // send "stop" signal to ESC.
 
-    delay(7000); // delay to allow the ESC to recognize the stopped signal
+    //delay(7000); // delay to allow the ESC to recognize the stopped signal
     DebugSerial.print("Thruster Initialized on Pin ");
     DebugSerial.println(servoPin);
 }

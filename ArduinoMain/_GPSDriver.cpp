@@ -1,7 +1,6 @@
 #include "_GPSDriver.h"
 
-_GPSDriver::_GPSDriver(){
-    Adafruit_GPS GPS = Adafruit_GPS(&GPSSerial);
+_GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     //GPS Initialization
     GPS.begin(9600);
     // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
@@ -26,6 +25,7 @@ double * _GPSDriver::getData(){
   }
   DebugSerial.print("Fix: "); DebugSerial.print((int)GPS.fix);
   DebugSerial.print(" quality: "); DebugSerial.println((int)GPS.fixquality);
+  DebugSerial.print("Antenna status: "); DebugSerial.println((int)GPS.antenna);
   if (GPS.fix) {
       DebugSerial.print("Location: ");
       DebugSerial.print(GPS.latitude, 4); DebugSerial.print(GPS.lat);
@@ -39,7 +39,26 @@ double * _GPSDriver::getData(){
   }
   double latlong[3];
   latlong[0] = GPS.latitude;
+  if(GPS.lon=="S"){
+    latlong[0] = -latlong[0];
+  }
   latlong[1] = GPS.longitude;
+  if(GPS.lon=="W"){
+    latlong[1] = -latlong[1];
+  }
   latlong[2] = GPS.angle;
   return latlong;
+}
+void _GPSDriver::spin(){
+    // read data from the GPS in the 'main loop'
+  char c = GPS.read();
+  // if a sentence is received, we can check the checksum, parse it...
+  if (GPS.newNMEAreceived()) {
+    // a tricky thing here is if we print the NMEA sentence, or data
+    // we end up not listening and catching other sentences!
+    // so be very wary if using OUTPUT_ALLDATA and trying to print out data
+   DebugSerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
+    if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
+      return; // we can fail to parse a sentence in which case we should just wait for another
+  }
 }

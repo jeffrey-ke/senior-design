@@ -10,7 +10,6 @@
 #include "PingDriver.h"
 #include "ThrusterDriver.h"
 #include "RadioDriver.h"
-#include "SoftwareSerial.h"
 class MasterComputeBridge{
   private:
     ThrusterDriver thruster1;
@@ -27,6 +26,7 @@ class MasterComputeBridge{
     void IMUSetup();
     void thrusterSetup();
     void giveCommand(String command);
+    void spinGPS();
     String returnCommand();
 };
 #endif

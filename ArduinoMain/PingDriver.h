@@ -2,7 +2,6 @@
 #define PingDriver_h
 #include "Arduino.h" 
 #include "ping1d.h"
-#include "SoftwareSerial.h"
 #include "Constants.h"
 static Ping1D ping { PingSerial }; 
 class PingDriver{
