@@ -29,6 +29,7 @@ set(srv_files
   "srv/GetOrientation.srv"
   "srv/SendKill.srv"
   "srv/SendPwm.srv"
+  "srv/GetMinionStatus.srv"
   )
 # Generating all custom interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}

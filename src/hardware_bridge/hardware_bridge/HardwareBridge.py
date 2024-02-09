@@ -18,16 +18,26 @@ class HardwareBridge:
         self.serial_ = Serial('/dev/tty{}'.format(self.port_), self.baud_, timeout=self.timeout_)
         self.init_successful_ = self.serial_.is_open
 
-    def AskForGps(self, timeout=1):
+    def AskForStatus(self, ros_msg_type, timeout=1):
+        self._Send("S:")
+        msg = self._ReadWithCheck(timeout=timeout)
+        created_msg = self._CreateMessageOrNone(msg)
+        return created_msg if isinstance(created_msg, ros_msg_type) else None
+
+
+    def AskForGps(self, ros_msg_type, timeout=1):
         self._Send("G:")
         msg = self._ReadWithCheck(timeout=timeout)
-        return self._CreateMessageOrNone(msg)
+        created_msg = self._CreateMessageOrNone(msg)
+        return created_msg if isinstance(created_msg, ros_msg_type) else None
         
         
-    def AskForIMU(self, timeout=1):
+    def AskForIMU(self, ros_msg_type, timeout=1):
         self._Send("I:")
         msg = self._ReadWithCheck(timeout=timeout)
-        return self._CreateMessageOrNone(msg)
+        created_msg = self._CreateMessageOrNone(msg)
+        return created_msg if isinstance(created_msg, ros_msg_type) else None
+
 
     def SendPWM(self, FL, FR, DL, DR, timeout=1):
         self._Send("T:{},{},{},{}".format(FL, FR, DL, DR))

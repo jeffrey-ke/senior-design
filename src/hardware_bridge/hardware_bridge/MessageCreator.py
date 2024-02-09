@@ -1,6 +1,7 @@
 
 from geometry_msgs.msg import Quaternion
 from geographic_msgs.msg import GeoPoint
+from std_msgs.msg import Int16
 
 class MessageCreator():
     
@@ -22,6 +23,9 @@ class MessageCreator():
 
         elif msg_id == "I":
             return self.CreateQuaternion(data)
+        
+        elif msg_id == "S":
+            return Int16(data=data["alive"])
 
     def CreatePoint(self, data):
         lat, long, heading = data["lat"], data["long"], data["heading"]
@@ -65,10 +69,11 @@ class MessageCreator():
 
 class ParserConverter():
     def __init__(self) -> None:
-        self._AllowedIds = ["I", "G", "T"]
+        self._AllowedIds = ["I", "G", "T", "S"]
         self._MsgLengths = {
             "I": 3, # x y z
-            "G": 3 # lat long heading
+            "G": 3, # lat long heading
+            "S": 1 # alive
         }
 
     def Identify(self, raw):
@@ -105,5 +110,13 @@ class ParserConverter():
                             "z" : float(tokenized[2])
                         }
                     }
+        elif (msg_id == "S"):
+            return {"msg_id": "S",
+                    "data":
+                        {
+                            "alive" : int(tokenized[0])
+                        }
+
+            }
 
  

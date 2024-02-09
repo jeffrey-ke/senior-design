@@ -49,8 +49,9 @@ class StateMachineNode(Node):
 
         self.start_time_ = time()
         self.cur_time_ = self.start_time_
-        self.get_logger().info('init succesful')
-        waypoints.append(GeoPoint(latitude=6.8, longitude=4.2, altitude=0.0)) #testing
+        self.get_logger().info('init succesful')# 37.350204,-121.938166
+
+        waypoints.append(GeoPoint(latitude=37.350204, longitude=-121.938166, altitude=0.0)) #testing
         if(len(waypoints)>0):
             state = "waypoint" #once arduino sends message that it is ready standby complete
             self.state_pub_.publish(String(data=state))

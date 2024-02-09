@@ -23,7 +23,7 @@ class NavigationNode:
     return h_err
 
   def atWaypoint(self, lat1, long1, lat2, long2) -> bool:
-    if(getDistanceToWaypoint(lat1, long1, lat2, long2)<distanceTolerance):
+    if(self.getDistanceToWaypoint(lat1, long1, lat2, long2)<self.distanceTolerance):
       return True
     return False
   def getDistanceToWaypoint(self, lat1, long1, lat2, long2) -> float:

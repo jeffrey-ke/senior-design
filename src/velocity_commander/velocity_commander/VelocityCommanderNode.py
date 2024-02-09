@@ -111,7 +111,7 @@ class VelocityCommanderNode(Node):
             feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)
             goal_handle.publish_feedback(feedback_msg)
 
-            geo = get_gnss()
+            geo = self.get_gnss()
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
             self.heading = geo.altitude
