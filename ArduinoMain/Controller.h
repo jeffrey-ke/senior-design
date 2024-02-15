@@ -28,6 +28,7 @@ class Controller {
         double GetKi() {return k_i_;};
         double GetKd() {return k_d_;};
         double GetKol() {return k_ol_;};
+        double GetDesired() {return desired_;};
 
 
     private: // member vars
