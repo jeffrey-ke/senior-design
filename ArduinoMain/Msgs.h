@@ -33,8 +33,12 @@ typedef struct m_depth {
 typedef struct m_PWM {
     int FL, FR, DL, DR;
 
-    m_PWM operator+(const m_PWM& rhs) {
-        return m_PWM{FL + rhs.FL, FR + rhs.FR, DL + rhs.DL, DR + rhs.DR};
+    m_PWM(): FL(1500), FR(1500), DL(1500), DR(1500){}
+    m_PWM(int FL_, int FR_, int DL_, int DR_) {
+        FL = (FL_ > 1900) ? 1900 : ((FL_ < 1100) ? 1100 : FL_);
+        FR = (FR_ > 1900) ? 1900 : ((FR_ < 1100) ? 1100 : FR_);
+        DL = (DL_ > 1900) ? 1900 : ((DL_ < 1100) ? 1100 : DL_);
+        DR = (DR_ > 1900) ? 1900 : ((DR_ < 1100) ? 1100 : DR_);
     }
 
     m_PWM operator-(const m_PWM& rhs) {
