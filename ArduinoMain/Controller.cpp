@@ -1,6 +1,9 @@
 #include "Controller.h" 
 
 double Controller::CalculateControlEffort(double current_state) {
+
+    current_ = current_state;
+
     auto error = CalculateError(current_state);
     auto p_effort = CalculateProportional(error);
     auto i_effort = CalculateIntegral(error);
@@ -10,7 +13,7 @@ double Controller::CalculateControlEffort(double current_state) {
                             i_effort + 
                             d_effort + 
                             ol_effort;
-                            
+
     return total_control_effort_;
 }
 
