@@ -22,9 +22,9 @@ class WaypointController {
         };
 
     public: //methods
-        PWM CalculatePWM(Location current_loc, double current_heading);
+        PWM CalculatePWM(Location current_loc);
         void UpdateDesiredLocation(Location loc) {desired_ = loc;};
-        bool IsHeadingCorrectWithinMargin(Location current_loc, double current_heading);
+        bool IsHeadingCorrectWithinMargin(Location current_loc);
         bool IsLocationCorrectWithinMargin(Location current_loc);
 
     private: //members
@@ -36,7 +36,7 @@ class WaypointController {
 
     private: //helpers
         PWM CalculateLinearPWM(Location current_loc);
-        PWM CalculateAngularPWM(Location current_loc, double current_heading);
+        PWM CalculateAngularPWM(Location current_loc);
         double CalculateDistanceBetween(Location l1, Location l2) {return l2 - l1;};
         double CalculateAngleDifferenceBetween(Location l1, Location l2) {return l2 % l1;};
 };
