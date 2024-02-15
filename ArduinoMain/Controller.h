@@ -14,13 +14,13 @@ class Controller {
 
     public: // methods
         double CalculateControlEffort(double current_state);
+        void SetDesired(double desired) {desired_ = desired;};
     
     public: // Setters
         void SetKp(double kp) {k_p_ = kp;};
         void SetKi(double ki) {k_i_ = ki;};
         void SetKd(double kd) {k_d_ = kd;};
         void SetKol(double kol) {k_ol_ = kol;};
-        void SetDesired(double desired) {desired_ = desired;};
         void ResetIntegratedError() {integrated_error_ = 0.0;};
 
     public: //Getters
