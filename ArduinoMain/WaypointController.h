@@ -37,8 +37,8 @@ class WaypointController {
     private: //helpers
         PWM CalculateLinearPWM(Location current_loc);
         PWM CalculateAngularPWM(Location current_loc, double current_heading);
-        double CalculateDistanceBetween(Location l1, Location l2);
-        double CalculateAngleDifferenceBetween(Location l1, Location l2);
+        double CalculateDistanceBetween(Location l1, Location l2) {return l2 - l1;};
+        double CalculateAngleDifferenceBetween(Location l1, Location l2) {return l2 % l1;};
 };
 
 
