@@ -10,7 +10,6 @@
 #include "PingDriver.h"
 #include "ThrusterDriver.h"
 //#include "RadioDriver.h"
-#include "SoftwareSerial.h"
 class MasterComputeBridge{
   private:
     ThrusterDriver thruster1;
