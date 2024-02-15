@@ -7,6 +7,7 @@ class Controller {
 
     public: //constants
         const static double DT = 1.0;
+        const static double ZERO = 0.0;
 
     public: // Constructors
         Controller(double kp, double ki, double kd, double kol=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol) {};
