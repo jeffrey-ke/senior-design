@@ -41,9 +41,22 @@ typedef struct m_PWM {
         DR = (DR_ > 1900) ? 1900 : ((DR_ < 1100) ? 1100 : DR_);
     }
 
-    m_PWM operator-(const m_PWM& rhs) {
-        return m_PWM{FL - rhs.FL, FR - rhs.FR, DL - rhs.DL, DR - rhs.DR};
+    m_PWM operator+(const int& of) const {
+        return m_PWM{FL + of, FR + of, DL + of, DR + of};
     }
+
+    m_PWM operator-(const int& of) const {
+        return m_PWM{FL - of, FR - of, DL - of, DR - of};
+    }
+    
+    m_PWM operator-(const m_PWM& rhs) const {
+        return m_PWM{FL - rhs.FL + 1500, FR - rhs.FR + 1500, DL - rhs.DL + 1500, DR - rhs.DR + 1500};
+    }//FL - 1500 - (FL - 1500)
+
+    m_PWM operator+(const m_PWM& rhs) const {
+        return m_PWM{FL + rhs.FL - 1500, FR + rhs.FR - 1500, DL + rhs.DL - 1500, DR + rhs.DR - 1500};
+    } // FL - 1500 + FL - 1500
+
 } m_PWM;
 
 #endif
