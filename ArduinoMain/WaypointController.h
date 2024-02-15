@@ -8,21 +8,37 @@ class WaypointController {
     public: //aliases
         using Location = m_GNSS;
         using PWM = m_PWM;
+    
+    public: //constants
+        static double LINEAR_MARGIN_OF_ERROR;
+        static double ANGULAR_MARGIN_OF_ERROR;
 
     public: //constructor
-        WaypointController(double kp, double ki, double kd, double kol=0.0): distance_controller_(kp, ki, kd, kol){};
+        WaypointController(double kp_l, double ki_l, double kd_l, double kol_l, 
+                            double kp_a, double ki_a, double kd_a, double kol_a): linear_controller_(kp_l, ki_l, kd_l, kol_l),
+                                                                                    angular_controller_(kp_a, ki_a, kd_a, kol_a){
+            linear_controller_.SetDesired(Controller::ZERO); //we want zero linear error
+            angular_controller_.SetDesired(Controller::ZERO); //we also want zero angular error 
+        };
 
     public: //methods
-        PWM CalculatePWM(Location current_loc);
+        PWM CalculatePWM(Location current_loc, double current_heading);
         void UpdateDesiredLocation(Location loc) {desired_ = loc;};
+        bool IsHeadingCorrectWithinMargin(Location current_loc, double current_heading);
+        bool IsLocationCorrectWithinMargin(Location current_loc);
 
     private: //members
 
-        Controller distance_controller_;
-        Controller heading_controller_;
+        Controller linear_controller_;
+        Controller angular_controller_;
 
         Location desired_;
-        Location current_;
+
+    private: //helpers
+        PWM CalculateLinearPWM(Location current_loc);
+        PWM CalculateAngularPWM(Location current_loc, double current_heading);
+        double CalculateDistanceBetween(Location l1, Location l2);
+        double CalculateAngleDifferenceBetween(Location l1, Location l2);
 };
 
 
