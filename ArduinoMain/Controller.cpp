@@ -31,7 +31,7 @@ double Controller::CalculateIntegral(double error) {
 
 double Controller::CalculateDerivative(double error) {
     derivative_control_effort_ = k_d_ * (error - previous_error_)/DT;
-    previous_error_ = previous_error_;
+    previous_error_ = error;
     return derivative_control_effort_;
 }
 
