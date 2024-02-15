@@ -57,6 +57,12 @@ typedef struct m_PWM {
         return m_PWM{FL + rhs.FL - 1500, FR + rhs.FR - 1500, DL + rhs.DL - 1500, DR + rhs.DR - 1500};
     } // FL - 1500 + FL - 1500
 
+    
 } m_PWM;
+
+
+const static m_PWM pwm_FULL_OFF{1500, 1500, 1500, 1500};
+const static m_PWM pwm_FULL_FORWARD{1900, 1900, 1500, 1500};
+const static m_PWM pwm_FULL_BACKWARD{1100, 1100, 1500, 1500};
 
 #endif
