@@ -6,8 +6,8 @@
 
 class WaypointController {
     public: //aliases
-        using Location = m_GNSS;
-        using PWMCommand = m_PWM;
+        using Location = Msg::GNSS;
+        using PWMCommand = Msg::PWM;
     
     public: //constants
         static double LINEAR_MARGIN_OF_ERROR;
