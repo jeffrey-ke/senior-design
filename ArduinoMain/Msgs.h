@@ -3,7 +3,7 @@
 #include <math.h>
 
 typedef struct m_GNSS {
-    static const double RADIUS_EARTH = 6378.1370e3;
+    constexpr static double RADIUS_EARTH = 6371e3;
 
     double lat;
     double lon;
@@ -13,8 +13,8 @@ typedef struct m_GNSS {
         auto delta_lat = lat - other.lat;
         auto delta_lon = lon - other.lon;
 
-        auto a = pow(sin(delta_lat/2), 2) + cos(other.lat) * cos(lat) * pow(sin(delta_lon/2), 2);
-        auto c = atan2(sqrt(a), sqrt(1 - a));
+        auto a = pow(sin(delta_lat/2), 2.0) + cos(other.lat) * cos(lat) * pow(sin(delta_lon/2), 2.0);
+        auto c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
         return RADIUS_EARTH * c;
     }
