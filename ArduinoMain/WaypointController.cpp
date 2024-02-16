@@ -27,7 +27,7 @@ WaypointController::PWM WaypointController::CalculateAngularPWM(Location current
 }
 
 bool WaypointController::IsHeadingCorrectWithinMargin(Location current_loc) {
-    return current_loc.heading - CalculateAngleDifferenceBetween(desired_, current_loc) < ANGULAR_MARGIN_OF_ERROR;
+    return current_loc.heading - CalculateAngleDifferenceBetween(current_loc, desired_) < ANGULAR_MARGIN_OF_ERROR;
 }
 
 bool WaypointController::IsLocationCorrectWithinMargin(Location current_loc) {
