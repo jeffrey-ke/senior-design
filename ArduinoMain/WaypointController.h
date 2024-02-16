@@ -27,6 +27,9 @@ class WaypointController {
         bool IsHeadingCorrectWithinMargin(Location current_loc);
         bool IsLocationCorrectWithinMargin(Location current_loc);
 
+    public: //Getters
+        Location GetDesired() const {return desired_;};
+
     private: //members
 
         Controller linear_controller_;
