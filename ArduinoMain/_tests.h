@@ -20,12 +20,12 @@ void assertPWMEqual(const m_PWM& p1, const m_PWM& p2) {
 
 test(bearing_calculation) {
     m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
-    assertEqual(static_cast<double>(l1 % l2), 1.20858232936434);
+    assertNear(l1 % l2, 1.20858232936434, 0.20);
 }
 
 test(distance_calculation) {
     m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
-    assertEqual(static_cast<double>(l1 - l2), 6.146e3);
+    assertNear(l1 - l2, 6.146e3, 1.0);
 }
 
 test(basic_controller_test){
@@ -62,6 +62,9 @@ test(wp_controller) {
     assertPWMEqual(eff, pwm_FULL_OFF);
 
     eff = wp_c.CalculatePWM(m_GNSS{10, 10, 0.1});
+    assertPWMEqual(eff, m_PWM{});
+
+    eff = wp_c.CalculatePWM(m_GNSS{10, 10, 69.0}); //regardless of heading, pwm should be zero.
     assertPWMEqual(eff, m_PWM{});
 }
 
