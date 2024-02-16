@@ -19,13 +19,13 @@ void assertPWMEqual(const m_PWM& p1, const m_PWM& p2) {
 
 
 test(bearing_calculation) {
-    m_GNSS l1{37.349219, -121.937878, 0.0}, l2{37.329650, -122.002900, 0.0};
-    assertEqual(l1 % l2, 1.20858232936434);
+    m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
+    assertEqual(static_cast<double>(l1 % l2), 1.20858232936434);
 }
 
 test(distance_calculation) {
-    m_GNSS l1{37.349219, -121.937878, 0.0}, l2{37.329650, -122.002900, 0.0};
-    assertEqual(l1 - l2, 6.146e3);
+    m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
+    assertEqual(static_cast<double>(l1 - l2), 6.146e3);
 }
 
 test(basic_controller_test){
