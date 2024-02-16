@@ -22,7 +22,7 @@ double * _GPSDriver::getData(){
   if (GPS.newNMEAreceived()) {
       DebugSerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
       if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
-      return; // we can fail to parse a sentence in which case we should just wait for another
+      return nullptr; // we can fail to parse a sentence in which case we should just wait for another
   }
   DebugSerial.print("Fix: "); DebugSerial.print((int)GPS.fix);
   DebugSerial.print(" quality: "); DebugSerial.println((int)GPS.fixquality);
