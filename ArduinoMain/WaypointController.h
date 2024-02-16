@@ -7,7 +7,7 @@
 class WaypointController {
     public: //aliases
         using Location = m_GNSS;
-        using PWM = m_PWM;
+        using PWMCommand = m_PWM;
     
     public: //constants
         static double LINEAR_MARGIN_OF_ERROR;
@@ -22,7 +22,7 @@ class WaypointController {
         };
 
     public: //methods
-        PWM CalculatePWM(Location current_loc);
+        PWMCommand CalculatePWM(Location current_loc);
         void UpdateDesiredLocation(Location loc) {desired_ = loc;};
         bool IsHeadingCorrectWithinMargin(Location current_loc);
         bool IsLocationCorrectWithinMargin(Location current_loc);
@@ -38,8 +38,8 @@ class WaypointController {
         Location desired_;
 
     private: //helpers
-        PWM CalculateLinearPWM(Location current_loc);
-        PWM CalculateAngularPWM(Location current_loc);
+        PWMCommand CalculateLinearPWM(Location current_loc);
+        PWMCommand CalculateAngularPWM(Location current_loc);
         double CalculateDistanceBetween(Location l1, Location l2) {return l2 - l1;};
         double CalculateAngleDifferenceBetween(Location l1, Location l2) {return l2 % l1;};
 };

@@ -3,7 +3,7 @@
 double WaypointController::LINEAR_MARGIN_OF_ERROR = 1.0; //meters
 double WaypointController::ANGULAR_MARGIN_OF_ERROR = 0.1; //radians
 
-WaypointController::PWM WaypointController::CalculatePWM(Location current_loc) {
+WaypointController::PWMCommand WaypointController::CalculatePWM(Location current_loc) {
     auto l_pwm = CalculateLinearPWM(current_loc);
     auto a_pwm = CalculateAngularPWM(current_loc);
 
@@ -14,16 +14,16 @@ WaypointController::PWM WaypointController::CalculatePWM(Location current_loc) {
     }
 }
 
-WaypointController::PWM WaypointController::CalculateLinearPWM(Location current_loc) {
+WaypointController::PWMCommand WaypointController::CalculateLinearPWM(Location current_loc) {
     auto current_distance = CalculateDistanceBetween(current_loc, desired_);
     auto linear_effort_per_thruster =  static_cast<int>(linear_controller_.CalculateControlEffort(current_distance) / 2);
-    return PWM{1500 + linear_effort_per_thruster, 1500 + linear_effort_per_thruster, 1500, 1500};
+    return PWMCommand{1500 + linear_effort_per_thruster, 1500 + linear_effort_per_thruster, 1500, 1500};
 }
 
-WaypointController::PWM WaypointController::CalculateAngularPWM(Location current_loc) {
+WaypointController::PWMCommand WaypointController::CalculateAngularPWM(Location current_loc) {
     auto current_angular_difference = current_loc.heading - CalculateAngleDifferenceBetween(desired_, current_loc);
     auto angular_effort_per_thruster = static_cast<int>(angular_controller_.CalculateControlEffort(current_angular_difference) / 2);
-    return PWM{1500 - angular_effort_per_thruster, 1500 + angular_effort_per_thruster, 1500, 1500};
+    return PWMCommand{1500 - angular_effort_per_thruster, 1500 + angular_effort_per_thruster, 1500, 1500};
 }
 
 bool WaypointController::IsHeadingCorrectWithinMargin(Location current_loc) {
