@@ -28,5 +28,15 @@
   }
 #elif IS_TEST
 #include "_tests.h"
+#include "_StateMachineTests.h"
+void setup() {
+// put your setup code here, to run once:
+    Serial.begin(115200);
+}
+
+void loop() {
+// put your main code here, to run repeatedly:
+    Test::run();
+}
 #endif
 
