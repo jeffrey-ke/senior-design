@@ -118,4 +118,10 @@ void StateMachine::GotoWaypoint(const Msg::GNSS& wp) {
     auto pwm_command = wp_controller_.CalculatePWM(current_location_);
     CommandThrusters(pwm_command);
 }
+
+void StateMachine::CommandThrusters(Msg::PWM pwm_command) {
+    thruster_FL.setVelocity(pwm_command.FL);
+    thruster_FR.setVelocity(pwm_command.FR);
+    thruster_DL.setVelocity(pwm_command.DL);
+    thruster_DR.setVelocity(pwm_command.DR);
 }
