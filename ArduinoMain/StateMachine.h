@@ -31,7 +31,7 @@ class StateMachine {
     public: //methods   
         state::State DecideState();
         state::State ExecuteState();
-        void Input(Msg::StateMachineInput input);
+        void Input(Msg::StateMachineInput input) {HandleInput(input);};
 
     public: //Setters
         void SetState(state::State s) {state_ = s;};
