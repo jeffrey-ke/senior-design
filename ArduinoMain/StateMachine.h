@@ -18,6 +18,7 @@ class StateMachine {
         using Waypoints = ArduinoQueue<Msg::GNSS>;
 
     public: // constructor
+        StateMachine();
         StateMachine(double kp_l, double ki_l, double kd_l, double kol_l, 
                         double kp_a, double ki_a, double kd_a, double kol_a,
                         unsigned num_waypoints): wp_controller_(kp_l, ki_l, kd_l, kol_l, kp_a, ki_a, kd_a, kol_a),
