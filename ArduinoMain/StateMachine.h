@@ -47,7 +47,8 @@ class StateMachine {
         ThrusterDriver thruster_FL, thruster_FR, thruster_DL, thruster_DR;
         _GPSDriver gps_;
         state::State state_;
-        ArduinoQueue<Msg::GNSS> waypoint_itinerary_;
+        Msg::GNSS home_coordinates_;
+        Msg::GNSS current_location_;
 
     private: //helper functions
         void HandleInput(const Msg::StateMachineInput& input);
