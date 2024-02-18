@@ -13,6 +13,9 @@ namespace state {
 
 class StateMachine {
 
+    public: //aliases
+        using Waypoints = ArduinoQueue<Msg::GNSS>;
+
     public: // constructor
         StateMachine(double kp_l, double ki_l, double kd_l, double kol_l, 
                         double kp_a, double ki_a, double kd_a, double kol_a,
