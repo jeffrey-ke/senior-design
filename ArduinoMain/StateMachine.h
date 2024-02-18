@@ -49,16 +49,43 @@ class StateMachine {
         ArduinoQueue<Msg::GNSS> waypoint_itinerary_;
 
     private: //helper functions
-        bool QueryGNSS();
-        bool QueryDepth();
-        bool QueryVehicleHealth();
-        bool QueryWaypointsRemaining();
-        const Msg::GNSS& GetCurrentWaypoint() const;
-        Msg::GNSS PopWaypoint() {if (IsWaypointItineraryNotEmpty()) return waypoint_itinerary_.dequeue();};
-        Msg::GNSS AddWaypoint(const Msg::GNSS& wp) {if (IsWaypointItineraryNotFull()) waypoint_itinerary_.enqueue(wp)};
-        bool IsWaypointItineraryNotFull() const {return !waypoint_itinerary_.isFull();}
-        bool IsWaypointItineraryNotEmpty() const {return !waypoint_itinerary_.isEmpty();}
+        void HandleInput(const Msg::StateMachineInput& input);
 
+        Msg::GNSS UpdateCurrentLocation()
+                                {return current_location_;};
+
+        void CommandThrusters(const Msg::PWM& cmd);
+
+        void GotoWaypoint(const Msg::GNSS& wp);
+
+        double IsProfileDone() 
+                                {return true;}; //profile should also be done if the vehicle is in danger
+        bool IsVehicleInDanger() 
+                                {return false;};
+
+        ////////////////////////////////////////////////////////////
+        // waypoint_itinerary_ management //////////////////////////
+        ////////////////////////////////////////////////////////////
+        bool AtTheWaypoint() 
+                                {return wp_controller_.IsLocationCorrectWithinMargin(current_location_);};
+        bool AllWaypointsDone() 
+                                {return waypoint_itinerary_.isEmpty();};
+        Msg::GNSS GetCurrentWaypoint() const 
+                                {return waypoint_itinerary_.getHead();};
+        Msg::GNSS PopWaypoint() 
+                                {if (IsWaypointItineraryNotEmpty()) return waypoint_itinerary_.dequeue();};
+        void AddWaypoint(const Msg::GNSS& wp) 
+                                {if (IsWaypointItineraryNotFull()) waypoint_itinerary_.enqueue(wp)};
+        bool IsWaypointItineraryNotFull() const 
+                                {return !waypoint_itinerary_.isFull();}
+        bool IsWaypointItineraryNotEmpty() const 
+                                {return !waypoint_itinerary_.isEmpty();}
+        void ResetItinerary() 
+                                {while (IsWaypointItineraryNotEmpty()) waypoint_itinerary_.dequeue(); }
+
+    public: // test functions
+        void test_SetCurrentLocation(const Msg::GNSS& loc) 
+                                {current_location_ = loc;}
         
 
 };
