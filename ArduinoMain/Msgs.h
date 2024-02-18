@@ -64,7 +64,7 @@ namespace Msg {
     } PWM;
 
     typedef struct StateMachineInput {
-        enum InputType {NEW_WAYPOINT, MANUAL};
+        enum InputType {NEW_WAYPOINT, MANUAL, START};
 
         InputType type;
         GNSS new_waypoint;
