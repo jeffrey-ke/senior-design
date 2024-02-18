@@ -20,15 +20,15 @@ class StateMachine {
     public: // constructor
         StateMachine();
         StateMachine(double kp_l, double ki_l, double kd_l, double kol_l, 
-                        double kp_a, double ki_a, double kd_a, double kol_a,
-                        unsigned num_waypoints): wp_controller_(kp_l, ki_l, kd_l, kol_l, kp_a, ki_a, kd_a, kol_a),
-                                                state_(state::STANDBY), 
+                    double kp_a, double ki_a, double kd_a, double kol_a,
+                    unsigned num_waypoints): wp_controller_(kp_l, ki_l, kd_l, kol_l, kp_a, ki_a, kd_a, kol_a),
+                                            state_(state::STANDBY), 
                                             thruster_FL(FL_PIN),
                                             thruster_FR(FR_PIN),
                                             thruster_DL(DL_PIN),
                                             thruster_DR(DR_PIN),
-                                                gps_(),
-                                                waypoint_itinerary_(num_waypoints)  {};
+                                            gps_(),
+                                            waypoint_itinerary_(num_waypoints)  {};
 
     public: //methods   
         state::State DecideState();
@@ -48,6 +48,7 @@ class StateMachine {
 
         ThrusterDriver thruster_FL, thruster_FR, thruster_DL, thruster_DR;
         _GPSDriver gps_;
+
         state::State state_;
         Msg::GNSS home_coordinates_;
         Msg::GNSS current_location_;

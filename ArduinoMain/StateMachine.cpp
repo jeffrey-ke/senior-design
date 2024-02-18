@@ -107,7 +107,7 @@ state::State StateMachine::ExecuteState() {
     case state::RETURN:
         UpdateCurrentLocation();
         GotoWaypoint(home_coordinates_);
-        break;
+    break;
     default:
         break;
     }
