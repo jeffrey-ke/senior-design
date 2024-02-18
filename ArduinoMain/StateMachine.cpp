@@ -113,8 +113,9 @@ state::State StateMachine::ExecuteState() {
     }
 }
 
-void StateMachine::Input(Msg::StateMachineInput input) {
-    if (input.type == Msg::StateMachineInput::NEW_WAYPOINT) {
-        AddWaypoint(input.new_waypoint);
-    }
+void StateMachine::GotoWaypoint(const Msg::GNSS& wp) {
+    wp_controller_.UpdateDesiredLocation(wp);
+    auto pwm_command = wp_controller_.CalculatePWM(current_location_);
+    CommandThrusters(pwm_command);
+}
 }
