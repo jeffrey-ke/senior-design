@@ -8,7 +8,7 @@
 #include <ArduinoQueue>
 
 namespace state {
-    enum State {WAYPOINT, PROFILING, RETURN, STANDBY, MANUAL};
+    enum State {WAYPOINT = 'W', PROFILING = 'P', RETURN = 'R', STANDBY = 'S', MANUAL = 'M'};
 }
 
 class StateMachine {
