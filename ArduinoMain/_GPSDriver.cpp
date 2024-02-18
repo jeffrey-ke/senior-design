@@ -11,34 +11,22 @@ _GPSDriver::_GPSDriver(){
     GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); 
     GPS.sendCommand(PGCMD_ANTENNA);
     delay(1000);
-    // Ask for firmware version
-    GPSSerial.println(PMTK_Q_RELEASE);
-    DebugSerial.println("GPS initialized succesfully");
+    timer_ = millis();
 }
 
 
-double * _GPSDriver::getData(){
-  char c = GPS.read();
-  if (GPS.newNMEAreceived()) {
-      DebugSerial.print(GPS.lastNMEA()); // this also sets the newNMEAreceived() flag to false
-      if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
-      return nullptr; // we can fail to parse a sentence in which case we should just wait for another
-  }
-  DebugSerial.print("Fix: "); DebugSerial.print((int)GPS.fix);
-  DebugSerial.print(" quality: "); DebugSerial.println((int)GPS.fixquality);
-  if (GPS.fix) {
-      DebugSerial.print("Location: ");
-      DebugSerial.print(GPS.latitude, 4); DebugSerial.print(GPS.lat);
-      DebugSerial.print(", ");
-      DebugSerial.print(GPS.longitude, 4); DebugSerial.println(GPS.lon);
-      DebugSerial.print("Speed (knots): "); DebugSerial.println(GPS.speed);
-      DebugSerial.print("Angle: "); DebugSerial.println(GPS.angle);
-      DebugSerial.print("Altitude: "); DebugSerial.println(GPS.altitude);
-      DebugSerial.print("Satellites: "); DebugSerial.println((int)GPS.satellites);
-      DebugSerial.print("Antenna status: "); DebugSerial.println((int)GPS.antenna);
-  }
-  double latlong[2];
-  latlong[0] = GPS.latitude;
-  latlong[1] = GPS.longitude;
-  return latlong;
+void _GPSDriver::Refresh(){
+    if (millis() - timer_ > 2000) 
+    {
+        timer_ = millis();
+        char c = GPS.read();
+        if (GPS.newNMEAreceived()) {
+            if (!GPS.parse(GPS.lastNMEA())) // this also sets the newNMEAreceived() flag to false
+            return; // we can fail to parse a sentence in which case we should just wait for another
+        }
+        lat_ = (GPS.lat == 'N')? GPS.latitude : -GPS.latitude;
+        long_ = (GPS.lon == 'E')? GPS.longitude: -GPS.longitude;
+        heading_ = GPS.angle;
+        fix_ = GPS.fix;
+    }
 }
