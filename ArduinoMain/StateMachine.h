@@ -5,6 +5,7 @@
 #include "ThrusterDriver.h"
 #include "_GPSDriver.h"
 #include "Msgs.h"
+#include "Constants.h"
 #include <ArduinoQueue>
 
 namespace state {
