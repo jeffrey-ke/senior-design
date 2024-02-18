@@ -21,6 +21,10 @@ class StateMachine {
                         double kp_a, double ki_a, double kd_a, double kol_a,
                         unsigned num_waypoints): wp_controller_(kp_l, ki_l, kd_l, kol_l, kp_a, ki_a, kd_a, kol_a),
                                                 state_(state::STANDBY), 
+                                            thruster_FL(FL_PIN),
+                                            thruster_FR(FR_PIN),
+                                            thruster_DL(DL_PIN),
+                                            thruster_DR(DR_PIN),
                                                 gps_(),
                                                 waypoint_itinerary_(num_waypoints)  {};
 
