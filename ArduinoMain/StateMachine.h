@@ -43,6 +43,7 @@ class StateMachine {
 
     private: //members
         WaypointController wp_controller_;
+        Waypoints waypoint_itinerary_;
 
         ThrusterDriver thruster_FL, thruster_FR, thruster_DL, thruster_DR;
         _GPSDriver gps_;
