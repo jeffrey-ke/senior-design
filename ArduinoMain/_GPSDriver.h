@@ -13,6 +13,7 @@ public:
   double GetLat() const {return (fix_)? lat_: INVALID;}
   double GetLong() const {return (fix_)? long_: INVALID;}
   double GetHeading() const {return (fix_) ? heading_: INVALID;}
+  bool GetFix() const {return fix_;}
 
   double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}
   double test_SetFixFalse() {fix_ = false;}
