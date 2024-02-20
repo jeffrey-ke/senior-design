@@ -1,6 +1,6 @@
 #include "StateMachine.h"
 
-void StateMachine::HandleInput(Msg::StateMachineInput input) {
+void StateMachine::HandleInput(const Msg::StateMachineInput& input) {
     switch (state_)
     {
     /////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ void StateMachine::HandleInput(Msg::StateMachineInput input) {
             state_ = state::MANUAL;
         }
         else if (input.type == Msg::StateMachineInput::START) {
-            state_ = state::WAYPOINT;
+            state_ = (IsGPSReady())? state::WAYPOINT : state::STANDBY;
         }
         else if (input.type == Msg::StateMachineInput::NEW_WAYPOINT) {
             AddWaypoint(input.new_waypoint);
@@ -85,14 +85,14 @@ state::State StateMachine::ExecuteState() {
         // (2) display command menu
         //      (2.1) print out collected data
         //      (2.2) print out health of all systems
-        home_coordinates_ = UpdateCurrentLocation();
+        home_coordinates_ = GetCurrentLocation();
     break;
     /////////////////////////////////////////////////////////////////////////
     // WAYPOINT /////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     case state::WAYPOINT:
         auto current_waypoint = GetCurrentWaypoint();
-        UpdateCurrentLocation();
+        current_location_ = GetCurrentLocation();
         GotoWaypoint(current_waypoint);
     break;
     /////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ state::State StateMachine::ExecuteState() {
     // RETURN ///////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     case state::RETURN:
-        UpdateCurrentLocation();
+        current_location_ = GetCurrentLocation();
         GotoWaypoint(home_coordinates_);
     break;
     default:
@@ -119,7 +119,7 @@ void StateMachine::GotoWaypoint(const Msg::GNSS& wp) {
     CommandThrusters(pwm_command);
 }
 
-void StateMachine::CommandThrusters(Msg::PWM pwm_command) {
+void StateMachine::CommandThrusters(const Msg::PWM& pwm_command) {
     thruster_FL.setVelocity(pwm_command.FL);
     thruster_FR.setVelocity(pwm_command.FR);
     thruster_DL.setVelocity(pwm_command.DL);
