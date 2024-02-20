@@ -6,7 +6,7 @@
 #include "_GPSDriver.h"
 #include "Msgs.h"
 #include "Constants.h"
-#include <ArduinoQueue>
+#include <ArduinoQueue.h>
 
 namespace state {
     enum State {WAYPOINT = 'W', PROFILING = 'P', RETURN = 'R', STANDBY = 'S', MANUAL = 'M'};
@@ -40,6 +40,7 @@ class StateMachine {
 
     public: //Getters   
         state::State GetState() const {return state_;};
+        Msg::GNSS GetHomeCoords() const {return home_coordinates_;}
 
 
     private: //members
@@ -56,8 +57,8 @@ class StateMachine {
     private: //helper functions
         void HandleInput(const Msg::StateMachineInput& input);
 
-        Msg::GNSS UpdateCurrentLocation()
-                                {return current_location_;};
+        Msg::GNSS GetCurrentLocation()
+                                {return gps_.GetGNSS();};
 
         void CommandThrusters(const Msg::PWM& cmd);
 
@@ -80,7 +81,7 @@ class StateMachine {
         Msg::GNSS PopWaypoint() 
                                 {if (IsWaypointItineraryNotEmpty()) return waypoint_itinerary_.dequeue();};
         void AddWaypoint(const Msg::GNSS& wp) 
-                                {if (IsWaypointItineraryNotFull()) waypoint_itinerary_.enqueue(wp)};
+                                {if (IsWaypointItineraryNotFull()) waypoint_itinerary_.enqueue(wp);};
         bool IsWaypointItineraryNotFull() const 
                                 {return !waypoint_itinerary_.isFull();}
         bool IsWaypointItineraryNotEmpty() const 
@@ -88,9 +89,14 @@ class StateMachine {
         void ResetItinerary() 
                                 {while (IsWaypointItineraryNotEmpty()) waypoint_itinerary_.dequeue(); }
 
+        bool IsGPSReady() const 
+                                {return gps_.GetFix();}
+
     public: // test functions
         void test_SetCurrentLocation(const Msg::GNSS& loc) 
-                                {current_location_ = loc;}
+                                {gps_.test_SetLatLongHeading(loc.lat, loc.lon, loc.heading);}
+        void test_SetFixFalse()
+                                {gps_.test_SetFixFalse();}
         
 
 };
