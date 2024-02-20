@@ -77,6 +77,8 @@ namespace Msg {
     const static PWM pwm_FULL_FORWARD{1900, 1900, 1500, 1500};
     const static PWM pwm_FULL_BACKWARD{1100, 1100, 1500, 1500};
 
+    const static GNSS gnss_INVALID{-99.0, -99.0, -99.0};
+
     }
 
 #endif
