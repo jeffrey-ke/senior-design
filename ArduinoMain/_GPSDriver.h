@@ -2,6 +2,7 @@
 #define _GPSDriver_h
 #include <Adafruit_GPS.h>
 #include "Constants.h"
+#include "Msgs.h"
 
 class _GPSDriver{
 public:
