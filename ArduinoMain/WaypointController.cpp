@@ -7,7 +7,10 @@ WaypointController::PWMCommand WaypointController::CalculatePWM(const Location& 
     auto l_pwm = CalculateLinearPWM(current_loc);
     auto a_pwm = CalculateAngularPWM(current_loc);
 
-    if (IsHeadingCorrectWithinMargin(current_loc)) {
+    if (IsLocationCorrectWithinMargin(current_loc)) {
+        return Msg::pwm_FULL_OFF;
+    }
+    else if (IsHeadingCorrectWithinMargin(current_loc)) {
         return l_pwm;
     } else {
         return a_pwm;
