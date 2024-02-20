@@ -1,28 +1,16 @@
+
 #include <ArduinoUnit.h>
 #include "WaypointController.h"
 #include "Msgs.h"
-
-void assertLocationsEqual(const m_GNSS& l1, const m_GNSS& l2) {
-    assertEqual(l1.lat, l2.lat);
-    assertEqual(l1.lon, l2.lon);
-    assertEqual(l1.heading, l2.heading);
-}
-
-void assertPWMEqual(const m_PWM& p1, const m_PWM& p2) {
-    assertEqual(p1.FL, p2.FL);
-    assertEqual(p1.FR, p2.FR);
-    assertEqual(p1.DL, p2.DL);
-    assertEqual(p1.DR, p2.DR);
-}
-
+#include "_helper_tests.h"
 
 test(bearing_calculation) {
-    m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
+    Msg::GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
     assertNear(l1 % l2, 1.20858232936434, 0.20);
 }
 
 test(distance_calculation) {
-    m_GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
+    Msg::GNSS l1{0.6518668445984239, -2.128217453995158, 0.0}, l2{0.6515253011171012, -2.1293523019813896, 0.0};
     assertNear(l1 - l2, 6.146e3, 1.0);
 }
 
@@ -52,18 +40,18 @@ test(basic_controller_test){
 test(wp_controller) {
     WaypointController wp_c(1, 0, 0, 0,
                             1, 0, 0, 0);
-    m_GNSS desired_loc{10, 10, 0};
+    Msg::GNSS desired_loc{10, 10, 0};
     wp_c.UpdateDesiredLocation(desired_loc);
     assertLocationsEqual(desired_loc, wp_c.GetDesired());
 
-    auto eff = wp_c.CalculatePWM(m_GNSS{10, 10, 0});
-    assertPWMEqual(eff, pwm_FULL_OFF);
+    auto eff = wp_c.CalculatePWM(Msg::GNSS{10, 10, 0});
+    assertPWMEqual(eff, Msg::pwm_FULL_OFF);
 
-    eff = wp_c.CalculatePWM(m_GNSS{10, 10, 0.1});
-    assertPWMEqual(eff, m_PWM{});
+    eff = wp_c.CalculatePWM(Msg::GNSS{10, 10, 0.1});
+    assertPWMEqual(eff, Msg::pwm_FULL_OFF);
 
-    eff = wp_c.CalculatePWM(m_GNSS{10, 10, 69.0}); //regardless of heading, pwm should be zero.
-    assertPWMEqual(eff, m_PWM{});
+    eff = wp_c.CalculatePWM(Msg::GNSS{10, 10, 69.0}); //regardless of heading, pwm should be zero.
+    assertPWMEqual(eff, Msg::pwm_FULL_OFF);
 }
 
 
