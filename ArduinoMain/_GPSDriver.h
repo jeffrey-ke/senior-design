@@ -9,6 +9,7 @@ public:
 
   _GPSDriver();
   void Refresh();
+  Msg::GNSS GetGNSS() const {Refresh(); return (fix_)? Msg::GNSS{GetLat(), GetLong(), GetHeading()} : Msg::gnss_INVALID;}
   double GetLat() const {return (fix_)? lat_: INVALID;}
   double GetLong() const {return (fix_)? long_: INVALID;}
   double GetHeading() const {return (fix_) ? heading_: INVALID;}
