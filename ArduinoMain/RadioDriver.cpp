@@ -11,7 +11,6 @@ RadioDriver::RadioDriver(): rf95(RFM95_CS, RFM95_INT){
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
   if (!rf95.setFrequency(RF95_FREQ)) {
     Serial.println("setFrequency failed");
-    while (1);
   }
   DebugSerial.print("Set Freq to: "); DebugSerial.println(RF95_FREQ);
   // The default transmitter power is 13dBm, using PA_BOOST.

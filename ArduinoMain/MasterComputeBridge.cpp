@@ -3,7 +3,7 @@
 */
 #include "MasterComputeBridge.h"
 
-MasterComputeBridge::MasterComputeBridge(): GPS(){
+MasterComputeBridge::MasterComputeBridge(){
   thrusterSetup();
 }
 void MasterComputeBridge::thrusterSetup(){
@@ -81,13 +81,12 @@ void MasterComputeBridge::giveCommand(String command){
   }
   //Parse and execute GPS command
   else if(command.substring(0,seperator) == "G"){
-    double* coords = GPS.getData();
     functionReturn = "G:"; //Build return string
-    functionReturn.concat(String(coords[0]));
+    functionReturn.concat(String(GPS.GetLat()));
     functionReturn.concat(",");
-    functionReturn.concat(String(coords[1]));
+    functionReturn.concat(String(GPS.GetLong()));
     functionReturn.concat(",");
-    functionReturn.concat(String(coords[2]));
+    functionReturn.concat(String(GPS.GetHeading()));
   }
   //Parse and execute EStop command
   else if(command.substring(0,seperator) == "E"){
@@ -109,5 +108,5 @@ String MasterComputeBridge::returnCommand(){
   return temp;
 }
 void MasterComputeBridge::spinGPS(){
-  GPS.spin();
+  GPS.Refresh();
 }

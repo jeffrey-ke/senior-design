@@ -2,13 +2,26 @@
 #define _GPSDriver_h
 #include <Adafruit_GPS.h>
 #include "Constants.h"
+#include "Msgs.h"
 
 class _GPSDriver{
+public:
+  constexpr static double INVALID = -99.0;
+
+  _GPSDriver();
+  void Refresh();
+  Msg::GNSS GetGNSS() const {Refresh(); return (fix_)? Msg::GNSS{GetLat(), GetLong(), GetHeading()} : Msg::gnss_INVALID;}
+  double GetLat() const {Refresh(); return (fix_)? lat_: INVALID;}
+  double GetLong() const {Refresh(); return (fix_)? long_: INVALID;}
+  double GetHeading() const {Refresh(); return (fix_) ? heading_: INVALID;}
+  bool GetFix() const {return fix_;}
+
+  double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}
+  double test_SetFixFalse() {fix_ = false;}
 private:
   Adafruit_GPS GPS;
-public:
-  _GPSDriver();
-  double* getData();
-  void spin();
+  double lat_{INVALID}, long_{INVALID}, heading_{INVALID};
+  bool fix_{false};
+  uint32_t timer_;
 };
 #endif
