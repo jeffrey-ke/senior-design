@@ -29,6 +29,7 @@ class WaypointController {
 
     public: //Getters
         Location GetDesired() const {return desired_;};
+        double GetDistance() const {return distance_;}
 
     private: //members
 
@@ -36,6 +37,7 @@ class WaypointController {
         Controller angular_controller_;
 
         Location desired_;
+        double distance_;
 
     private: //helpers
         PWMCommand CalculateLinearPWM(const Location& current_loc);

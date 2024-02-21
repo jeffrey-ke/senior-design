@@ -19,6 +19,7 @@ WaypointController::PWMCommand WaypointController::CalculatePWM(const Location& 
 
 WaypointController::PWMCommand WaypointController::CalculateLinearPWM(const Location& current_loc) {
     auto current_distance = CalculateDistanceBetween(current_loc, desired_);
+    distance_ = current_distance;
     auto linear_effort_per_thruster =  static_cast<int>(linear_controller_.CalculateControlEffort(current_distance) / 2);
     return PWMCommand{1500 + linear_effort_per_thruster, 1500 + linear_effort_per_thruster, 1500, 1500};
 }
