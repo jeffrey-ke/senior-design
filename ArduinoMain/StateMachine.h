@@ -40,7 +40,12 @@ class StateMachine {
 
     public: //Getters   
         state::State GetState() const {return state_;};
+        Msg::PWM GetCommandedPWM() const {return pwm_command_;}
         Msg::GNSS GetHomeCoords() const {return home_coordinates_;}
+        Msg::GNSS GetCurrentWaypoint() const 
+                        {return waypoint_itinerary_.getHead();};
+        Msg::GNSS GetCurrentLocation()
+                                {return gps_.GetGNSS();};
 
 
     private: //members
@@ -48,6 +53,7 @@ class StateMachine {
         Waypoints waypoint_itinerary_;
 
         ThrusterDriver thruster_FL, thruster_FR, thruster_DL, thruster_DR;
+        Msg::PWM pwm_command_;
         _GPSDriver gps_;
 
         state::State state_;
@@ -57,8 +63,6 @@ class StateMachine {
     private: //helper functions
         void HandleInput(const Msg::StateMachineInput& input);
 
-        Msg::GNSS GetCurrentLocation()
-                                {return gps_.GetGNSS();};
 
         void CommandThrusters(const Msg::PWM& cmd);
 
@@ -76,8 +80,7 @@ class StateMachine {
                                 {return wp_controller_.IsLocationCorrectWithinMargin(current_location_);};
         bool AllWaypointsDone() 
                                 {return waypoint_itinerary_.isEmpty();};
-        Msg::GNSS GetCurrentWaypoint() const 
-                                {return waypoint_itinerary_.getHead();};
+
         Msg::GNSS PopWaypoint() 
                                 {if (IsWaypointItineraryNotEmpty()) return waypoint_itinerary_.dequeue();};
         void AddWaypoint(const Msg::GNSS& wp) 
