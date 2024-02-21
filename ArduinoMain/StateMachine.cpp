@@ -115,8 +115,8 @@ state::State StateMachine::ExecuteState() {
 
 void StateMachine::GotoWaypoint(const Msg::GNSS& wp) {
     wp_controller_.UpdateDesiredLocation(wp);
-    auto pwm_command = wp_controller_.CalculatePWM(current_location_);
-    CommandThrusters(pwm_command);
+    pwm_command_ = wp_controller_.CalculatePWM(current_location_);
+    CommandThrusters(pwm_command_);
 }
 
 void StateMachine::CommandThrusters(const Msg::PWM& pwm_command) {
