@@ -1,6 +1,7 @@
 
-#define IS_TEST 1
+#define IS_TEST 0
 #define IS_ACTUAL 0
+#define FLIP_TEST 1
 
 #if IS_ACTUAL
 #include "MasterComputeBridge.h"
@@ -44,5 +45,39 @@ void loop() {
 // put your main code here, to run repeatedly:
     Test::run();
 }
+#elif FLIP_TEST
+#include "OrientationController.h"
+#include "Controller.h"
+#include "IMUDriver.h"
+
+
+void setup() {
+    Serial.begin(9600);
+    OrientationController o_con_(10.0, 0.0, 0.0);
+    o_con_.SetDesiredToVertical();
+    auto timer = millis();
+    Serial.println("Starting test.");
+    while (millis() - timer < 60000) {
+        auto pwm = o_con_.CalculateControlEffort();
+        Serial.print("Current orientation: ");
+        Serial.println(o_con_.GetCurrentOrientation().z);
+        Serial.print("Desired orientation: ");
+        Serial.println(o_con_.GetDesiredOrientation());
+        Serial.print("FL: ");
+        Serial.println(pwm.FL);
+        Serial.print("FR: ");
+        Serial.println(pwm.FR);
+        Serial.print("DL: ");
+        Serial.println(pwm.DL);
+        Serial.print("DR: ");
+        Serial.println(pwm.DR);
+        delay(1000);
+    }
+}
+
+void loop() {
+
+}
+
 #endif
 

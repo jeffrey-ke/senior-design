@@ -33,6 +33,12 @@ namespace Msg {
         double depth;
     } Depth;
 
+    typedef struct RPY {
+        double x;
+        double y;
+        double z;
+    } RPY;
+
     typedef struct PWM {
         int FL, FR, DL, DR;
 
@@ -78,6 +84,9 @@ namespace Msg {
     const static PWM pwm_FULL_BACKWARD{1100, 1100, 1500, 1500};
 
     const static GNSS gnss_INVALID{-99.0, -99.0, -99.0};
+
+    const static RPY rpy_VERTICAL{0.0, 0.0, 90.0};
+    const static RPY rpy_HORIZONTAL{0.0, 0.0, 0.0};
 
     }
 

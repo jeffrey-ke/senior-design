@@ -1,16 +1,21 @@
 #include "IMUDriver.h"
+#include <Wire.h>
+#include "Constants.h"
 
-IMUDriver::IMUDriver(){
-  imu = Adafruit_BNO055(55, 0x28, &Wire); //IMU object
-  if (!imu.begin()){
-    DebugSerial.println("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-    while(1);
+IMUDriver::IMUDriver()
+:
+imu_(55, 0x28) //IMU object
+{
+  if (!imu_.begin()){
+    alive_ = false;
+    Serial.println("IMU failed");
   }
-  DebugSerial.println("IMU initialized succesfully");
+  else 
+    alive_ = true;
+  imu_.setExtCrystalUse(true);
 }
-sensors_event_t IMUDriver::getData(){
-  sensors_event_t orientationData , linearAccelData;
-  imu.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-  //  bno.getEvent(&angVelData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-  return orientationData;
+Msg::RPY IMUDriver::GetData(){
+  sensors_event_t event;
+  imu_.getEvent(&event);
+  return Msg::RPY{event.orientation.x, event.orientation.y, event.orientation.z};
 }

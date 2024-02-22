@@ -10,7 +10,7 @@ class Controller {
         constexpr static double ZERO = 0.0;
 
     public: // Constructors
-        Controller(double kp, double ki, double kd, double kol=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol) {};
+        Controller(double kp, double ki, double kd, double kol=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol), integrated_error_{}{};
 
     public: // methods
         double CalculateControlEffort(double current_state);
@@ -24,11 +24,11 @@ class Controller {
         void ResetIntegratedError() {integrated_error_ = 0.0;};
 
     public: //Getters
-        double GetKp() {return k_p_;};
-        double GetKi() {return k_i_;};
-        double GetKd() {return k_d_;};
-        double GetKol() {return k_ol_;};
-        double GetDesired() {return desired_;};
+        double GetKp() const {return k_p_;};
+        double GetKi() const {return k_i_;};
+        double GetKd() const {return k_d_;};
+        double GetKol() const {return k_ol_;};
+        double GetDesired() const {return desired_;};
 
 
     private: // member vars
