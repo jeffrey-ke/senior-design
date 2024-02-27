@@ -1,18 +1,17 @@
 #include "IMUDriver.h"
 #include <Wire.h>
 #include "Constants.h"
+#include "Arduino.h"
 
 IMUDriver::IMUDriver()
 :
-imu_(55, 0x28) //IMU object
+imu_(55) //IMU object
 {
-  if (!imu_.begin()){
-    alive_ = false;
-    Serial.println("IMU failed");
-  }
-  else 
-    alive_ = true;
-  imu_.setExtCrystalUse(true);
+}
+
+void IMUDriver::Init() {
+    alive_ = imu_.begin();
+    imu_.setExtCrystalUse(true);
 }
 Msg::RPY IMUDriver::GetData(){
   sensors_event_t event;
