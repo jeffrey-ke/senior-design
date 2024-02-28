@@ -22,6 +22,5 @@ private:
   Adafruit_GPS GPS;
   double lat_{INVALID}, long_{INVALID}, heading_{INVALID};
   bool fix_{false};
-  uint32_t timer_;
 };
 #endif
