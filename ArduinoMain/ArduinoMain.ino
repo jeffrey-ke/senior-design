@@ -50,16 +50,35 @@ void loop() {
 #include "OrientationController.h"
 #include "IMUDriver.h"
 #include "ThrusterDriver.h"
+#include "BarometerDriver.h"
 
 OrientationController o_con_(10, 0, 0);
 IMUDriver imu_;
+BarometerDriver baro_;
+
+using milliseconds = double;
+
+void FlipTest(milliseconds duration, double Kp, double Ki, double Kd);
+void DiveTest(double duration, double Kp, double Ki, double Kd);
+void PressureTest(double duration);
+
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
     imu_.Init();
-    // delay(2 * 60 * 1000);
-    auto timer  = millis();
+    baro_.Init();
+
+    auto timer = millis();
     o_con_.SetDesiredToVertical();
     while (millis() - timer < 60000) {
+        
+    }
+    o_con_.SetDesiredToHorizontal();
+}
+
+void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
+    o_con_.SetDesiredToVertical();
+    auto timer = millis();
+    while (millis() - timer < duration) {
         auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
         Serial.print("Current orientation: ");
         Serial.println(imu_.GetData().z);
@@ -74,8 +93,9 @@ void setup() {
         Serial.print("DR: ");
         Serial.println(pwm.DR);
         delay(1000);
+
     }
-    o_con_.SetDesiredToHorizontal();
+
 }
 
 void loop() {
