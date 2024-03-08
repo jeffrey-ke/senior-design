@@ -64,7 +64,7 @@ namespace Msg {
 
         PWM operator+(const PWM& rhs) const {
             return PWM{FL + rhs.FL - 1500, FR + rhs.FR - 1500, DL + rhs.DL - 1500, DR + rhs.DR - 1500};
-        } // FL - 1500 + FL - 1500
+        } // (FL - 1500) + (FL - 1500) + 1500
 
         
     } PWM;

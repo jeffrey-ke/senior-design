@@ -24,12 +24,6 @@ double Controller::CalculateProportional(double error) {
 }
 
 double Controller::CalculateIntegral(double error) {
-    Serial.print("Integrated error: ");
-    Serial.println(integrated_error_);
-    Serial.print("error: ");
-    Serial.println(error);
-    Serial.print("dt: ");
-    Serial.println(DT);
     integrated_error_ += error * DT;
     integral_control_effort_ = k_i_ * integrated_error_;
     return integral_control_effort_;

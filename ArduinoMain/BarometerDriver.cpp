@@ -1,11 +1,11 @@
 #include "BarometerDriver.h"
 
-BarometerDriver::Init() {
+void BarometerDriver::Init() {
     is_alive_ = baro_.begin();
     baro_.setSeaPressure(1013.26);
 }
 
-BarometerDriver::mmHg BarometerDriver::GetAvgPressure() {
+mmHg BarometerDriver::GetAvgPressure() {
     AddMeasurement();
     mmHg sum{0.0};
     for (int i = 0; i < buf_.itemCount(); ++i) {

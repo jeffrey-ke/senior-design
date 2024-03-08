@@ -1,0 +1,9 @@
+#ifndef UNITS_H
+#define UNITS_H
+
+using hPa = double;
+using mmHg = double;
+using milliseconds = unsigned long;
+using meters = double;
+
+#endif

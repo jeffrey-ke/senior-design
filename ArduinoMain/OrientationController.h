@@ -14,11 +14,10 @@ class OrientationController {
         };
 
     public: //methods
-        void SetDesiredToVertical() {con_.SetDesired(Msg::rpy_VERTICAL.z);}
-        void SetDesiredToHorizontal() {con_.SetDesired(Msg::rpy_HORIZONTAL.z);}
-        void SetDesiredOrientation(Msg::RPY des) {con_.SetDesired(des.z);};
-        Msg::PWM CalculateControlEffort(Msg::RPY current_orientation) 
-                                                                    {auto effort = static_cast<int>(con_.CalculateControlEffort(current_orientation.z) / 2); return Msg::PWM{1500, 1500, 1500 + effort, 1500 + effort};}
+        void SetDesiredToVertical();
+        void SetDesiredToHorizontal();
+        void SetDesiredOrientation(Msg::RPY des);
+        Msg::PWM CalculateControlEffort(Msg::RPY current_orientation); 
  
     public: //getters
         double GetDesiredOrientation() const {return con_.GetDesired();}
