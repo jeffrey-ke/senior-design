@@ -9,6 +9,7 @@ class DepthController {
 
     public: //methods
         void SetDesiredDepth(meters depth);
+        void SetGains(double Kp, double Ki, double Kd);
         Msg::PWM CalculateControlEffort(meters current_depth);
 
     public: //getters

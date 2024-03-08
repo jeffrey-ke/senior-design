@@ -7,6 +7,12 @@ void DepthController::SetDesiredDepth(meters depth) {
         con_.SetDesired(depth);
 }
 
+void DepthController::SetGains(double kp, double ki, double kd) {
+    con_.SetKp(kp);
+    con_.SetKi(ki);
+    con_.SetKd(kd);
+}
+
 Msg::PWM DepthController::CalculateControlEffort(meters current_depth) {
     auto effort = static_cast<int>(con_.CalculateControlEffort(current_depth) / 2); 
     return Msg::PWM{1500 + effort, 1500 + effort, 1500, 1500};

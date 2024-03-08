@@ -9,7 +9,6 @@
 TestParams SerialParser::ParseLine(class String &line) {
     char* line_cstr = line.c_str();
     char *type = strtok(line_cstr, ",");
-    Serial.println(type);
     if (CStringsEqual(type, "DIVE")) {
         auto Kp = strtod(strtok(NULL, ","), NULL);
         auto Ki = strtod(strtok(NULL, ","), NULL);

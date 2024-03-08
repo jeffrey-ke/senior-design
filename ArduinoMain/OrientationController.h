@@ -18,6 +18,8 @@ class OrientationController {
         void SetDesiredToHorizontal();
         void SetDesiredOrientation(Msg::RPY des);
         Msg::PWM CalculateControlEffort(Msg::RPY current_orientation); 
+        void SetGains(double kp, double ki, double kd);
+        bool IsVertical(Msg::RPY current_orientation, double margin=5);
  
     public: //getters
         double GetDesiredOrientation() const {return con_.GetDesired();}

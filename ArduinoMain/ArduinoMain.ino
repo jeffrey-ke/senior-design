@@ -121,15 +121,22 @@ bool PressureTest(milliseconds duration, mmHg maximum_deviation) {
         }
         delay(100);
     }
+    Serial.println("done");
+
     return PRESSURE_GOOD;
 }
 
 void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double Kd) {
     meters surface_depth{0};
     depth_con_.SetDesiredDepth(depth);
+    depth_con_.SetGains(Kp, Ki, Kd);
+    o_con_.SetDesiredToVertical();
     Timer t(duration);
+     
     while (!t.IsExpired()) {
-        auto pwm = depth_con_.CalculateControlEffort(depth_sensor_.GetDepth());
+        auto pwm_orientation = o_con_.CalculateControlEffort(imu_.GetData());
+        auto pwm_depth = (o_con_.IsVertical(imu_.GetData()))? depth_con_.CalculateControlEffort(depth_sensor_.GetDepth()) : Msg::PWM{};
+        auto pwm = pwm_depth.SaturatePWM(pwm_depth, pwm_orientation);
         Serial.print(depth_sensor_.GetDepth()); Serial.print(",");
         Serial.print(imu_.GetData().z); Serial.print(",");
         Serial.print(pwm.FL); Serial.print(",");
@@ -139,10 +146,12 @@ void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double 
         delay(100);
     }
     depth_con_.SetDesiredDepth(surface_depth);
+    Serial.println("done");
 }
 
 void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
     o_con_.SetDesiredToVertical();
+    o_con_.SetGains(Kp, Ki, Kd);
     Timer t(duration);
     while (!t.IsExpired()) {
         auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
@@ -150,9 +159,10 @@ void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
         Serial.print(pwm.FL); Serial.print(",");
         Serial.print(pwm.FR); Serial.print(",");
         Serial.print(pwm.DL); Serial.print(",");
-        Serial.print(pwm.DR); Serial.print(",");
+        Serial.print(pwm.DR); Serial.print("\n");
         delay(100);
     }
+    Serial.println("done");
 
 }
 
