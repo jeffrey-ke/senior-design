@@ -1,50 +1,4 @@
 
-#define UNIT_TEST 0
-#define IS_ACTUAL 0
-#define FLIP_TEST 1
-
-#if IS_ACTUAL
-#include "MasterComputeBridge.h"
-#include "Constants.h"
-#include "WaypointController.h"
-#include "StateMachine.h"
-
-
-StateMachine sm(1, 0, 0, 0,
-                1, 0, 0, 0,
-                5);
-void setup() {
-  // put your setup code here, to run once:
-  PISerial.begin(115200);
-  
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-    sm.DecideState();
-    sm.ExecuteState();
-    auto pwm = sm.GetCommandedPWM();
-    PISerial.print("FL: ");
-    PISerial.println(pwm.FL);
-    PISerial.print("FR: ");
-    PISerial.println(pwm.FR);
-    PISerial.print("DL: ");
-    PISerial.println(pwm.DL);
-    PISerial.print("DR: ");
-    PISerial.println(pwm.DR);
-}
-#elif UNIT_TEST
-#include "_depth_unittests.h"
-void setup() {
-// put your setup code here, to run once:
-    Serial.begin(115200);
-}
-
-void loop() {
-// put your main code here, to run repeatedly:
-    Test::run();
-}
-#elif FLIP_TEST
 #include "OrientationController.h"
 #include "IMUDriver.h"
 #include "ThrusterDriver.h"
@@ -60,6 +14,7 @@ DepthController depth_con_(4, 0.1, 0, 10);
 IMUDriver imu_;
 BarometerDriver baro_(5);
 MS5837Driver depth_sensor_;
+Servo FL, FR, DL, DR;
 
 
 void FlipTest(milliseconds duration, double Kp, double Ki, double Kd);
@@ -73,6 +28,11 @@ void setup() {
     imu_.Init();
     baro_.Init();
     depth_sensor_.Init();
+    FL.attach(FL_PIN);
+    FR.attach(FR_PIN);
+    DL.attach(DL_PIN);
+    DR.attach(DR_PIN);
+
 }
 
 void loop() {
@@ -84,6 +44,7 @@ void loop() {
                 break;
             }
         }
+        StopThrusters();
     }
     SerialParser parser;
     while (true) {
@@ -105,10 +66,9 @@ void loop() {
         break;
         }
         params.Reset();
+        StopThrusters();
     }
-    
-    return;
-}
+  }
 
 bool PressureTest(milliseconds duration, mmHg maximum_deviation) {
     Timer t(duration);
@@ -137,6 +97,7 @@ void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double 
         auto pwm_orientation = o_con_.CalculateControlEffort(imu_.GetData());
         auto pwm_depth = (o_con_.IsVertical(imu_.GetData()))? depth_con_.CalculateControlEffort(depth_sensor_.GetDepth()) : Msg::PWM{};
         auto pwm = pwm_depth.SaturatePWM(pwm_depth, pwm_orientation);
+        CommandThrusterAt(pwm);
         Serial.print(depth_sensor_.GetDepth()); Serial.print(",");
         Serial.print(imu_.GetData().z); Serial.print(",");
         Serial.print(pwm.FL); Serial.print(",");
@@ -145,7 +106,6 @@ void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double 
         Serial.print(pwm.DR); Serial.print("\n");
         delay(100);
     }
-    depth_con_.SetDesiredDepth(surface_depth);
     Serial.println("done");
 }
 
@@ -155,6 +115,7 @@ void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
     Timer t(duration);
     while (!t.IsExpired()) {
         auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
+        CommandThrusterAt(pwm);
         Serial.print(imu_.GetData().z); Serial.print(",");
         Serial.print(pwm.FL); Serial.print(",");
         Serial.print(pwm.FR); Serial.print(",");
@@ -163,10 +124,19 @@ void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
         delay(100);
     }
     Serial.println("done");
-
 }
 
+void CommandThrusterAt(const Msg::PWM& pwm) {
+    FL.writeMicroseconds(pwm.FL);
+    FR.writeMicroseconds(pwm.FR);
+    DL.writeMicroseconds(pwm.DL);
+    DR.writeMicroseconds(pwm.DR);
+}
 
-
-#endif
+void StopThrusters() {
+    FL.writeMicroseconds(1500);
+    FR.writeMicroseconds(1500);
+    DL.writeMicroseconds(1500);
+    DR.writeMicroseconds(1500);
+}
 
