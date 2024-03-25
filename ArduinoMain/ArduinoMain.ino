@@ -1,14 +1,15 @@
 
 #include "OrientationController.h"
 #include "IMUDriver.h"
-#include "ThrusterDriver.h"
 #include "BarometerDriver.h"
 #include "MS5837Driver.h"
 #include "DepthController.h"
 #include "SerialParser.h"
 #include "units.h"
 #include "timer.h"
-
+#include <Servo.h>
+#include "Constants.h"
+#include "Msgs.h"
 OrientationController o_con_(10, 0, 0);
 DepthController depth_con_(4, 0.1, 0, 10);
 IMUDriver imu_;
@@ -32,7 +33,9 @@ void setup() {
     FR.attach(FR_PIN);
     DL.attach(DL_PIN);
     DR.attach(DR_PIN);
-
+    StopThrusters();
+    delay(7000);
+    StopThrusters();
 }
 
 void loop() {
