@@ -1,7 +1,6 @@
 #include "MasterComputeBridge.h"
 #include "Constants.h"
 bool startup = false;
-uint32_t timer = millis();
 void setup() {
   PISerial.begin(115200);
   //DebugSerial.begin(9600);
@@ -9,7 +8,8 @@ void setup() {
   MasterComputeBridge bridge; 
   DebugSerial.println("Initialization Done");
   startup = true;
-
+  uint32_t timer = millis();
+  
   while(true){
     //Must spin GPS at rate it is filled to clear serial buffer
     if (millis() - timer >= 100) {
@@ -33,4 +33,4 @@ void setup() {
   }
 }
 
-void loop() { //running all code in setup cause we can't use global variables  }
+void loop() {} //running all code in setup cause we can't use global variables  }
