@@ -106,7 +106,7 @@ class VelocityCommanderNode(Node):
             pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
                                                 self.wp_lat_, self.wp_lon_,
                                                 self.heading_)
-    ``      self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
+            self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
             #self.send_pwm(pwm)
             feedback_msg = Waypoint.Feedback()
             feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)

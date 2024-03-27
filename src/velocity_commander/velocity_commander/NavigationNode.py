@@ -32,8 +32,8 @@ class NavigationNode:
   def get_bearing(lat1, long1, lat2, long2):
     dLon = (long2 - long1)
     #print(long1)
-    x = math.cos(math.radians(lat2)) * math.sin(math.radians(dLon))
-    y = math.cos(math.radians(lat1)) * math.sin(math.radians(lat2)) - math.sin(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.cos(math.radians(dLon))
+    x = cos(radians(lat2)) * sin(radians(dLon))
+    y = cos(radians(lat1)) * sin(radians(lat2)) - sin(radians(lat1)) * cos(radians(lat2)) * cos(radians(dLon))
     brng = numpy.arctan2(x,y)
     brng = numpy.degrees(brng)
     if (brng < 0):
@@ -41,11 +41,11 @@ class NavigationNode:
     return brng
 
   def get_distance(self, lat1, long1, lat2, long2):
-    dLat = (math.radians(lat2) - math.radians(lat1))
-    dLon = (math.radians(long2) - math.radians(long1))
+    dLat = (radians(lat2) - radians(lat1))
+    dLon = (radians(long2) - radians(long1))
     R = 6373.0
-    a = math.sin(dLat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dLon/2)**2
-    c = 2* math.atan2(math.sqrt(a), math.sqrt(1-a))
+    a = sin(dLat/2)**2 + cos(lat1) * cos(lat2) * sin(dLon/2)**2
+    c = 2* atan2(sqrt(a), sqrt(1-a))
     distance = R*c*1000
     return distance
     
