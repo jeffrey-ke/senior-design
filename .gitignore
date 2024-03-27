@@ -9,3 +9,7 @@ documentation/
 install/
 
 log/
+
+*.tar
+.vscode/
+
