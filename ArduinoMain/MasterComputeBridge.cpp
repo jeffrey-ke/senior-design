@@ -52,7 +52,6 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat("DR");
     functionReturn.concat(",");
     functionReturn.concat(String(vel));
-    DebugSerial.println(functionReturn);
   }
   //Parse and execute Radio command
   else if(command.substring(0,seperator) == "R"){
@@ -60,7 +59,6 @@ void MasterComputeBridge::giveCommand(String command){
     Lora.transmitMessage(msg);
     functionReturn = "R:"; //Build return string
     functionReturn.concat(msg);
-    DebugSerial.println(functionReturn);
   }
   //Parse and execute Ping command
   /*else if(command.substring(0,seperator) == "P"){
@@ -77,14 +75,13 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat(String(orientationData.orientation.y));
     functionReturn.concat(",");
     functionReturn.concat(String(orientationData.orientation.z));
-    DebugSerial.println(functionReturn);
   }
   //Parse and execute GPS command
   else if(command.substring(0,seperator) == "G"){
     functionReturn = "G:"; //Build return string
-    functionReturn.concat(String(GPS.GetLat(), 5));
+    functionReturn.concat(String(GPS.GetLat(), 6));
     functionReturn.concat(",");
-    functionReturn.concat(String(GPS.GetLong(), 5));
+    functionReturn.concat(String(GPS.GetLong(), 6));
     functionReturn.concat(",");
     functionReturn.concat(String(GPS.GetHeading()));
   }
