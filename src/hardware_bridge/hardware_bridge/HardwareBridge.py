@@ -83,7 +83,7 @@ class HardwareBridge:
     
     def SerialSend(self, msg: str):
         # self.serial_.write(msg.encode())
-        print(msg, str="")
+        print(msg, end="")
 
 class TokenBag:
     def __init__(self, tokens_arr: list[str]) -> None:
