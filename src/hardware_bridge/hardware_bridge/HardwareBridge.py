@@ -6,12 +6,12 @@ class HardwareBridge:
     def __init__(self, port, baud, timeout=1, test=False) -> None:
         if not test:
             self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
+            self.init_successful_ = self.serial_.is_open
+            self.serial_.reset_input_buffer()
         self.port_ = port
         self.timeout_ = timeout
         self.baud_ = baud
-        self.init_successful_ = self.serial_.is_open
-        self.serial_.reset_input_buffer()
-        self.token_bag_ = TokenBag()
+        self.token_bag_ = None
 
     def Match(self, tok):
         try:
