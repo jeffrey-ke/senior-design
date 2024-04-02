@@ -1,6 +1,6 @@
 from serial import Serial
 from tokens import *
-
+from time import time
 class HardwareBridge:
 
     def __init__(self, port, baud, timeout=1, test=False) -> None:
@@ -56,7 +56,13 @@ class HardwareBridge:
         elif (tok == PWM):
             self.Pwm()
         
-        
+    def GetMinionResponse(self):
+        while (self.serial_.in_waiting == 0):
+            pass
+
+        pass
+
+
     def Imu(self):
         self.SerialSend("I:\n")
         self.Match(IMU)
