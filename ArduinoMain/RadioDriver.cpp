@@ -2,22 +2,15 @@
 
 RadioDriver::RadioDriver(): rf95(RFM95_CS, RFM95_INT){
   pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
-  digitalWrite(RFM95_RST, LOW);
-  delay(10);
-  digitalWrite(RFM95_RST, HIGH);
-  delay(10);
 
-  while (!rf95.init()) {
+  if(!rf95.init()) {
     DebugSerial.println("LoRa radio init failed");
-    while (1);
   }
   DebugSerial.println("LoRa radio initialized");
 
   // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
   if (!rf95.setFrequency(RF95_FREQ)) {
     Serial.println("setFrequency failed");
-    while (1);
   }
   DebugSerial.print("Set Freq to: "); DebugSerial.println(RF95_FREQ);
   // The default transmitter power is 13dBm, using PA_BOOST.

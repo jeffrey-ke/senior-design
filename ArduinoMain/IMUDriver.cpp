@@ -3,7 +3,6 @@
 #include "Constants.h"
 #include "Arduino.h"
 
-
 // Convenience aliases
 using offsets_struct = adafruit_bno055_offsets_t;
 
@@ -30,6 +29,7 @@ void IMUDriver::Init() {
     offsets.mag_radius = 669;
     imu_.setSensorOffsets(offsets);
     
+
 }
 Msg::RPY IMUDriver::GetData(){
   sensors_event_t event;

@@ -6,33 +6,41 @@
 #if IS_ACTUAL
 #include "MasterComputeBridge.h"
 #include "Constants.h"
-#include "WaypointController.h"
-#include "StateMachine.h"
-
-
-StateMachine sm(1, 0, 0, 0,
-                1, 0, 0, 0,
-                5);
+bool startup = false;
 void setup() {
-  // put your setup code here, to run once:
   PISerial.begin(115200);
+  //DebugSerial.begin(9600);
+  PISerial.setTimeout(10); //avoid long delays to mistimed reads
+  MasterComputeBridge bridge; 
+  DebugSerial.println("Initialization Done");
+  startup = true;
+  uint32_t timer = millis();
   
+  while(true){
+    //Must spin GPS at rate it is filled to clear serial buffer
+    if (millis() - timer >= 100) {
+      timer = millis();
+      bridge.spinGPS();
+    }
+    if(PISerial.available()>0){
+      String data = PISerial.readStringUntil('\n');
+      DebugSerial.print("You sent me: ");
+      DebugSerial.println(data);
+      if(data=="K"){ return; }
+      else if(data=="S"){ 
+        if(startup){ PISerial.println("1"); }
+        else{ PISerial.println("0"); }
+      }
+      else{
+        bridge.giveCommand(data);
+        PISerial.println(bridge.returnCommand());
+      }
+    }
+  }
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-    sm.DecideState();
-    sm.ExecuteState();
-    auto pwm = sm.GetCommandedPWM();
-    PISerial.print("FL: ");
-    PISerial.println(pwm.FL);
-    PISerial.print("FR: ");
-    PISerial.println(pwm.FR);
-    PISerial.print("DL: ");
-    PISerial.println(pwm.DL);
-    PISerial.print("DR: ");
-    PISerial.println(pwm.DR);
-}
+void loop() {} //running all code in setup cause we can't use global variables  }
+
 #elif UNIT_TEST
 #include "_depth_unittests.h"
 void setup() {
@@ -169,4 +177,5 @@ void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
 
 
 #endif
+
 

@@ -1,11 +1,11 @@
 #ifndef ThrusterDriver_h
 #define ThrusterDriver_h
 #include "Arduino.h" 
-#include <Servo.h>
+#include <ServoTimer2.h>
 #include "Constants.h"
 class ThrusterDriver{
   private:
-    Servo thruster;
+    ServoTimer2 thruster;
   public:
     ThrusterDriver();
     ThrusterDriver(const int servoPin);

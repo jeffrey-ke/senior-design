@@ -10,10 +10,11 @@ public:
 
   _GPSDriver();
   void Refresh();
-  Msg::GNSS GetGNSS() const {Refresh(); return (fix_)? Msg::GNSS{GetLat(), GetLong(), GetHeading()} : Msg::gnss_INVALID;}
-  double GetLat() const {Refresh(); return (fix_)? lat_: INVALID;}
-  double GetLong() const {Refresh(); return (fix_)? long_: INVALID;}
-  double GetHeading() const {Refresh(); return (fix_) ? heading_: INVALID;}
+
+  Msg::GNSS GetGNSS() const {Refresh(); return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}
+  double GetLat() const {Refresh(); return lat_;}
+  double GetLong() const {Refresh(); return long_;}
+  double GetHeading() const {Refresh(); return heading_;}
   bool GetFix() const {return fix_;}
 
   double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}
@@ -22,6 +23,5 @@ private:
   Adafruit_GPS GPS;
   double lat_{INVALID}, long_{INVALID}, heading_{INVALID};
   bool fix_{false};
-  uint32_t timer_;
 };
 #endif

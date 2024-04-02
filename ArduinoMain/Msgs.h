@@ -39,15 +39,17 @@ namespace Msg {
         double z;
     } RPY;
 
+
     typedef struct PWM {
         int FL, FR, DL, DR;
 
         PWM(): FL(1500), FR(1500), DL(1500), DR(1500){}
         PWM(int FL_, int FR_, int DL_, int DR_) {
-            FL = (FL_ > 1800) ? 1800 : ((FL_ < 1200) ? 1200 : FL_);
-            FR = (FR_ > 1800) ? 1800 : ((FR_ < 1200) ? 1200 : FR_);
-            DL = (DL_ > 1800) ? 1800 : ((DL_ < 1200) ? 1200 : DL_);
-            DR = (DR_ > 1800) ? 1800 : ((DR_ < 1200) ? 1200 : DR_);
+
+            FL = (FL_ > 1900) ? 1900 : ((FL_ < 1100) ? 1100 : FL_);
+            FR = (FR_ > 1900) ? 1900 : ((FR_ < 1100) ? 1100 : FR_);
+            DL = (DL_ > 1900) ? 1900 : ((DL_ < 1100) ? 1100 : DL_);
+            DR = (DR_ > 1900) ? 1900 : ((DR_ < 1100) ? 1100 : DR_);
         }
 
         PWM operator+(const int& of) const {
@@ -64,6 +66,7 @@ namespace Msg {
 
         PWM operator+(const PWM& rhs) const {
             return PWM{FL + rhs.FL - 1500, FR + rhs.FR - 1500, DL + rhs.DL - 1500, DR + rhs.DR - 1500};
+
         } // (FL - 1500) + (FL - 1500) + 1500
 
         PWM SaturatePWM(const PWM& Forward, const PWM& Down) {
@@ -83,6 +86,7 @@ namespace Msg {
                 return Forward + Down;
             }
         }
+
 
         
     } PWM;
@@ -105,6 +109,7 @@ namespace Msg {
 
     const static RPY rpy_VERTICAL{0.0, 0.0, 90.0};
     const static RPY rpy_HORIZONTAL{0.0, 0.0, 0.0};
+
 
     }
 
