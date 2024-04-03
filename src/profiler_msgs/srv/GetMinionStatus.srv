@@ -1,4 +1,4 @@
-Int16 timeout
+int16 timeout
 ---
 bool alive
 bool success
