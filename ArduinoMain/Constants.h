@@ -4,7 +4,10 @@
 */
 #ifndef Constants_h
 #define Constants_h
+
 #include "Arduino.h"
+
+
 /*Serial  USB
   Serial1 19(RX1), 18(TX1)
   Serial2 17(RX2), 16(TX2)
@@ -12,15 +15,18 @@
 */
 #define PISerial Serial
 #define GPSSerial Serial1
+
 #define PingSerial Serial2
 #define DebugSerial Serial3
 const int RFM95_CS = 4;
 const int RFM95_RST = 2;
 const int RFM95_INT = 3;
-const int TPIN1 = 8;
-const int TPIN2 = 9;
-const int TPIN3 = 10;
-const int TPIN4 = 11;
+
+const int FL_PIN = 7;
+const int FR_PIN = 8;
+const int DL_PIN = 9;
+const int DR_PIN = 10;
+
 #define RF95_FREQ 915.0 //Standard frequency for use in the US
 
 #endif

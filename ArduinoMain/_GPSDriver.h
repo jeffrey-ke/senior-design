@@ -10,10 +10,11 @@ public:
 
   _GPSDriver();
   void Refresh();
-  Msg::GNSS GetGNSS() const {Refresh(); return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}
-  double GetLat() const {Refresh(); return lat_;}
-  double GetLong() const {Refresh(); return long_;}
-  double GetHeading() const {Refresh(); return heading_;}
+
+  Msg::GNSS GetGNSS() const {return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}
+  double GetLat() const {return lat_;}
+  double GetLong() const {return long_;}
+  double GetHeading() const {return heading_;}
   bool GetFix() const {return fix_;}
 
   double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}

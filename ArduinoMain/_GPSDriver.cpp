@@ -11,6 +11,7 @@ _GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     GPS.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ); //Set update rate
     GPS.sendCommand(PGCMD_ANTENNA); //set antenna on
     delay(1000);
+
     DebugSerial.println("Waiting for gps fix...");
     while(!GPS.fix){
       char c = GPS.read();

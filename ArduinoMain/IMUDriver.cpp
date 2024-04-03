@@ -1,56 +1,38 @@
 #include "IMUDriver.h"
+#include <Wire.h>
+#include "Constants.h"
+#include "Arduino.h"
+
+// Convenience aliases
+using offsets_struct = adafruit_bno055_offsets_t;
 
 IMUDriver::IMUDriver()
 :
-imu(55) //IMU object
+imu_(55) //IMU object
 {
 }
+
 void IMUDriver::Init() {
-    alive = imu.begin();
-    imu.setExtCrystalUse(true);
+    alive_ = imu_.begin();
+    imu_.setExtCrystalUse(true);
+    offsets_struct offsets;
+    offsets.accel_offset_x = -27;
+    offsets.accel_offset_y = 6;
+    offsets.accel_offset_z = -31;
+    offsets.gyro_offset_x = -1;
+    offsets.gyro_offset_y = -8;
+    offsets.gyro_offset_z = -2;
+    offsets.mag_offset_x = -442;
+    offsets.mag_offset_y = -263;
+    offsets.mag_offset_z = -23;
+    offsets.accel_radius = 1000;
+    offsets.mag_radius = 669;
+    imu_.setSensorOffsets(offsets);
+    
+
 }
-sensors_event_t IMUDriver::getData(){
-  sensors_event_t orientationData , linearAccelData;
-  imu.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-  //  bno.getEvent(&angVelData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-  return orientationData;
-}
-
-/**************************************************************************/
-/*
-    Display sensor calibration status
-*/
-/**************************************************************************/
-void IMUDriver::displayCalStatus(void)
-{
-  /* Get the four calibration values (0..3) */
-  /* Any sensor data reporting 0 should be ignored, */
-  /* 3 means 'fully calibrated" */
-  uint8_t system, gyro, accel, mag;
-  system = gyro = accel = mag = 0;
-  imu.getCalibration(&system, &gyro, &accel, &mag);
-
-  /* The data should be ignored until the system calibration is > 0 */
-  Serial.print("\t");
-  while (!system)
-  {
-    Serial.println("calibrating...");
-    Serial.print(" G:");
-    Serial.print(gyro, DEC);
-    Serial.print(" A:");
-    Serial.print(accel, DEC);
-    Serial.print(" M:");
-    Serial.println(mag, DEC);
-    delay(1000);
-  }
-
-  /* Display the individual values */
-  Serial.print("Sys:");
-  Serial.print(system, DEC);
-  Serial.print(" G:");
-  Serial.print(gyro, DEC);
-  Serial.print(" A:");
-  Serial.print(accel, DEC);
-  Serial.print(" M:");
-  Serial.println(mag, DEC);
+Msg::RPY IMUDriver::GetData(){
+  sensors_event_t event;
+  imu_.getEvent(&event);
+  return Msg::RPY{event.orientation.x, event.orientation.y, event.orientation.z};
 }
