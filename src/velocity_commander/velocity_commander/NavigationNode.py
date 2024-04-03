@@ -31,7 +31,6 @@ class NavigationNode:
 
   def get_bearing(lat1, long1, lat2, long2):
     dLon = (long2 - long1)
-    #print(long1)
     x = cos(radians(lat2)) * sin(radians(dLon))
     y = cos(radians(lat1)) * sin(radians(lat2)) - sin(radians(lat1)) * cos(radians(lat2)) * cos(radians(dLon))
     brng = numpy.arctan2(x,y)
@@ -95,15 +94,15 @@ class NavigationNode:
       
       #determine PWM commands
       if(vel[3]==0 and vel[4]==0 and vel[5]==0): #no angular change
-          return (lx*10, 
-                  lx*10,
-                  0.0,
-                  0.0)
+          return (lx*40+1500.0, 
+                  lx*40+1500.0,
+                  1500.0,
+                  1500.0)
       elif(vel[5]!=0):
-          return (-5*az,
-                  5*az,
-                  0.0,
-                  0.0)
+          return (40*az+1500.0,
+                  -40*az+1500.0,
+                  1500.0,
+                  1500.0)
   def descendToPwm(self, currentDepth, desiredDepth, heading):
     print('descending')
     return (0.0,0.0,0.0,0.0)
