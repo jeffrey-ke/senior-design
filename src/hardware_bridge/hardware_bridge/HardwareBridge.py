@@ -169,10 +169,21 @@ class HardwareBridge:
     def Command_Pwm(self):
         self.SerialSend("P:")
         self.Match(PWM)
-        for i in range(4):
-            pwm = self.Integer()
-            self.SerialSend(str(pwm))
-            self.SerialSend(",")
+        pwm = self.Integer()
+        
+        self.SerialSend(str(pwm))
+        self.SerialSend(",")
+
+        pwm = self.Integer()
+        self.SerialSend(str(pwm))
+        self.SerialSend(",")
+
+        pwm = self.Integer()
+        self.SerialSend(str(pwm))
+        self.SerialSend(",")
+
+        pwm = self.Integer()
+        self.SerialSend(str(pwm))
         self.SerialSend("\n")
     
     def Command_Kill(self):
