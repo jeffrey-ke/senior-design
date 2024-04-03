@@ -18,6 +18,8 @@ find_package(std_msgs)
 find_package(geographic_msgs)
 set(msg_files
   "msg/Pwm.msg"
+  "msg/Imu.msg"
+  "msg/Gnss.msg"
   )
 set(action_files
   "action/Profile.action"
