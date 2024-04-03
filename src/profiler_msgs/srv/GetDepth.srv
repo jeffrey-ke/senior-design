@@ -1,4 +1,4 @@
-
+Int16 timeout
 ---
 float32 depth
 bool success

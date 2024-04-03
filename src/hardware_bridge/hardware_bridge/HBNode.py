@@ -15,28 +15,25 @@ class HBNode(Node):
         self.create_service(SendPwm, 'send_pwm', self.SendPwm)
         self.create_service(GetMinionStatus, 'minion_status', self.GetMinionStatus)
 
-        self.bridge_ = HardwareBridge("ACM0", 115200, 5, self.get_logger())
+        self.bridge_ = HardwareBridge("ACM0", 115200)
 
         
-        self.bridge_.WaitForInit()
             
 
     def GetMinionStatus(self, request, response):
-        from std_msgs.msg import Int16
-        result = self.bridge_.AskForStatus(ros_msg_type=Int16)
-        success = True
-        if result is None:
-            result = Int16()
-            success = False
-        response.alive = 1
-        response.success = success
-        return response
+        self.bridge_.Command("status {}".format(str(request.timeout))) 
+        msg = self.bridge_.Response()
+        if msg is None:
+            response.success = False
+            return response
+        else:
+            response = msg
+            return response
 
     def SendPwm(self, request, response):
         FL, FR, DL, DR = request.forward_l_pwm, request.forward_r_pwm, request.down_l_pwm, request.down_r_pwm
         self.get_logger().info("Pwm sent:\n\t{}\n\t{}\n\t{}\n\t{}".format(FL, FR, DL, DR))
-        result = self.bridge_.SendPWM(FL, FR, DL, DR)
-        response.success = True if result is not None else False
+        self.bridge_.Command("pwm {} {} {} {}".format(str(FL), str(FR), str(DL), str(DR)))
         return response
 
     def SendKill(self, request, response):
