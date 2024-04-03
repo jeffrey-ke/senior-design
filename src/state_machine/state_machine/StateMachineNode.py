@@ -55,12 +55,11 @@ class StateMachineNode(Node):
 
         self.state_machine_ = StateMachine()
 
-        self.state_machine_.pushBackWP(GeoPoint(latitude=37.351812,longitude=-121.941060,altitude=20.0))
+        self.state_machine_.pushBackWP(GeoPoint(latitude=37.351812,longitude=121.941060,altitude=20.0))
         # 37.350204,-121.938166
         self.get_logger().info('init succesful')
         self.waitForSetup()
         self.get_logger().info('minion ready')
-
     #state has just change do something based on new state
     def stateChange(self):
         if(self.state_machine_.state()=="idle"):
