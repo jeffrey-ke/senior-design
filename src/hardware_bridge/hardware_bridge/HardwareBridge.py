@@ -102,24 +102,24 @@ class HardwareBridge:
             return self.Response_Status()
     
     def Response_Imu(self):
-        from profiler_msgs.msg import imu
+        from profiler_msgs.msg import Imu
         self.Match(IMU)
         x = self.Float()
         y = self.Float()
         z = self.Float()
-        msg = imu()
+        msg = Imu()
         msg.x = x
         msg.y = y
         msg.z = z
         return msg
     
     def Response_Gnss(self):
-        from profiler_msgs.msg import gnss
+        from profiler_msgs.msg import Gnss
         self.Match(gnss)
         lat = self.Float()
         lon = self.Float()
         heading = self.Float()
-        msg = gnss()
+        msg = Gnss()
         msg.lat = lat
         msg.lon = lon
         msg.heading = heading
