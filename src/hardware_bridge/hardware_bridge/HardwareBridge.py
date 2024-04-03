@@ -1,79 +1,107 @@
 from serial import Serial
-import time
-from .MessageCreator import MessageCreator
- 
-
+from tokens import *
+from time import time
 class HardwareBridge:
-    def __init__(self, port, baud, timeout, logger) -> None:
-        self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
+
+    def __init__(self, port, baud, timeout=1, test=False) -> None:
+        if not test:
+            self.serial_ = Serial('/dev/tty{}'.format(port), baud, timeout=timeout)
+            self.init_successful_ = self.serial_.is_open
+            self.serial_.reset_input_buffer()
         self.port_ = port
         self.timeout_ = timeout
         self.baud_ = baud
-        self.init_successful_ = self.serial_.is_open
-        self.serial_.reset_input_buffer()
-        self.msg_creator_ = MessageCreator()
-        self.logger_ = logger
+        self.token_bag_ = None
 
-    def TryInit(self):
-        self.serial_ = Serial('/dev/tty{}'.format(self.port_), self.baud_, timeout=self.timeout_)
-        self.init_successful_ = self.serial_.is_open
+    def Match(self, tok):
+        try:
+            int_val = int(tok)
+            tok_val = int(self.token_bag_.Lookahead())
+            # If they're both int, then they automatically match
+        except ValueError:
+            if tok != self.token_bag_.Lookahead():
+                raise Exception("Unexpected token for expression in parse. See Hardwarebridge.py:Match")
+            
+        self.token_bag_.NextToken()
+    
+    def Integer(self):
+        try:
+            int_val = int(self.token_bag_.Lookahead())
+            self.Match(INT)
+            return int_val
+        except ValueError:
+            raise Exception("Tried to match an integer value, but an integer wasn\'t there.")
 
-    def AskForStatus(self, ros_msg_type, timeout=1):
-        self._Send("S:")
-        msg = self._ReadWithCheck(timeout=timeout)
-        created_msg = self._CreateMessageOrNone(msg)
-        return created_msg if isinstance(created_msg, ros_msg_type) else None
-
-    def WaitForInit(self):
-        line = "S:0"
-        while(line!="S:1"):
-            self._Send("S:")
-            line = self.serial_.readline().decode('utf-8').rstrip()
-            time.sleep(1)
-            print(line)
-        self.serial_.reset_input_buffer()
-
-    def AskForGps(self, ros_msg_type, timeout=1):
-        self._Send("G:")
-        msg = self._ReadWithCheck(timeout=timeout)
-        self.logger_.info("\n\n\n\n\t==============THE __CHECKED__ MESSAGE:================")
-        self.logger_.info(msg)
-        created_msg = self._CreateMessageOrNone(msg)
-        return created_msg if isinstance(created_msg, ros_msg_type) else None
+    def SendMasterCommand(self, master_command: str):
+        """
+            Command -> Imu
+                    | Gnss
+                    | Pwm
+                    | Depth
+            
+            Imu -> imu
+            Gnss -> gnss
+            Pwm -> pwm int int int int
+            Depth -> depth      
         
+        """
+        self.token_bag_ = TokenBag(master_command.split())
+        tok = self.token_bag_.Lookahead()
+        if (tok == IMU):
+            self.Imu()
+        elif (tok == GNSS):
+            self.Gnss()
+        elif (tok == DEPTH):
+            self.Depth()
+        elif (tok == PWM):
+            self.Pwm()
         
-    def AskForIMU(self, ros_msg_type, timeout=1):
-        self._Send("I:")
-        msg = self._ReadWithCheck(timeout=timeout)
-        created_msg = self._CreateMessageOrNone(msg)
-        return created_msg if isinstance(created_msg, ros_msg_type) else None
+    def GetMinionResponse(self):
+        while (self.serial_.in_waiting == 0):
+            pass
+
+        pass
 
 
-    def SendPWM(self, FL, FR, DL, DR, timeout=1):
-        self._Send("T:{},{},{},{}".format(FL, FR, DL, DR))
-        msg = self._ReadWithCheck(timeout=timeout)
-        return msg is not None
+    def Imu(self):
+        self.SerialSend("I:\n")
+        self.Match(IMU)
+        pass
 
-    def _CreateMessageOrNone(self, msg):
-        if msg is None:
+    def Gnss(self):
+        self.SerialSend("G:\n")
+        self.Match(GNSS)
+        pass
+
+    def Depth(self):
+        self.SerialSend("D:\n")
+        self.Match(DEPTH)
+        pass
+
+    def Pwm(self):
+        self.SerialSend("P:")
+        self.Match(PWM)
+        for i in range(4):
+            pwm = self.Integer()
+            self.SerialSend(str(pwm))
+            self.SerialSend(",")
+        self.SerialSend("\n")
+    
+    def SerialSend(self, msg: str):
+        # self.serial_.write(msg.encode())
+        print(msg, end="")
+
+class TokenBag:
+    def __init__(self, tokens_arr: list[str]) -> None:
+        self.buf_ = tokens_arr
+        self.i_ = 0
+        
+    def Lookahead(self):
+        if self.i_ >= len(self.buf_):
             return None
-        else:
-            return self.msg_creator_.CreateMessage(msg)
+        tok = self.buf_[self.i_]
+        return tok
+    
+    def NextToken(self):
+        self.i_ = self.i_ + 1
 
-
-    def _ReadWithCheck(self, timeout):
-        # if self.serial_.in_waiting > 0:
-        self.logger_.info("\n\n\n\n\t==============THE READ MESSAGE:================")
-        msg = self.serial_.readline().decode('utf-8').rstrip()
-        self.logger_.info(msg)
-        return msg
-        
-
-    def _Send(self, msg):
-        msg = msg + "\n"
-        self.serial_.write(msg.encode("utf-8"))
-"""
-G:
-I:
-T:1,2,3,4
-"""
