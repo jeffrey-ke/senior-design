@@ -18,7 +18,7 @@ class MasterComputeBridge{
     ThrusterDriver thruster4;
     IMUDriver IMU;
     //PingDriver ping;
-    RadioDriver Lora;
+    // RadioDriver Lora;
     String functionReturn;
     _GPSDriver GPS;
   public:

@@ -1,7 +1,7 @@
 
 #define UNIT_TEST 0
-#define IS_ACTUAL 0
-#define FLIP_TEST 1
+#define IS_ACTUAL 1
+#define FLIP_TEST 0
 
 #if IS_ACTUAL
 #include "MasterComputeBridge.h"
