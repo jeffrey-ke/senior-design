@@ -31,4 +31,5 @@ void setup() {
   }
 }
 
-void loop() {} //running all code in setup cause we can't use global variables  }
+void loop() {} //running all code in setup cause we can't use global variables 
+

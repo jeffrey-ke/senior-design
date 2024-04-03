@@ -4,13 +4,17 @@
 #include <Wire.h>
 #include "Arduino.h" 
 #include "Constants.h"
+#include <Adafruit_Sensor.h>
+
 
 class IMUDriver{
   private:
     Adafruit_BNO055 imu;
+    bool alive;
   public:
     IMUDriver();
     sensors_event_t getData();
-
+    void Init();
+    void displayCalStatus(void);
 };
 #endif

@@ -5,6 +5,8 @@
 
 MasterComputeBridge::MasterComputeBridge(){
   thrusterSetup();
+  IMU.Init();
+  IMU.displayCalStatus();
 }
 void MasterComputeBridge::thrusterSetup(){
   thruster1 = ThrusterDriver(TPIN1);
@@ -79,11 +81,12 @@ void MasterComputeBridge::giveCommand(String command){
   //Parse and execute GPS command
   else if(command.substring(0,seperator) == "G"){
     functionReturn = "G:"; //Build return string
-    functionReturn.concat(String(GPS.GetLat(), 6));
+    sensors_event_t orientationData = IMU.getData();
+   /* functionReturn.concat(String(GPS.GetLat(), 6));
     functionReturn.concat(",");
     functionReturn.concat(String(GPS.GetLong(), 6));
-    functionReturn.concat(",");
-    functionReturn.concat(String(GPS.GetHeading()));
+    functionReturn.concat(",");*/
+    functionReturn.concat(String(orientationData.orientation.x*PI/180));//using IMU since GPS heading innacurate
   }
   //Parse and execute EStop command
   else if(command.substring(0,seperator) == "E"){
@@ -105,5 +108,5 @@ String MasterComputeBridge::returnCommand(){
   return temp;
 }
 void MasterComputeBridge::spinGPS(){
-  GPS.Refresh();
+  //GPS.Refresh();
 }

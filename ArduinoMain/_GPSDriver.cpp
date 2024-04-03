@@ -21,7 +21,7 @@ _GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     fix_ = true;
     lat_ = (GPS.lat == 'N')? decimalDegrees(GPS.latitude) : -decimalDegrees(GPS.latitude);
     long_ = (GPS.lon == 'W')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
-    heading_ = GPS.angle;
+    heading_ = GPS.angle*PI/180;
     DebugSerial.println("Set values properly");
     DebugSerial.println(lat_, 5);
     DebugSerial.println(long_, 5);
@@ -44,10 +44,10 @@ void _GPSDriver::Refresh(){
     if (GPS.parse(GPS.lastNMEA())){ // this also sets the newNMEAreceived() flag to false
       lat_ = (GPS.lat == 'N')? decimalDegrees(GPS.latitude) : -decimalDegrees(GPS.latitude);
       long_ = (GPS.lon == 'W')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
-      heading_ = GPS.angle;
-      DebugSerial.println("Set values properly");
+      heading_ = GPS.angle*PI/180;
+      /*DebugSerial.println("Set values properly");
       DebugSerial.println(lat_, 5);
-      DebugSerial.println(long_, 5);
+      DebugSerial.println(long_, 5);*/
     } 
   }  
 }
