@@ -10,6 +10,8 @@ from profiler_msgs.srv import GetDepth
 from profiler_msgs.srv import GetGnss
 from profiler_msgs.srv import GetOrientation
 from profiler_msgs.srv import SendPwm
+from math import sin, cos, sqrt, radians, atan2, pi
+
 
 # 37.429518,-121.982590 are the of a point approximately 10 meters out from the dock 
 
@@ -95,28 +97,38 @@ class VelocityCommanderNode(Node):
         coords = goal_handle.request.waypoint_coords 
         self.wp_lat_ = coords.latitude
         self.wp_lon_ = coords.longitude
-
+    
         geo = self.get_gnss()
         self.get_logger().info('got some gamer coords')
         self.lat_ = geo.latitude
         self.lon_ = geo.longitude
-        self.heading = geo.altitude
+        self.heading_ = geo.altitude
+        #testing
+        #self.wp_lat_ = 37.351812
+        #self.wp_lon_ = 121.941060
+        #self.lat_ = 37.352364
+        #self.lon_ = 121.941310
+        #self.heading_ = 0.0
 
         while(not self.navigator_.atWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)): #while not at waypoint 
             pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
                                                 self.wp_lat_, self.wp_lon_,
                                                 self.heading_)
+            #logger Block
+            #self.get_logger().info("PWM lat1{} lon1{} lat2{} lon2{}".format(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_))
             self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
+            #self.get_logger().info("Distance to waypoint: {}".format(self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
+            #self.get_logger().info("Velocity Commands: {}".format(self.navigator_.waypointToVelocity(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
+            self.get_logger().info("Heading Err: {}".format(self.navigator_.getHeadingError(radians(self.lat_), radians(self.lon_), radians(self.wp_lat_), radians(self.wp_lon_), self.heading_)))  
+            
             #self.send_pwm(pwm)
             feedback_msg = Waypoint.Feedback()
             feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)
             goal_handle.publish_feedback(feedback_msg)
-            self.get_logger().info("Distance to waypoint: {}".format(self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
             geo = self.get_gnss()
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
-            self.heading = geo.altitude
-
+            self.heading_ = geo.altitude
         goal_handle.succeed()
         result = Waypoint.Result()
         result.arrived_at_waypoint = True
