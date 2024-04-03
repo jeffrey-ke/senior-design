@@ -6,14 +6,13 @@
 #if IS_ACTUAL
 #include "MasterComputeBridge.h"
 #include "Constants.h"
-bool startup = false;
 void setup() {
   PISerial.begin(115200);
   //DebugSerial.begin(9600);
   PISerial.setTimeout(10); //avoid long delays to mistimed reads
   MasterComputeBridge bridge; 
+  delay(5000); // delay to allow the ESC to recognize the stopped signals
   DebugSerial.println("Initialization Done");
-  startup = true;
   uint32_t timer = millis();
   
   while(true){
@@ -27,9 +26,8 @@ void setup() {
       DebugSerial.print("You sent me: ");
       DebugSerial.println(data);
       if(data=="K"){ return; }
-      else if(data=="S"){ 
-        if(startup){ PISerial.println("1"); }
-        else{ PISerial.println("0"); }
+      else if(data=="S:"){ 
+        PISerial.println("S:1");
       }
       else{
         bridge.giveCommand(data);

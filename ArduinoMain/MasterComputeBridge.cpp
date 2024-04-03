@@ -6,6 +6,7 @@
 MasterComputeBridge::MasterComputeBridge(){
   thrusterSetup();
   IMU.Init();
+
 }
 void MasterComputeBridge::thrusterSetup(){
   thruster1 = ThrusterDriver(FL_PIN);
@@ -53,7 +54,6 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat("DR");
     functionReturn.concat(",");
     functionReturn.concat(String(vel));
-    DebugSerial.println(functionReturn);
   }
   //Parse and execute Radio command
   // else if(command.substring(0,seperator) == "R"){
@@ -63,6 +63,7 @@ void MasterComputeBridge::giveCommand(String command){
   //   functionReturn.concat(msg);
   //   DebugSerial.println(functionReturn);
   // }
+
   //Parse and execute Ping command
   /*else if(command.substring(0,seperator) == "P"){
     functionReturn = "P:"; //Build return string
@@ -79,16 +80,17 @@ void MasterComputeBridge::giveCommand(String command){
     functionReturn.concat(",");
     functionReturn.concat(String(orientationData.z));
     DebugSerial.println(functionReturn);
+
   }
   //Parse and execute GPS command
   else if(command.substring(0,seperator) == "G"){
     functionReturn = "G:"; //Build return string
-    functionReturn.concat(String(GPS.GetLat(), 5));
-    functionReturn.concat(",");
-    functionReturn.concat(String(GPS.GetLong(), 5));
+    sensors_event_t orientationData = IMU.getData();
+   /* functionReturn.concat(String(GPS.GetLat(), 6));
     functionReturn.concat(",");
     auto heading = IMU.GetData().x * PI/180;
     functionReturn.concat(String(heading));
+
   }
   //Parse and execute EStop command
   else if(command.substring(0,seperator) == "E"){
@@ -110,5 +112,5 @@ String MasterComputeBridge::returnCommand(){
   return temp;
 }
 void MasterComputeBridge::spinGPS(){
-  GPS.Refresh();
+  //GPS.Refresh();
 }
