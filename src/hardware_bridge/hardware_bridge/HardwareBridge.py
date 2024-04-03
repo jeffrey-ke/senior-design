@@ -115,7 +115,7 @@ class HardwareBridge:
     
     def Response_Gnss(self):
         from profiler_msgs.msg import Gnss
-        self.Match(gnss)
+        self.Match(GNSS)
         lat = self.Float()
         lon = self.Float()
         heading = self.Float()
