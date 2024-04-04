@@ -2,38 +2,16 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from time import time
-from geographic_msgs.msg import GeoPoint
-from std_msgs.msg import Float64
-from std_msgs.msg import Float64MultiArray
+
 from std_msgs.msg import Int16
-from std_msgs.msg import String
 from profiler_msgs.srv import GetMinionStatus
 from profiler_msgs.action import Waypoint
 from profiler_msgs.action import Profile
 from .StateMachine import StateMachine
 
-
-
-MAX_DURATION_SECONDS = 600
-SPIN_FREQUENCY = 100
-
 class StateMachineNode(Node):
     def __init__(self):
         super().__init__('StateMachineNode') #Important!
-        ###################
-        # Publishers ######
-        ###################
-        self.kill_pub_ = self.create_publisher(Int16, "/KILL", 10)
-        self.state_pub_ = self.create_publisher(String, "State", 10)
-
-        ##################
-        # Subscribers ####
-        ##################
-        self.command_sub_ = self.create_subscription(String,"/Command",self.command_callback,10)
-        self.command_sub_  # prevent unused variable warning
-        self.health_sub_ = self.create_subscription(String,"/Health",self.health_callback,10)
-        self.health_sub_  # prevent unused variable warning
-
         #################
         # Services ####
         #################
@@ -48,7 +26,6 @@ class StateMachineNode(Node):
         ###################
         # Timers
         ##################
-        self.spin_timer_ = self.create_timer(1/SPIN_FREQUENCY, self.Spin)
 
         self.start_time_ = time()
         self.cur_time_ = self.start_time_
@@ -187,12 +164,7 @@ class StateMachineNode(Node):
            if(self.state_machine_.assessState()):
                 self.stateChange()
 
-    def Spin(self):
-        self.UpdateTime()
-        #if (self.ShouldDie()):
-        #    self.kill_pub_.publish(Int16(data=1))
-        #else:
-        #    self.kill_pub_.publish(Int16(data=0))
+
 
     def UpdateTime(self):
         self.cur_time_ = time()
