@@ -1,5 +1,0 @@
-geographic_msgs/GeoPoint waypoint_coords
----
-bool arrived_at_waypoint
----
-float64 distance_to_waypoint

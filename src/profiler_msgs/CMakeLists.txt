@@ -20,10 +20,11 @@ set(msg_files
   "msg/Pwm.msg"
   "msg/Imu.msg"
   "msg/Gnss.msg"
+  "msg/Waypoint.msg"
   )
 set(action_files
-  "action/Profile.action"
-  "action/Waypoint.action"
+  "action/DoProfile.action"
+  "action/DoWaypoint.action"
   )
 set(srv_files
   "srv/GetDepth.srv"

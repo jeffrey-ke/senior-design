@@ -1,0 +1,5 @@
+profiler_msgs/Waypoint waypoint_coords
+---
+bool arrived_at_waypoint
+---
+float32 distance_to_waypoint
