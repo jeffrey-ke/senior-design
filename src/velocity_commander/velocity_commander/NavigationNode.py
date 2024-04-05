@@ -1,6 +1,6 @@
 
 from typing import Tuple
-from math import sin, cos, sqrt, radians, atan2, pi
+from math import sin, cos, sqrt, radians, atan2, pi, degrees
 
 class NavigationNode:
   K_l = 0.5
@@ -14,14 +14,9 @@ class NavigationNode:
     y = sin(long2 - long1) * sin(lat2) 
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(long2 - long1)
     bearing = atan2(y, x)
+    bearing = (bearing * 180/pi + 360) % 360
     self.bearing_ = bearing
-    h_err = bearing - current_heading
-
-    if (h_err > pi):
-      h_err = h_err - (2 * pi)  
-    if (h_err < -pi):
-      h_err = h_err + (2 * pi)
-
+    h_err = bearing - (degrees(current_heading) + 180 + 12.5)
     return h_err
 
   def atWaypoint(self, lat1, long1, lat2, long2) -> bool:

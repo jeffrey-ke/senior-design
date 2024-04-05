@@ -107,8 +107,8 @@ class VelocityCommanderNode(Node):
                                                 self.wp_lat_, self.wp_lon_,
                                                 self.heading_)
             from math import pi
-            self.get_logger().info("Bearing {}".format(str(self.navigator_.bearing_ * 180/pi + 180)))
-            self.get_logger().info("Heading {}".format(str(self.heading_ * 180/pi)))
+            self.get_logger().info("Bearing {}".format(str(self.navigator_.bearing_)))
+            self.get_logger().info("Heading {}".format(str(self.heading_ * 180/pi + 180 + 12.5)))
             self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
             #self.send_pwm(pwm)
             feedback_msg = Waypoint.Feedback()
