@@ -84,16 +84,16 @@ void MasterComputeBridge::giveCommand(String command){
 
   }
   //Parse and execute GPS command
-  // else if(command.substring(0,seperator) == "G"){
-  //   functionReturn = "G:"; //Build return string
-  //   functionReturn.concat(String(GPS.GetLat(), 6));
-  //   functionReturn.concat(",");
-  //   functionReturn.concat(String(GPS.GetLong(), 6));
-  //   functionReturn.concat(",");
-  //   auto heading = IMU.GetData().x * PI/180;
-  //   functionReturn.concat(String(heading));
+  else if(command.substring(0,seperator) == "G"){
+    functionReturn = "G:"; //Build return string
+    functionReturn.concat(String(GPS.GetLat(), 6));
+    functionReturn.concat(",");
+    functionReturn.concat(String(GPS.GetLong(), 6));
+    functionReturn.concat(",");
+    auto heading = IMU.GetData().x * M_PI/180;
+    functionReturn.concat(String(heading));
 
-  // }
+  }
   //Parse and execute EStop command
   else if(command.substring(0,seperator) == "E"){
 
@@ -114,6 +114,5 @@ String MasterComputeBridge::returnCommand(){
   return temp;
 }
 void MasterComputeBridge::spinGPS(){
-  //GPS.Refresh();
-  return;
+  GPS.Refresh();
 }

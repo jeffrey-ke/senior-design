@@ -20,7 +20,7 @@ class MasterComputeBridge{
     //PingDriver ping;
     // RadioDriver Lora;
     String functionReturn;
-  //  _GPSDriver GPS;
+    _GPSDriver GPS;
   public:
     MasterComputeBridge();
     void IMUSetup();
