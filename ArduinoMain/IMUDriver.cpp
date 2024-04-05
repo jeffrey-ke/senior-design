@@ -13,8 +13,11 @@ imu_(55) //IMU object
 }
 
 void IMUDriver::Init() {
-    alive_ = imu_.begin();
-    imu_.setExtCrystalUse(true);
+    alive_ = imu_.begin(OPERATION_MODE_CONFIG);
+    delay(19);
+    //PISerial.print("IMU operation mode: ");
+    //PISerial.println(imu_.getMode());
+    //imu_.setExtCrystalUse(true);
     offsets_struct offsets;
     offsets.accel_offset_x = -27;
     offsets.accel_offset_y = 6;
@@ -28,8 +31,10 @@ void IMUDriver::Init() {
     offsets.accel_radius = 1000;
     offsets.mag_radius = 669;
     imu_.setSensorOffsets(offsets);
-    
-
+    imu_.setMode(OPERATION_MODE_NDOF);
+    delay(10);
+    //PISerial.print("IMU operation mode: ");
+    //PISerial.println(imu_.getMode());
 }
 Msg::RPY IMUDriver::GetData(){
   sensors_event_t event;
