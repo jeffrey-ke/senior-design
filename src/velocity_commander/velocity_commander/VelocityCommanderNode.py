@@ -100,7 +100,7 @@ class VelocityCommanderNode(Node):
         self.get_logger().info('got some gamer coords')
         self.lat_ = geo.latitude
         self.lon_ = geo.longitude
-        self.heading = geo.altitude
+        self.heading_ = geo.altitude
 
         while(not self.navigator_.atWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)): #while not at waypoint 
             pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
@@ -115,7 +115,7 @@ class VelocityCommanderNode(Node):
             geo = self.get_gnss()
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
-            self.heading = geo.altitude
+            self.heading_ = geo.altitude
 
         goal_handle.succeed()
         result = Waypoint.Result()

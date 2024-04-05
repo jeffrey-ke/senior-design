@@ -25,6 +25,7 @@ class MessageCreator():
             return self.CreateQuaternion(data)
         
         elif msg_id == "S":
+            
             return Int16(data=data["alive"])
 
     def CreatePoint(self, data):

@@ -95,15 +95,15 @@ class NavigationNode:
       
       #determine PWM commands
       if(vel[3]==0 and vel[4]==0 and vel[5]==0): #no angular change
-          return (lx*10, 
-                  lx*10,
-                  0.0,
-                  0.0)
+          return (lx*40 + 1500, 
+                  lx*40 + 1500,
+                  1500,
+                  1500)
       elif(vel[5]!=0):
-          return (-5*az,
-                  5*az,
-                  0.0,
-                  0.0)
+          return (40*az + 1500,
+                  -40*az + 1500,
+                  1500,
+                  1500)
   def descendToPwm(self, currentDepth, desiredDepth, heading):
     print('descending')
     return (0.0,0.0,0.0,0.0)
