@@ -38,6 +38,7 @@ void IMUDriver::Init() {
 }
 Msg::RPY IMUDriver::GetData(){
   sensors_event_t event;
+  Serial.println(imu_.isFullyCalibrated());
   imu_.getEvent(&event);
   return Msg::RPY{event.orientation.x, event.orientation.y, event.orientation.z};
 }
