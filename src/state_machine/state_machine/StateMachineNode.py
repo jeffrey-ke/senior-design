@@ -56,7 +56,7 @@ class StateMachineNode(Node):
         self.state_machine_ = StateMachine()
 
         self.state_machine_.pushBackWP(GeoPoint(latitude=37.348785,longitude=121.937208,altitude=20.0))
-        # 37.350204,-121.938166
+ 
         self.get_logger().info('init succesful')
         self.waitForSetup()
         self.get_logger().info('minion ready')
