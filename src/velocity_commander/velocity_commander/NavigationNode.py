@@ -35,9 +35,6 @@ class NavigationNode:
     x = cos(radians(lat2)) * sin(radians(dLon))
     y = cos(radians(lat1)) * sin(radians(lat2)) - sin(radians(lat1)) * cos(radians(lat2)) * cos(radians(dLon))
     brng = numpy.arctan2(x,y)
-    brng = numpy.degrees(brng)
-    if (brng < 0):
-        brng = 360 + brng
     return brng
 
   def get_distance(self, lat1, long1, lat2, long2):
