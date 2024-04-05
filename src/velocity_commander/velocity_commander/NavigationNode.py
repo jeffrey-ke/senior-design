@@ -7,12 +7,14 @@ class NavigationNode:
   K_a = 0.5
   distanceTolerance = 0.1
   angleTolerance = 0.1 
+  bearing_ = 0.0
 
 
   def getHeadingError(self, lat1, long1, lat2, long2, current_heading) -> float:
     y = sin(long2 - long1) * sin(lat2) 
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(long2 - long1)
     bearing = atan2(y, x)
+    self.bearing_ = bearing
     h_err = bearing - current_heading
 
     if (h_err > pi):
@@ -52,11 +54,11 @@ class NavigationNode:
     return pwm
 
   #takes in the current point and goal point as x,y,z as well as heading and returns the linear and angular velocity as (lx,ly,lz,ax,ay,az)
-  def waypointToVelocity(self, lat1, long1, lat2, long2, current_heading) -> Tuple[float, float, float, float, float, float]: 
+  def waypointToVelocity(self, cur_lat, cur_long, wp_lat, wp_lon, current_heading) -> Tuple[float, float, float, float, float, float]: 
   #Get the heading error i.e. how many radians does the robot need to turn to head towards the waypoint 
-    heading_error = self.getHeadingError(radians(lat1), radians(long1), radians(lat2), radians(long2), current_heading)  
+    heading_error = self.getHeadingError(radians(cur_lat), radians(cur_long), radians(wp_lat), radians(wp_lon), current_heading)  
   
-    distanceToWaypoint = self.getDistanceToWaypoint(lat1, long1, lat2, long2)
+    distanceToWaypoint = self.getDistanceToWaypoint(cur_lat, cur_long, wp_lat, wp_lon)
 
     if (abs(distanceToWaypoint) > self.distanceTolerance):    
       # If the robot's heading is off, fix it.
