@@ -1,7 +1,7 @@
 
 #define UNIT_TEST 0
-#define IS_ACTUAL 1
-#define FLIP_TEST 0
+#define IS_ACTUAL 0
+#define FLIP_TEST 1
 
 #if IS_ACTUAL
 #include "MasterComputeBridge.h"
@@ -194,5 +194,6 @@ void StopThrusters() {
     DL.writeMicroseconds(1500);
     DR.writeMicroseconds(1500);
 }
+#endif
 
 
