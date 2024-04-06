@@ -123,7 +123,61 @@ void loop() {
         params.Reset();
         StopThrusters();
     }
-  }
+}
+
+/**
+ * Duration_forward should be at MOST 10000 ms
+*/
+void FlipUnflipTest(milliseconds duration_vertical, double Kp, double Ki, double Kd,  
+                    milliseconds duration_forward, int pwm_forward) {
+    o_con_.SetGains(Kp, Ki, Kd);
+
+
+    Serial.println("Flipping");
+    o_con_.SetDesiredToVertical();
+    Timer timer_vertical(duration_vertical);
+    while (!timer_vertical.IsExpired()) {
+        auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
+        CommandThrusterAt(pwm);
+        Serial.print(imu_.GetData().z); Serial.print(",");
+        Serial.print(pwm.FL); Serial.print(",");
+        Serial.print(pwm.FR); Serial.print(",");
+        Serial.print(pwm.DL); Serial.print(",");
+        Serial.print(pwm.DR); Serial.print("\n");
+        delay(100);
+    }
+// ============================================================
+    Serial.println("Unflipping and moving forward");
+    o_con_.SetDesiredToHorizontal();
+    Timer timer_horizontal(duration_forward);
+    while (!timer_horizontal.IsExpired()) {
+        auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
+        pwm.FL = pwm_forward;
+        pwm.FR = pwm_forward;
+        CommandThrusterAt(pwm);
+        Serial.print(imu_.GetData().z); Serial.print(",");
+        Serial.print(pwm.FL); Serial.print(",");
+        Serial.print(pwm.FR); Serial.print(",");
+        Serial.print(pwm.DL); Serial.print(",");
+        Serial.print(pwm.DR); Serial.print("\n");
+        delay(100);
+    }
+// ============================================================
+    Serial.println("Flipping again");
+    o_con_.SetDesiredToVertical();
+    timer_vertical.Reset();
+    while (!timer_vertical.IsExpired()) {
+        auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
+        CommandThrusterAt(pwm);
+        Serial.print(imu_.GetData().z); Serial.print(",");
+        Serial.print(pwm.FL); Serial.print(",");
+        Serial.print(pwm.FR); Serial.print(",");
+        Serial.print(pwm.DL); Serial.print(",");
+        Serial.print(pwm.DR); Serial.print("\n");
+        delay(100);
+    }
+    Serial.println("done");
+}
 
 bool PressureTest(milliseconds duration, mmHg maximum_deviation) {
     Timer t(duration);
