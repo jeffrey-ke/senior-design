@@ -5,6 +5,7 @@ ThrusterDriver::ThrusterDriver(const int servoPin){
     thruster.attach(servoPin);
 
     thruster.writeMicroseconds(1500); // send "stop" signal to ESC.
+
 }
 void ThrusterDriver::setVelocity(int vel){
   if(vel>=1100&&vel<=1900){

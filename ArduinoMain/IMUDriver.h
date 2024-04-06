@@ -15,5 +15,6 @@ class IMUDriver{
     Msg::RPY GetData();
     bool GetAlive() const {return alive_;}
 
+
 };
 #endif
