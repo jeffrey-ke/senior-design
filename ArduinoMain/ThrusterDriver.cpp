@@ -1,8 +1,6 @@
 #include "ThrusterDriver.h"
 
-ThrusterDriver::ThrusterDriver(){
-  DebugSerial.println("No Pin provided for thruster");
-}
+ThrusterDriver::ThrusterDriver(){}
 ThrusterDriver::ThrusterDriver(const int servoPin){
     thruster.attach(servoPin);
 

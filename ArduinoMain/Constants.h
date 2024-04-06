@@ -22,11 +22,10 @@ const int RFM95_CS = 4;
 const int RFM95_RST = 2;
 const int RFM95_INT = 3;
 
-const int FL_PIN = 7;
-const int FR_PIN = 8;
+const int FL_PIN = 10;
+const int FR_PIN = 12;
 const int DL_PIN = 9;
-const int DR_PIN = 10;
-
+const int DR_PIN = 11;
 #define RF95_FREQ 915.0 //Standard frequency for use in the US
 
 #endif
