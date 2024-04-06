@@ -60,4 +60,15 @@ WaitForSer()
 ser.reset_input_buffer()
 WaitForHandshake()
 tokens = TokenBag(GetArgTokens())
+"""
+    test_cmd -> dive_test
+              | flip_test
+              | pressure_test
+              | flip_unflip_test
 
+    dive_test -> DIVE float (Kp) float (Ki) float (Kd) float (duration) float (target depth)
+    flip_test -> FLIP float (Kp) float (Ki) float (Kd) float (duration)
+    pressure_test -> PRESSURE float (duration) float (max_deviation)
+    flip_unflip_test -> FUN float (Kp) float (Ki) float (Kd) float (duration_vertical) float (duration_horizontal) int pwm_forward
+
+"""
