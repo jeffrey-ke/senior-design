@@ -26,12 +26,15 @@ def WaitForSer():
 
 def WaitForHandshake():
     global ser
-    while (ser.readline().decode().rstrip() != "Ready"):
-        print("Waiting for handshake")
+    line = ser.readline().decode().rstrip()
+    while (line != "Ready"):
+        print("Got: {}".format(line))
+        print("\tWaiting for handshake")
         ser.write(b"Pi Ready\n")
+        line = ser.readline().decode().rstrip()
 
 def GetArgTokens():
-    return (" ".join(sys.argv[1:])).split()
+    return sys.argv[1:]
 
 def Match(tok):
     global tokens
@@ -41,7 +44,7 @@ def Match(tok):
 
 def Integer():
     try:
-        int_val = int(tokens.Lookahead())
+        int_val = int(float(tokens.Lookahead()))
         tokens.NextToken()
         return int_val
     except ValueError:
@@ -69,6 +72,111 @@ tokens = TokenBag(GetArgTokens())
     dive_test -> DIVE float (Kp) float (Ki) float (Kd) float (duration) float (target depth)
     flip_test -> FLIP float (Kp) float (Ki) float (Kd) float (duration)
     pressure_test -> PRESSURE float (duration) float (max_deviation)
-    flip_unflip_test -> FUN float (Kp) float (Ki) float (Kd) float (duration_vertical) float (duration_horizontal) int pwm_forward
+    flip_unflip_test -> FUN float (Kp) float (Ki) float (Kd) float (duration_vertical) float (duration_horizontal) int (pwm_forward)
+    quit -> QUIT
 
 """
+def Dive():
+    global ser
+    Match(DIVE)
+    kp = Float()
+    ki = Float()
+    kd = Float()
+    duration = Float()
+    target_depth = Float()
+    ser.write("DIVE,{},{},{},{},{}\n".format(
+        str(kp),
+        str(ki),
+        str(kd),
+        str(duration),
+        str(target_depth)
+    ).encode())
+    
+def Flip():
+    global ser
+    Match(FLIP)
+    kp = Float()
+    ki = Float()
+    kd = Float()
+    duration = Float()
+    ser.write("FLIP,{},{},{},{}\n".format(
+        str(kp),
+        str(ki),
+        str(kd),
+        str(duration)
+    ).encode())
+
+def Pressure():
+    global ser
+    Match(PRESSURE)
+    duration = Float()
+    max_dev = Float()
+    ser.write("PRESSURE,{},{}\n".format(
+        str(duration),
+        str(max_dev)
+    ).encode())
+
+def Fun():
+    global ser
+    Match(FUN)
+    kp = Float()
+    ki = Float()
+    kd = Float()
+    duration_vertical = Float()
+    duration_horizontal = Float()
+    pwm_forward = Integer()
+    ser.write("FUN,{},{},{},{},{},{}\n".format(
+        str(kp),
+        str(ki),
+        str(kd),
+        str(duration_vertical),
+        str(duration_horizontal),
+        str(pwm_forward)
+    ).encode())
+
+from tokens import *
+test_type = tokens.Lookahead()
+if tokens.Lookahead() == DIVE:
+    Dive()
+elif tokens.Lookahead() == FLIP:
+    Flip() 
+elif tokens.Lookahead() == PRESSURE:
+    Pressure()
+elif tokens.Lookahead() == FUN:
+    Fun()
+elif tokens.Lookahead() == QUIT:
+    print("quitting")
+    sys.exit()
+else:
+    print("Not how you use this script.")
+    sys.exit()
+
+from collections import deque
+data = deque()
+line = ser.readline().decode().rstrip()
+while (line != "done"):
+    print(line)
+    data.append(line + "\n")
+    line = ser.readline().decode().rstrip()
+
+file_name = input("\n\nFile name: (append \'.csv\' to the end)")
+
+def GetTestHeader(test_type: str):
+    if test_type == DIVE:
+        return "Depth(m),Orientation(degrees),FL,FR,DL,DR\n" 
+    elif test_type == FLIP:
+        return "Orientation(degrees),FL,FR,DL,DR\n"
+    elif test_type == PRESSURE:
+        return "Pressure(mmHg)\n"
+    elif test_type == FUN:
+        return "Orientation(degrees),FL,FR,DL,DR\n"
+    else:
+        print("Garbage input. Killing program.")
+        sys.exit()
+
+
+with open(file_name, 'w') as file:
+    file.write(GetTestHeader(test_type))
+    for line in data:
+        file.write(line)
+
