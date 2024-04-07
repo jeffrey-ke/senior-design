@@ -160,7 +160,8 @@ while (line != "done"):
     line = ser.readline().decode().rstrip()
 
 file_name = input("\n\nFile name: (append \'.csv\' to the end) ")
-if file_name == "quit":
+if file_name == "q":
+    print("trashing file...")
     sys.exit()
 
 def GetTestHeader(test_type: str):
