@@ -5,5 +5,6 @@ using hPa = double;
 using mmHg = double;
 using milliseconds = unsigned long;
 using meters = double;
+using pwm = int;
 
 #endif

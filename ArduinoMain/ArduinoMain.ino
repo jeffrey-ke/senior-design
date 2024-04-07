@@ -119,6 +119,9 @@ void loop() {
         case FLIP:
             FlipTest(params.duration, params.Kp, params.Ki, params.Kd);
         break;
+        case FUN:
+            FlipUnflipTest(params.duration, params.Kp, params.Ki, params.Kd, params.duration2, params.forward_pwm);
+        break;
         }
         params.Reset();
         StopThrusters();
