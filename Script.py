@@ -159,7 +159,9 @@ while (line != "done"):
     data.append(line + "\n")
     line = ser.readline().decode().rstrip()
 
-file_name = input("\n\nFile name: (append \'.csv\' to the end)")
+file_name = input("\n\nFile name: (append \'.csv\' to the end) ")
+if file_name == "quit":
+    sys.exit()
 
 def GetTestHeader(test_type: str):
     if test_type == DIVE:
