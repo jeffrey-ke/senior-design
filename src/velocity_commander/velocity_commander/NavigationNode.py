@@ -6,7 +6,7 @@ class NavigationNode:
   K_l = 0.5
   K_a = 0.5
   distanceTolerance = 0.1
-  angleTolerance = 0.1 
+  angleTolerance = 10.0 
   bearing_ = 0.0
 
 
@@ -15,7 +15,7 @@ class NavigationNode:
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(long2 - long1)
     bearing = (degrees(atan2(y, x)) + 360) % 360
     self.bearing_ = bearing
-    h_err = bearing - (degrees(current_heading) + 360) % 360
+    h_err = self.bearing_ - (degrees(current_heading) + 360 + 12.8) % 360
     return h_err
 
   def atWaypoint(self, lat1, long1, lat2, long2) -> bool:
