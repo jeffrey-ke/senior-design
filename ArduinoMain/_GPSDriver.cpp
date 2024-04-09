@@ -44,7 +44,7 @@ void _GPSDriver::Refresh(){
   if (GPS.newNMEAreceived()) {
     if (GPS.parse(GPS.lastNMEA())){ // this also sets the newNMEAreceived() flag to false
       lat_ = (GPS.lat == 'N')? decimalDegrees(GPS.latitude) : -decimalDegrees(GPS.latitude);
-      long_ = (GPS.lon == 'W')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
+      long_ = (GPS.lon == 'E')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
       heading_ = GPS.angle*PI/180;
       /*DebugSerial.println("Set values properly");
       DebugSerial.println(lat_, 5);
