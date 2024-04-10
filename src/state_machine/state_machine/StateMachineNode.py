@@ -54,9 +54,9 @@ class StateMachineNode(Node):
         self.cur_time_ = self.start_time_
 
         self.state_machine_ = StateMachine()
-        #eco building
-        #self.state_machine_.pushBackWP(GeoPoint(latitude=37.348785,longitude=-121.937208,altitude=20.0))
-        self.state_machine_.pushBackWP(GeoPoint(latitude=37.352492,longitude=-121.939761,altitude=20.0))
+        #law building
+        #37.350755, -121.938399
+        self.state_machine_.pushBackWP(GeoPoint(latitude=37.350755,longitude=-121.938399,altitude=20.0))
 
         self.get_logger().info('init succesful')
         self.waitForSetup()
