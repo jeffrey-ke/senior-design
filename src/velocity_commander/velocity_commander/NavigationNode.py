@@ -11,11 +11,23 @@ class NavigationNode:
 
 
   def getHeadingError(self, lat1, long1, lat2, long2, current_heading) -> float:
+    """
+      2 degrees
+      358 degrees
+      = -356 degrees
+      formula: 
+      add 360 degrees to get 4
+
+    """
     y = sin(long2 - long1) * cos(lat2) 
     x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(long2 - long1)
     bearing = (degrees(atan2(y, x)) + 360) % 360
     self.bearing_ = bearing
     h_err = self.bearing_ - (degrees(current_heading) + 360 + 12.8) % 360
+    if h_err > 180:
+       h_err = h_err - 360
+    elif h_err < -180:
+       h_err = h_err + 360
     return h_err
 
   def atWaypoint(self, lat1, long1, lat2, long2) -> bool:
