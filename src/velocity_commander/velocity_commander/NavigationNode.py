@@ -5,7 +5,7 @@ from math import sin, cos, sqrt, radians, atan2, pi, degrees
 class NavigationNode:
   K_l = 0.5
   K_a = 0.5
-  distanceTolerance = 0.1
+  distanceTolerance = 5.0
   angleTolerance = 10.0 
   bearing_ = 0.0
 
