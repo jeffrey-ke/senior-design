@@ -27,7 +27,6 @@ class NavigationNode:
 
   def get_bearing(lat1, long1, lat2, long2):
     dLon = (long2 - long1)
-    #print(long1)
     x = cos(radians(lat2)) * sin(radians(dLon))
     y = cos(radians(lat1)) * sin(radians(lat2)) - sin(radians(lat1)) * cos(radians(lat2)) * cos(radians(dLon))
     brng = numpy.arctan2(x,y)

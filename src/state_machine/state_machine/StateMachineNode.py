@@ -61,7 +61,6 @@ class StateMachineNode(Node):
         self.get_logger().info('init succesful')
         self.waitForSetup()
         self.get_logger().info('minion ready')
-
     #state has just change do something based on new state
     def stateChange(self):
         if(self.state_machine_.state()=="idle"):

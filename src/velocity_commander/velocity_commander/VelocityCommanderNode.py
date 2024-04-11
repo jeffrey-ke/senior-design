@@ -10,6 +10,8 @@ from profiler_msgs.srv import GetDepth
 from profiler_msgs.srv import GetGnss
 from profiler_msgs.srv import GetOrientation
 from profiler_msgs.srv import SendPwm
+from math import sin, cos, sqrt, radians, atan2, pi
+
 
 # 37.429518,-121.982590 are the of a point approximately 10 meters out from the dock 
 
@@ -95,7 +97,7 @@ class VelocityCommanderNode(Node):
         coords = goal_handle.request.waypoint_coords 
         self.wp_lat_ = coords.latitude
         self.wp_lon_ = coords.longitude
-
+    
         geo = self.get_gnss()
         self.get_logger().info('got some gamer coords')
         self.lat_ = geo.latitude
@@ -110,11 +112,14 @@ class VelocityCommanderNode(Node):
             self.get_logger().info("Bearing {}".format(str(self.navigator_.bearing_)))
             self.get_logger().info("Heading {}".format(str((self.heading_ * 180/pi + 360 + 12.8) % 360)))
             self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
+            #self.get_logger().info("Distance to waypoint: {}".format(self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
+            #self.get_logger().info("Velocity Commands: {}".format(self.navigator_.waypointToVelocity(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
+            self.get_logger().info("Heading Err: {}".format(self.navigator_.getHeadingError(radians(self.lat_), radians(self.lon_), radians(self.wp_lat_), radians(self.wp_lon_), self.heading_)))  
+            
             #self.send_pwm(pwm)
             feedback_msg = Waypoint.Feedback()
             feedback_msg.distance_to_waypoint = self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)
             goal_handle.publish_feedback(feedback_msg)
-            self.get_logger().info("Distance to waypoint: {}".format(self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
             geo = self.get_gnss()
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude

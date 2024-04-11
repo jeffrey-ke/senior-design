@@ -1,4 +1,4 @@
-
+int16 timeout
 ---
-geometry_msgs/Quaternion orientation
+profiler_msgs/Imu orientation
 bool success

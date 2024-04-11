@@ -1,4 +1,4 @@
-
+int16 timeout
 ---
-geographic_msgs/GeoPoint gnss
+profiler_msgs/Gnss gnss
 bool success
