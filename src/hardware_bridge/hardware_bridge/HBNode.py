@@ -28,7 +28,7 @@ class HBNode(Node):
         if result is None:
             result = Int16()
             success = False
-        response.alive = 1
+        response.alive = True
         response.success = success
         return response
 
