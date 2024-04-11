@@ -103,19 +103,14 @@ class VelocityCommanderNode(Node):
         self.lat_ = geo.latitude
         self.lon_ = geo.longitude
         self.heading_ = geo.altitude
-        #testing
-        #self.wp_lat_ = 37.351812
-        #self.wp_lon_ = 121.941060
-        #self.lat_ = 37.352364
-        #self.lon_ = 121.941310
-        #self.heading_ = 0.0
 
         while(not self.navigator_.atWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)): #while not at waypoint 
             pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
                                                 self.wp_lat_, self.wp_lon_,
                                                 self.heading_)
-            #logger Block
-            #self.get_logger().info("PWM lat1{} lon1{} lat2{} lon2{}".format(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_))
+            from math import pi
+            self.get_logger().info("Bearing {}".format(str(self.navigator_.bearing_)))
+            self.get_logger().info("Heading {}".format(str((self.heading_ * 180/pi + 360 + 12.8) % 360)))
             self.get_logger().info("PWM FL{} FR{} DL{} DR{}".format(pwm[0], pwm[1], pwm[2], pwm[3]))
             #self.get_logger().info("Distance to waypoint: {}".format(self.navigator_.getDistanceToWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
             #self.get_logger().info("Velocity Commands: {}".format(self.navigator_.waypointToVelocity(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)))
@@ -129,6 +124,7 @@ class VelocityCommanderNode(Node):
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
             self.heading_ = geo.altitude
+
         goal_handle.succeed()
         result = Waypoint.Result()
         result.arrived_at_waypoint = True

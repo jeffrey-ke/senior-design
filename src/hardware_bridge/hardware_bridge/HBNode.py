@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 
 from profiler_msgs.srv import GetDepth, GetGnss, GetOrientation, SendKill, SendPwm, GetMinionStatus
-from tokens import *
 
 from .HardwareBridge import HardwareBridge
 
@@ -16,65 +15,62 @@ class HBNode(Node):
         self.create_service(SendPwm, 'send_pwm', self.SendPwm)
         self.create_service(GetMinionStatus, 'minion_status', self.GetMinionStatus)
 
-        self.bridge_ = HardwareBridge("ACM0", 115200)
+        self.bridge_ = HardwareBridge("ACM0", 115200, 5, self.get_logger())
 
         
+        self.bridge_.WaitForInit()
             
 
     def GetMinionStatus(self, request, response):
-        self.bridge_.Command("{} {}".format(STATUS, str(request.timeout))) 
-        msg = self.bridge_.Response()
-        if msg is None:
-            response.success = False
-        else:
-            response.success = True
-            response.alive = msg
+        from std_msgs.msg import Int16
+        result = self.bridge_.AskForStatus(ros_msg_type=Int16)
+        success = True
+        if result is None:
+            result = Int16()
+            success = False
+        response.alive = 1
+        response.success = success
         return response
 
     def SendPwm(self, request, response):
         FL, FR, DL, DR = request.forward_l_pwm, request.forward_r_pwm, request.down_l_pwm, request.down_r_pwm
-        self.bridge_.Command("{} {} {} {} {}".format(PWM, str(FL), str(FR), str(DL), str(DR)))
-
-
-
         self.get_logger().info("Pwm sent:\n\t{}\n\t{}\n\t{}\n\t{}".format(FL, FR, DL, DR))
+        result = self.bridge_.SendPWM(FL, FR, DL, DR)
+        response.success = True if result is not None else False
         return response
 
     def SendKill(self, request, response):
-        self.bridge_.Command(KILL)
-        return response
+        pass
 
     def RequestOrientation(self, request, response):
-        self.bridge_.Command("{} {}".format(IMU, str(request.timeout)))
-        msg = self.bridge_.Response()
-        if msg is None:
-            response.success = False
-        else:
-            response.success = True
-            response.orientation = msg
+        from geometry_msgs.msg import Quaternion
+        result = self.bridge_.AskForIMU(ros_msg_type=Quaternion)
+        success = True
+        if result is None:
+            result = Quaternion()
+            success = False
+        self.get_logger().info("Orientation received: {}, {}, {}, {}".format(result.w, result.x, result.y, result.z))
+        response.orientation = result
+        response.success = success
         return response
 
 
     def RequestGnss(self, request, response):
-        self.bridge_.Command("{} {}".format(GNSS, str(request.timeout)))
-        msg = self.bridge_.Response()
-        if msg is None:
-            response.success = False
-        else:
-            response.success = True
-            response.gnss = msg
+        from geographic_msgs.msg import GeoPoint
+        result = self.bridge_.AskForGps(GeoPoint)
+        success = True
+
+        if result is None:
+            result = GeoPoint()
+            success = False
+        self.get_logger().info("GNSS: {}, {}, {}".format(result.latitude, result.longitude, result.altitude))
+        response.gnss = result
+        response.success = success
         return response
 
 
     def RequestDepth(self, request, response):
-        self.bridge_.Command("{} {}".format(DEPTH, str(request.timeout)))
-        msg = self.bridge_.Response()
-        if msg is None:
-            response.success = False
-        else:
-            response.success = True
-            response.depth = msg
-        return response
+        pass
         
 def main(args=None):
     rclpy.init(args=args)

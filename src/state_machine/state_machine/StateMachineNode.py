@@ -54,9 +54,10 @@ class StateMachineNode(Node):
         self.cur_time_ = self.start_time_
 
         self.state_machine_ = StateMachine()
+        #law building
+        #37.350755, -121.938399
+        self.state_machine_.pushBackWP(GeoPoint(latitude=37.350755,longitude=-121.938399,altitude=20.0))
 
-        self.state_machine_.pushBackWP(GeoPoint(latitude=37.351812,longitude=121.941060,altitude=20.0))
-        # 37.350204,-121.938166
         self.get_logger().info('init succesful')
         self.waitForSetup()
         self.get_logger().info('minion ready')
