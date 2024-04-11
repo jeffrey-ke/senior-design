@@ -3,6 +3,7 @@ from rclpy.action import ActionServer
 from rclpy.node import Node
 from geographic_msgs.msg import GeoPoint
 from geometry_msgs.msg import Quaternion
+from std_msgs.msg import String
 from .NavigationNode import NavigationNode
 from profiler_msgs.action import Waypoint
 from profiler_msgs.action import Profile
@@ -11,6 +12,7 @@ from profiler_msgs.srv import GetGnss
 from profiler_msgs.srv import GetOrientation
 from profiler_msgs.srv import SendPwm
 from math import sin, cos, sqrt, radians, atan2, pi
+from time import time
 
 
 # 37.429518,-121.982590 are the of a point approximately 10 meters out from the dock 
@@ -25,6 +27,11 @@ class VelocityCommanderNode(Node):
 
     def __init__(self):
         super().__init__('VelocityCommanderNode') #Important!
+
+        #################
+        # Pubs ##########
+        #################
+        self.waypoint_state_log_ = self.create_publisher(String, "/gps_coords", 10)
 
         #################
         # Services ####
@@ -103,7 +110,7 @@ class VelocityCommanderNode(Node):
         self.lat_ = geo.latitude
         self.lon_ = geo.longitude
         self.heading_ = geo.altitude
-
+        self.waypoint_state_log_.publish(String(data="NEW"))
         while(not self.navigator_.atWaypoint(self.lat_, self.lon_, self.wp_lat_, self.wp_lon_)): #while not at waypoint 
             pwm = self.navigator_.waypointToPwm(self.lat_, self.lon_,
                                                 self.wp_lat_, self.wp_lon_,
@@ -124,6 +131,15 @@ class VelocityCommanderNode(Node):
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
             self.heading_ = geo.altitude
+            self.waypoint_state_log_.publish(String(data="{},{},{},{},{},{},{},{},{}\n".format(time(),
+                                                                                            self.lat_, 
+                                                                                            self.lon_, 
+                                                                                            self.heading_, 
+                                                                                            self.navigator_.bearing_, 
+                                                                                            pwm[0],
+                                                                                            pwm[1],
+                                                                                            pwm[2],
+                                                                                            pwm[3])))
 
         goal_handle.succeed()
         result = Waypoint.Result()
