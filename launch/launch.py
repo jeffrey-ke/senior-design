@@ -17,5 +17,10 @@ def generate_launch_description():
             package='velocity_commander',
             executable='vlcmdnode',
             name='VelocityCommanderNode'
+        ),
+        Node(
+            package='logger',
+            executable='logger',
+            name='LoggerNode'
         )
     ])

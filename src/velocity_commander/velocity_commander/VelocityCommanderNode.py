@@ -31,7 +31,7 @@ class VelocityCommanderNode(Node):
         #################
         # Pubs ##########
         #################
-        self.waypoint_state_log_ = self.create_publisher(String, "/gps_coords", 10)
+        self.waypoint_state_log_ = self.create_publisher(String, "/waypoint_state_log", 10)
 
         #################
         # Services ####
@@ -131,7 +131,7 @@ class VelocityCommanderNode(Node):
             self.lat_ = geo.latitude
             self.lon_ = geo.longitude
             self.heading_ = geo.altitude
-            self.waypoint_state_log_.publish(String(data="{},{},{},{},{},{},{},{},{}\n".format(time(),
+            self.waypoint_state_log_.publish(String(data="{},{},{},{},{},{},{},{},{}".format(time(),
                                                                                             self.lat_, 
                                                                                             self.lon_, 
                                                                                             self.heading_, 
