@@ -14,7 +14,7 @@ void setup() {
   delay(5000); // delay to allow the ESC to recognize the stopped signals
   DebugSerial.println("Initialization Done");
   uint32_t timer = millis();
-  
+  uint32_t heartbeat = millis();
   while(true){
     //Must spin GPS at rate it is filled to clear serial buffer
     if (millis() - timer >= 100) {
@@ -22,6 +22,7 @@ void setup() {
       bridge.spinGPS();
     }
     if(PISerial.available()>0){
+      heartbeat = millis();
       String data = PISerial.readStringUntil('\n');
       DebugSerial.print("You sent me: ");
       DebugSerial.println(data);
@@ -33,6 +34,12 @@ void setup() {
         bridge.giveCommand(data);
         PISerial.println(bridge.returnCommand());
       }
+    }
+    else if (millis() - heartbeat >= 1000) { //1 second of no communication from PI
+      bridge.giveCommand("T:1500,1500,1500,1500"); //Turn off all thruster
+      DebugSerial.println(bridge.returnCommand());
+      DebugSerial.println("No heartbeat found reseting thrusters");
+      heartbeat = millis();
     }
   }
 }
