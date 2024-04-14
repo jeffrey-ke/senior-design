@@ -30,17 +30,17 @@ void IMUDriver::Init() {
     offsets.mag_offset_z = -23;
     offsets.accel_radius = 1000;
     offsets.mag_radius = 669;*/
-    offsets.accel_offset_x = -3;
-    offsets.accel_offset_y = 22;
-    offsets.accel_offset_z = -13;
-    offsets.gyro_offset_x = -1;
-    offsets.gyro_offset_y = -3;
-    offsets.gyro_offset_z = 1;
-    offsets.mag_offset_x = -314;
-    offsets.mag_offset_y = -125;
-    offsets.mag_offset_z = -39;
+    offsets.accel_offset_x = -16;
+    offsets.accel_offset_y = 15;
+    offsets.accel_offset_z = -19;
+    offsets.gyro_offset_x = -3;
+    offsets.gyro_offset_y = 0;
+    offsets.gyro_offset_z = 0;
+    offsets.mag_offset_x = -337;
+    offsets.mag_offset_y = -132;
+    offsets.mag_offset_z = -56;
     offsets.accel_radius = 1000;
-    offsets.mag_radius = 684;
+    offsets.mag_radius = 912;
     imu_.setSensorOffsets(offsets);
     imu_.setMode(OPERATION_MODE_NDOF);
     delay(10);
