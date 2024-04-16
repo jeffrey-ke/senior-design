@@ -1,5 +1,5 @@
 #include "_GPSDriver.h"
-float decimalDegrees(float nmeaCoord) {
+static degrees decimalDegrees(float nmeaCoord) {
   uint16_t wholeDegrees = 0.01*nmeaCoord;
   return wholeDegrees + (nmeaCoord - 100.0*wholeDegrees)/60.0;
 }
@@ -12,7 +12,7 @@ _GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     GPS.sendCommand(PGCMD_ANTENNA); //set antenna on
     delay(1000);
 
-    DebugSerial.println("Waiting for gps fix...");
+    Serial.println("Waiting for gps fix...");
     while(!GPS.fix){
       char c = GPS.read();
       if (GPS.newNMEAreceived()) {
@@ -22,14 +22,7 @@ _GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     fix_ = true;
     lat_ = (GPS.lat == 'N')? decimalDegrees(GPS.latitude) : -decimalDegrees(GPS.latitude);
     long_ = (GPS.lon == 'W')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
-    heading_ = GPS.angle*PI/180;
-    DebugSerial.println("Set values properly");
-    DebugSerial.println(lat_, 5);
-    DebugSerial.println(long_, 5);
-    DebugSerial.print("got a fix:\t");
-    DebugSerial.println(GPS.fix);
-    DebugSerial.println(GPS.antenna);
-    DebugSerial.println(fix_);
+    heading_ = GPS.angle;
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCONLY); //once fix is aquired only need minimum data
 }
 

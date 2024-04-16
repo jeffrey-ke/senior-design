@@ -6,26 +6,32 @@
 
 // ONLY controls ___ (insert whatever axis we're controlling)
 class OrientationController {
-    public: // constructor
-        OrientationController(double k_p, double k_i, double k_d, double k_ol=0.0)
-        :
-        con_(k_p, k_i, k_d, k_ol)
-        {
-        };
-
+    public: //aliases
+        enum class AXES {X, Y, Z};
+        static constexpr auto YAW = AXES::X;
+        static constexpr auto ROLL = AXES::Y;
+        static constexpr auto PITCH = AXES::Z;
     public: //methods
+        OrientationController(): con_x_(0, 0, 0), con_y_(0, 0, 0), con_z_(0, 0, 0){}
         void SetDesiredToVertical();
         void SetDesiredToHorizontal();
-        void SetDesiredOrientation(Msg::RPY des);
+        void SetDesiredOrientation(degrees desired, AXES axis);
         Msg::PWM CalculateControlEffort(Msg::RPY current_orientation); 
-        void SetGains(double kp, double ki, double kd);
-        bool IsVertical(Msg::RPY current_orientation, double margin=5);
+        void SetGains(double kp, double ki, double kd, AXES axis);
+
+        bool IsAngleAchieved(degrees current, degrees margin, AXES axis);
+        degrees GetAngleError(degrees desired, degrees current);
+
+        bool IsVertical(Msg::RPY current_orientation, degrees margin=5);
+
  
     public: //getters
-        double GetDesiredOrientation() const {return con_.GetDesired();}
+        degrees GetDesiredOrientation(AXES axis);
 
     private: //members
-        Controller con_;
+        Controller con_x_;
+        Controller con_y_;
+        Controller con_z_;
 };
 
 

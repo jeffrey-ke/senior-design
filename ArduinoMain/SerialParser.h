@@ -2,9 +2,10 @@
 #define SERIALPARSER_H
 
 #include "units.h"
+#include "Msgs.h"
 #include "string.h"
 
-enum TestType {PRESSURE, DIVE, FLIP, FUN, NONE};
+enum TestType {PRESSURE, DIVE, FLIP, FUN, WAYPOINT, NONE};
 
 typedef struct TestParams {
     TestType type;
@@ -13,6 +14,9 @@ typedef struct TestParams {
     double Kd;
     milliseconds duration;
     milliseconds duration2;
+    meters distance_threshold;
+    degrees heading_threshold;
+    Msg::GNSS goal_point;
     meters target_depth;
     mmHg max_deviation;
     pwm forward_pwm;
