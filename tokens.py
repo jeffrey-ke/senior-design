@@ -1,5 +1,6 @@
 DIVE = "dive"
 FLIP = "flip"
 PRESSURE = "pressure"
+WAYPOINT = "waypoint"
 FUN = "fun"
 QUIT = "quit"
