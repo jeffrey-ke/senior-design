@@ -38,7 +38,7 @@ TestParams SerialParser::ParseLine(class String &line) {
         auto pwm_forward = static_cast<int>(strtol(strtok(NULL, ","), NULL, 10));
         return TestParams(FUN, Kp, Ki, Kd, duration_vertical, 0, 0, duration_horizontal, pwm_forward);
     }
-    else if (CStringsEqual(type, "WAYPOINT")) {
+    else if (CStringsEqual(type, "WAYPOINT")) { // WAYPOINT,10,0,0,300000,10,5,37.350758,-121.938408
         auto Kp = strtod(strtok(NULL, ","), NULL);
         auto Ki = strtod(strtok(NULL, ","), NULL);
         auto Kd = strtod(strtok(NULL, ","), NULL);
@@ -48,6 +48,7 @@ TestParams SerialParser::ParseLine(class String &line) {
         auto goal_lat = strtod(strtok(NULL, ","), NULL);
         auto goal_lon = strtod(strtok(NULL, ","), NULL);
         TestParams p;
+        p.type = WAYPOINT;
         p.Kp = Kp;
         p.Ki = Ki;
         p.Kd = Kd;
