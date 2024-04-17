@@ -3,8 +3,6 @@
 #include <math.h>
 #include "units.h"
 
-#define RADIANS(deg) deg * M_PI / 180.0
-#define DEGREES(rads) rads * 180.0/M_PI
 
 namespace Msg {
 
@@ -15,6 +13,14 @@ namespace Msg {
         degrees lat;
         degrees lon;
         degrees heading;
+
+        radians RADIANS(degrees deg) {
+            return deg * M_PI / 180.0;
+        }
+
+        degrees DEGREES(radians rad) {
+            return rad * 180 / M_PI;
+        }
 
         meters operator-(const GNSS& other) {
             auto delta_lat = RADIANS(lat) - RADIANS(other.lat);
@@ -27,9 +33,9 @@ namespace Msg {
         }
 
         degrees operator%(const GNSS& other) {
-            auto y = sin(RADIANS(lon) - RADIANS(other.lon)) * sin(RADIANS(lat));
+            auto y = sin(RADIANS(lon) - RADIANS(other.lon)) * cos(RADIANS(lat));
             auto x = cos(RADIANS(other.lat)) * sin(RADIANS(lat)) - sin(RADIANS(other.lat)) * cos(RADIANS(lat)) * cos(RADIANS(lon - other.lon));
-            return static_cast<int>(DEGREES(atan2(y, x)) + 360) % 360;
+            return static_cast<int>((DEGREES(atan2(y, x))) + 360) % 360;
         }
     } GNSS;
 
