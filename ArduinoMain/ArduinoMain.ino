@@ -31,6 +31,7 @@ void setup() {
     Serial.println("Hello");
     imu_.Init();
     baro_.Init();
+    gps_.Init();
     depth_sensor_.Init();
     FL.attach(FL_PIN);
     FR.attach(FR_PIN);
