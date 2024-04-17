@@ -28,7 +28,6 @@ bool PressureTest(milliseconds duration, mmHg maximum_deviation=1.0);
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Hello");
     imu_.Init();
     baro_.Init();
     gps_.Init();
@@ -43,7 +42,6 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("Hello");
     while (true) {
         if (Serial.available()) {
             String line{Serial.readStringUntil('\n')};
@@ -92,9 +90,10 @@ void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a,
     int waypoint_id{0};
     // profiler gets duration seconds to get to the waypoint and back.
     while (!timer_.IsExpired()) {
+        gps_.Refresh();
         Msg::GNSS current_loc = gps_.GetGNSS();
         degrees bearing = goal_point % current_loc;
-        degrees heading = imu_.GetData().x;
+        degrees heading = (static_cast<int>(imu_.GetData().x) + 360) % 360;
         o_con_.SetDesiredOrientation(bearing, OrientationController::YAW);
         auto pwm = Msg::PWM{};
         if (goal_point - current_loc < distance_threshold) {
@@ -103,35 +102,23 @@ void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a,
             goal_point = home_coords;
             waypoint_id = 1;
         }
-        if (!o_con_.IsAngleAchieved(heading, 5, OrientationController::YAW)) {
-            pwm = o_con_.CalculateControlEffort(Msg::RPY{heading, 0, 0});
-            CommandThrusterAt(pwm);
-        } 
-        else if (goal_point - current_loc > distance_threshold){
-            pwm = Msg::pwm_FULL_FORWARD;
-            CommandThrusterAt(pwm);
-        }
-        char data_line[80];// time,lat,lon,bearing,heading,FL,FR,DL,DR
-        snprintf(data_line, 
-                78, 
-                "%d,%d,%.7f,%.7f,%.2f,%.7f,%.7f,%.2f,%d,%d,%d,%d\n", 
-                millis(),
-                waypoint_id,
-                goal_point.lat,
-                goal_point.lon,
-                bearing,
-                current_loc.lat,
-                current_loc.lon,
-                heading,
-                pwm.FL,
-                pwm.FR,
-                pwm.DL,
-                pwm.DR
-                );
-        Serial.println(data_line);
-        
+        pwm = o_con_.CalculateControlEffort(Msg::RPY{heading, 0, 0}) + Msg::pwm_FULL_FORWARD;
+        CommandThrusterAt(pwm);
+        Serial.print(millis()); Serial.print(",");
+        Serial.print(waypoint_id); Serial.print(",");
+        Serial.print(goal_point.lat, 7); Serial.print(",");
+        Serial.print(goal_point.lon, 7); Serial.print(",");
+        Serial.print(goal_point - current_loc); Serial.print(",");
+        Serial.print(bearing); Serial.print(",");
+        Serial.print(current_loc.lat, 7); Serial.print(",");
+        Serial.print(current_loc.lon, 7); Serial.print(",");
+        Serial.print(heading); Serial.print(",");
+        Serial.print(pwm.FL); Serial.print(",");
+        Serial.print(pwm.FR); Serial.print(",");
+        Serial.print(pwm.DL); Serial.print(",");
+        Serial.println(pwm.DR);  
     }
-}
+    Serial.println("done");
 
 /**
  * Duration_forward should be at MOST 10000 ms
