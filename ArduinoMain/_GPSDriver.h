@@ -9,6 +9,7 @@ public:
   constexpr static double INVALID = -99.0;
 
   _GPSDriver();
+  void Init();
   void Refresh();
 
   Msg::GNSS GetGNSS() const {return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}

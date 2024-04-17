@@ -4,7 +4,9 @@ static degrees decimalDegrees(float nmeaCoord) {
   return wholeDegrees + (nmeaCoord - 100.0*wholeDegrees)/60.0;
 }
 
-_GPSDriver::_GPSDriver(): GPS(&GPSSerial){
+_GPSDriver::_GPSDriver(): GPS(&GPSSerial){}
+
+void _GPSDriver::Init() {
     GPS.begin(9600);
     // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -21,7 +23,7 @@ _GPSDriver::_GPSDriver(): GPS(&GPSSerial){
     }
     fix_ = true;
     lat_ = (GPS.lat == 'N')? decimalDegrees(GPS.latitude) : -decimalDegrees(GPS.latitude);
-    long_ = (GPS.lon == 'W')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
+    long_ = (GPS.lon == 'E')? decimalDegrees(GPS.longitude): -decimalDegrees(GPS.longitude);
     heading_ = GPS.angle;
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCONLY); //once fix is aquired only need minimum data
 }
