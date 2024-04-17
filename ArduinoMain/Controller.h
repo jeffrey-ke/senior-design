@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "Msgs.h"
+#include "units.h"
 
 class Controller {
 
@@ -13,7 +14,7 @@ class Controller {
         Controller(double kp, double ki, double kd, double kol=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol), integrated_error_{}{};
 
     public: // methods
-        double CalculateControlEffort(double current_state);
+        double CalculateControlEffort(double current_state, bool is_angle_diff=false);
         void SetDesired(double desired) {desired_ = desired;};
     
     public: // Setters
@@ -47,7 +48,7 @@ class Controller {
 
 
     private: //helper functions
-        double CalculateError(double actual) {return desired_ - actual;};
+        double CalculateError(double actual, bool is_angle_diff=false);
         double CalculateProportional(double error);
         double CalculateIntegral(double error);
         double CalculateDerivative(double error);
