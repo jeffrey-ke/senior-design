@@ -157,7 +157,7 @@ def Waypoint():
         str(heading_threshold),
         str(goal_lat),
         str(goal_lon)
-    ))
+    ).encode())
 
 from tokens import *
 test_type = tokens.Lookahead()
@@ -169,7 +169,7 @@ elif tokens.Lookahead() == PRESSURE:
     Pressure()
 elif tokens.Lookahead() == FUN:
     Fun()
-elif tokens.Lookahead == WAYPOINT:
+elif tokens.Lookahead() == WAYPOINT:
     Waypoint()
 elif tokens.Lookahead() == QUIT:
     print("quitting")
@@ -200,7 +200,7 @@ def GetTestHeader(test_type: str):
     elif test_type == FUN:
         return "Orientation(degrees),FL,FR,DL,DR\n"
     elif test_type == WAYPOINT:
-        return "Time(ms),Waypoint_id,Waypoint_lat,Waypoint_lon,Bearing(degrees),Current_lat,Current_lon,Heading(degrees),FL,FR,DL,DR\n"
+        return "Time(ms),Waypoint_id,Waypoint_lat,Waypoint_lon,Distance_to_wp(meters),Bearing(degrees),Current_lat,Current_lon,Heading(degrees),FL,FR,DL,DR\n"
     else:
         print("Garbage input. Killing program.")
         sys.exit()
