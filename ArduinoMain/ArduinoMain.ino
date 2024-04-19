@@ -89,7 +89,6 @@ void loop() {
 void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a, 
                     meters distance_threshold, degrees heading_threshold, Msg::GNSS goal_point) {
     Msg::GNSS home_coords = gps_.GetGNSS();
-    Serial.println(home_coords.lat);
     o_con_.SetGains(kp_a, ki_a, kd_a, OrientationController::YAW);
     Timer timer_(duration);
     int waypoint_id{0};
@@ -103,7 +102,6 @@ void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a,
         if (goal_point - current_loc < distance_threshold) {
             pwm = Msg::pwm_FULL_OFF;
             CommandThrusterAt(pwm);
-            Serial.println(home_coords.lat);
             goal_point = home_coords;
             waypoint_id = 1;
         }
