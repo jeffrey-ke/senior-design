@@ -28,7 +28,7 @@ Msg::PWM OrientationController::CalculateControlEffort(Msg::RPY current_orientat
     auto effort_x_ = static_cast<int>(con_x_.CalculateControlEffort(current_orientation.x, true) / 2); // yaw
     auto effort_y_ = static_cast<int>(con_y_.CalculateControlEffort(current_orientation.y, true) / 2); // roll
     auto pwm_z = Msg::PWM{1500, 1500, 1500 + effort_z_, 1500 + effort_z_};
-    auto pwm_x = Msg::PWM{1500 - effort_x_, 1500 + effort_x_, 1500, 1500};
+    auto pwm_x = Msg::PWM{1500 + effort_x_, 1500 - effort_x_, 1500, 1500};
     auto pwm_y = Msg::PWM{1500, 1500, 1500 + effort_y_, 1500 - effort_y_};
     return pwm_x + pwm_y + pwm_z;
 }
