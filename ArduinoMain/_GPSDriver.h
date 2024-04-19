@@ -10,9 +10,8 @@ public:
 
   _GPSDriver();
   void Init();
-  void Refresh();
 
-  Msg::GNSS GetGNSS() const {return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}
+  Msg::GNSS GetGNSS();
   degrees GetLat() const {return lat_;}
   degrees GetLong() const {return long_;}
   degrees GetHeading() const {return heading_;}
@@ -24,5 +23,6 @@ private:
   Adafruit_GPS GPS;
   degrees lat_{INVALID}, long_{INVALID}, heading_{INVALID};
   bool fix_{false};
+  void Refresh();
 };
 #endif
