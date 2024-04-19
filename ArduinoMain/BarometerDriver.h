@@ -12,6 +12,7 @@ class BarometerDriver
 
     public: //methods
         mmHg GetAvgPressure();
+        bool IsAlive() {return is_alive_;}
         void Init();
 
 
