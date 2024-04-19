@@ -1,10 +1,27 @@
 #include "Controller.h" 
 #include "Arduino.h"
-double Controller::CalculateControlEffort(double current_state) {
+
+double Controller::CalculateError(double actual, bool is_angle_diff) {
+    auto err = desired_ - actual;
+    if (is_angle_diff){
+        if (err > 180) {
+            err -= 360;
+        } 
+        else if (err < -180) {
+            err += 360;
+        }
+        return err;
+    } 
+    else {
+        return err;
+    }
+}
+
+double Controller::CalculateControlEffort(double current_state, bool is_angle_diff) {
 
     current_ = current_state;
 
-    auto error = CalculateError(current_state);
+    auto error = CalculateError(current_state, is_angle_diff);
     auto p_effort = CalculateProportional(error);
     auto i_effort = CalculateIntegral(error);
     auto d_effort = CalculateDerivative(error);

@@ -9,19 +9,20 @@ public:
   constexpr static double INVALID = -99.0;
 
   _GPSDriver();
+  void Init();
   void Refresh();
 
   Msg::GNSS GetGNSS() const {return Msg::GNSS{GetLat(), GetLong(), GetHeading()};}
-  double GetLat() const {return lat_;}
-  double GetLong() const {return long_;}
-  double GetHeading() const {return heading_;}
+  degrees GetLat() const {return lat_;}
+  degrees GetLong() const {return long_;}
+  degrees GetHeading() const {return heading_;}
   bool GetFix() const {return fix_;}
 
   double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}
   double test_SetFixFalse() {fix_ = false;}
 private:
   Adafruit_GPS GPS;
-  double lat_{INVALID}, long_{INVALID}, heading_{INVALID};
+  degrees lat_{INVALID}, long_{INVALID}, heading_{INVALID};
   bool fix_{false};
 };
 #endif

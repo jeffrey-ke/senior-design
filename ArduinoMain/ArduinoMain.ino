@@ -1,63 +1,4 @@
 
-#define UNIT_TEST 0
-#define IS_ACTUAL 1
-#define FLIP_TEST 0
-
-#if IS_ACTUAL
-#include "MasterComputeBridge.h"
-#include "Constants.h"
-void setup() {
-  PISerial.begin(115200);
-  //DebugSerial.begin(9600);
-  PISerial.setTimeout(10); //avoid long delays to mistimed reads
-  MasterComputeBridge bridge; 
-  delay(5000); // delay to allow the ESC to recognize the stopped signals
-  DebugSerial.println("Initialization Done");
-  uint32_t timer = millis();
-  uint32_t heartbeat = millis();
-  while(true){
-    //Must spin GPS at rate it is filled to clear serial buffer
-    if (millis() - timer >= 100) {
-      timer = millis();
-      bridge.spinGPS();
-    }
-    if(PISerial.available()>0){
-      heartbeat = millis();
-      String data = PISerial.readStringUntil('\n');
-      DebugSerial.print("You sent me: ");
-      DebugSerial.println(data);
-      if(data=="K"){ return; }
-      else if(data=="S:"){ 
-        PISerial.println("S:1");
-      }
-      else{
-        bridge.giveCommand(data);
-        PISerial.println(bridge.returnCommand());
-      }
-    }
-    else if (millis() - heartbeat >= 1000) { //1 second of no communication from PI
-      bridge.giveCommand("T:1500,1500,1500,1500"); //Turn off all thruster
-      DebugSerial.println(bridge.returnCommand());
-      DebugSerial.println("No heartbeat found reseting thrusters");
-      heartbeat = millis();
-    }
-  }
-}
-
-void loop() {} //running all code in setup cause we can't use global variables  }
-
-#elif UNIT_TEST
-#include "_depth_unittests.h"
-void setup() {
-// put your setup code here, to run once:
-    Serial.begin(115200);
-}
-
-void loop() {
-// put your main code here, to run repeatedly:
-    Test::run();
-}
-#elif FLIP_TEST
 #include "OrientationController.h"
 #include "IMUDriver.h"
 #include "BarometerDriver.h"
@@ -69,12 +10,14 @@ void loop() {
 #include <Servo.h>
 #include "Constants.h"
 #include "Msgs.h"
-OrientationController o_con_(10, 0, 0);
+#include "_GPSDriver.h"
+OrientationController o_con_;
 DepthController depth_con_(4, 0.1, 0, 10);
 IMUDriver imu_;
 BarometerDriver baro_(5);
 MS5837Driver depth_sensor_;
 Servo FL, FR, DL, DR;
+_GPSDriver gps_;
 
 
 void FlipTest(milliseconds duration, double Kp, double Ki, double Kd);
@@ -87,6 +30,7 @@ void setup() {
     Serial.begin(115200);
     imu_.Init();
     baro_.Init();
+    gps_.Init();
     depth_sensor_.Init();
     FL.attach(FL_PIN);
     FR.attach(FR_PIN);
@@ -129,18 +73,59 @@ void loop() {
         case FUN:
             FlipUnflipTest(params.duration, params.Kp, params.Ki, params.Kd, params.duration2, params.forward_pwm);
         break;
+        case WAYPOINT:
+            WaypointTest(params.duration, params.Kp, params.Ki, params.Kd, params.distance_threshold, params.heading_threshold, params.goal_point);
+        break;
         }
         params.Reset();
         StopThrusters();
     }
 }
 
+void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a, 
+                    meters distance_threshold, degrees heading_threshold, Msg::GNSS goal_point) {
+    Msg::GNSS home_coords = gps_.GetGNSS();
+    o_con_.SetGains(kp_a, ki_a, kd_a, OrientationController::YAW);
+    Timer timer_(duration);
+    int waypoint_id{0};
+    // profiler gets duration seconds to get to the waypoint and back.
+    while (!timer_.IsExpired()) {
+        gps_.Refresh();
+        Msg::GNSS current_loc = gps_.GetGNSS();
+        degrees bearing = goal_point % current_loc;
+        degrees heading = (static_cast<int>(imu_.GetData().x) + 360) % 360;
+        o_con_.SetDesiredOrientation(bearing, OrientationController::YAW);
+        auto pwm = Msg::PWM{};
+        if (goal_point - current_loc < distance_threshold) {
+            pwm = Msg::pwm_FULL_OFF;
+            CommandThrusterAt(pwm);
+            goal_point = home_coords;
+            waypoint_id = 1;
+        }
+        pwm = o_con_.CalculateControlEffort(Msg::RPY{heading, 0, 0}) + Msg::pwm_FULL_FORWARD;
+        CommandThrusterAt(pwm);
+        Serial.print(millis()); Serial.print(",");
+        Serial.print(waypoint_id); Serial.print(",");
+        Serial.print(goal_point.lat, 7); Serial.print(",");
+        Serial.print(goal_point.lon, 7); Serial.print(",");
+        Serial.print(goal_point - current_loc); Serial.print(",");
+        Serial.print(bearing); Serial.print(",");
+        Serial.print(current_loc.lat, 7); Serial.print(",");
+        Serial.print(current_loc.lon, 7); Serial.print(",");
+        Serial.print(heading); Serial.print(",");
+        Serial.print(pwm.FL); Serial.print(",");
+        Serial.print(pwm.FR); Serial.print(",");
+        Serial.print(pwm.DL); Serial.print(",");
+        Serial.println(pwm.DR);  
+    }
+    Serial.println("done");
+
 /**
  * Duration_forward should be at MOST 10000 ms
 */
 void FlipUnflipTest(milliseconds duration_vertical, double Kp, double Ki, double Kd,  
                     milliseconds duration_forward, int pwm_forward) {
-    o_con_.SetGains(Kp, Ki, Kd);
+    o_con_.SetGains(Kp, Ki, Kd, OrientationController::PITCH);
 
 
     Serial.println("Flipping");
@@ -214,7 +199,7 @@ void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double 
      
     while (!t.IsExpired()) {
         auto pwm_orientation = o_con_.CalculateControlEffort(imu_.GetData());
-        auto pwm_depth = (o_con_.IsVertical(imu_.GetData()))? depth_con_.CalculateControlEffort(depth_sensor_.GetDepth()) : Msg::PWM{};
+        auto pwm_depth = (o_con_.IsVertical(imu_.GetData()), 5)? depth_con_.CalculateControlEffort(depth_sensor_.GetDepth()) : Msg::PWM{};
         auto pwm = pwm_depth.SaturatePWM(pwm_depth, pwm_orientation);
         CommandThrusterAt(pwm);
         Serial.print(depth_sensor_.GetDepth()); Serial.print(",");
@@ -230,7 +215,7 @@ void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double 
 
 void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
     o_con_.SetDesiredToVertical();
-    o_con_.SetGains(Kp, Ki, Kd);
+    o_con_.SetGains(Kp, Ki, Kd, OrientationController::PITCH);
     Timer t(duration);
     while (!t.IsExpired()) {
         auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
@@ -258,6 +243,6 @@ void StopThrusters() {
     DL.writeMicroseconds(1500);
     DR.writeMicroseconds(1500);
 }
-#endif
+
 
 

@@ -30,17 +30,17 @@ void IMUDriver::Init() {
     offsets.mag_offset_z = -23;
     offsets.accel_radius = 1000;
     offsets.mag_radius = 669;*/
-    offsets.accel_offset_x = -16;
-    offsets.accel_offset_y = 15;
-    offsets.accel_offset_z = -19;
-    offsets.gyro_offset_x = -3;
-    offsets.gyro_offset_y = 0;
-    offsets.gyro_offset_z = 0;
-    offsets.mag_offset_x = -337;
-    offsets.mag_offset_y = -132;
-    offsets.mag_offset_z = -56;
+    offsets.accel_offset_x = -23;
+    offsets.accel_offset_y = -35;
+    offsets.accel_offset_z = -30;
+    offsets.gyro_offset_x = -4;
+    offsets.gyro_offset_y = -2;
+    offsets.gyro_offset_z = 1;
+    offsets.mag_offset_x = 1147;
+    offsets.mag_offset_y = 71;
+    offsets.mag_offset_z = 203;
     offsets.accel_radius = 1000;
-    offsets.mag_radius = 912;
+    offsets.mag_radius = 567;
     imu_.setSensorOffsets(offsets);
     imu_.setMode(OPERATION_MODE_NDOF);
     delay(10);
@@ -55,5 +55,5 @@ Msg::RPY IMUDriver::GetData(){
 
   imu::Vector<3> eul = quat.toEuler();
 
-  return Msg::RPY{-180/M_PI*eul.x(), -180/M_PI*eul.y(), -180/M_PI*eul.z()};
+  return Msg::RPY{-180/M_PI*eul.x() + 12.8, -180/M_PI*eul.y(), -180/M_PI*eul.z()};
 }

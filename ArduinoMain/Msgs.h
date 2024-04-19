@@ -1,6 +1,8 @@
 #ifndef MSGS_H
 #define MSGS_H
 #include <math.h>
+#include "units.h"
+
 
 namespace Msg {
 
@@ -8,24 +10,32 @@ namespace Msg {
     typedef struct GNSS {
         constexpr static double RADIUS_EARTH = 6371e3;
 
-        double lat;
-        double lon;
-        double heading;
+        degrees lat;
+        degrees lon;
+        degrees heading;
 
-        double operator-(const GNSS& other) {
-            auto delta_lat = lat - other.lat;
-            auto delta_lon = lon - other.lon;
+        radians RADIANS(degrees deg) {
+            return deg * M_PI / 180.0;
+        }
 
-            auto a = pow(sin(delta_lat/2), 2.0) + cos(other.lat) * cos(lat) * pow(sin(delta_lon/2), 2.0);
+        degrees DEGREES(radians rad) {
+            return rad * 180 / M_PI;
+        }
+
+        meters operator-(const GNSS& other) {
+            auto delta_lat = RADIANS(lat) - RADIANS(other.lat);
+            auto delta_lon = RADIANS(lon) - RADIANS(other.lon);
+
+            auto a = pow(sin(delta_lat/2), 2.0) + cos(RADIANS(other.lat)) * cos(RADIANS(lat)) * pow(sin(delta_lon/2), 2.0);
             auto c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
             return RADIUS_EARTH * c;
         }
 
-        double operator%(const GNSS& other) {
-            auto y = sin(lon - other.lon) * sin(lat);
-            auto x = cos(other.lat) * sin(lat) - sin(other.lat) * cos(lat) * cos(lon - other.lon);
-            return atan2(y, x);
+        degrees operator%(const GNSS& other) {
+            auto y = sin(RADIANS(lon) - RADIANS(other.lon)) * cos(RADIANS(lat));
+            auto x = cos(RADIANS(other.lat)) * sin(RADIANS(lat)) - sin(RADIANS(other.lat)) * cos(RADIANS(lat)) * cos(RADIANS(lon - other.lon));
+            return static_cast<int>((DEGREES(atan2(y, x))) + 360) % 360;
         }
     } GNSS;
 
@@ -34,9 +44,9 @@ namespace Msg {
     } Depth;
 
     typedef struct RPY {
-        double x;
-        double y;
-        double z;
+        degrees x;
+        degrees y;
+        degrees z;
     } RPY;
 
 
@@ -93,12 +103,8 @@ namespace Msg {
 
     typedef struct StateMachineInput {
         enum InputType {NEW_WAYPOINT, MANUAL, START};
-
         InputType type;
         GNSS new_waypoint;
-        
-
-
     } StateMachineInput;
 
     const static PWM pwm_FULL_OFF{1500, 1500, 1500, 1500};
