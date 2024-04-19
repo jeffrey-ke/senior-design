@@ -204,7 +204,7 @@ def GetTestHeader(test_type: str):
     else:
         print("Garbage input. Killing program.")
         sys.exit()
-
+#  ./Script.py waypoint 10 0.1 0 300000 5 5 36.608633 -121.879483
 
 with open(file_name, 'w') as file:
     file.write(GetTestHeader(test_type))
