@@ -23,6 +23,10 @@ _GPSDriver gps_;
 void FlipTest(milliseconds duration, double Kp, double Ki, double Kd);
 void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double Kd);
 bool PressureTest(milliseconds duration, mmHg maximum_deviation=1.0);
+void FlipUnflipTest(milliseconds duration_vertical, double Kp, double Ki, double Kd,  
+                    milliseconds duration_forward, int pwm_forward);
+void CommandThrusterAt(const Msg::PWM& pwm);
+void StopThrusters();
 #define PRESSURE_GOOD true
 #define PRESSURE_BAD false
 
@@ -84,14 +88,13 @@ void loop() {
 
 void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a, 
                     meters distance_threshold, degrees heading_threshold, Msg::GNSS goal_point) {
-    gps_.Refresh();
     Msg::GNSS home_coords = gps_.GetGNSS();
+    Serial.println(home_coords.lat);
     o_con_.SetGains(kp_a, ki_a, kd_a, OrientationController::YAW);
     Timer timer_(duration);
     int waypoint_id{0};
     // profiler gets duration seconds to get to the waypoint and back.
     while (!timer_.IsExpired()) {
-        gps_.Refresh();
         Msg::GNSS current_loc = gps_.GetGNSS();
         degrees bearing = goal_point % current_loc;
         degrees heading = (static_cast<int>(imu_.GetData().x) + 360) % 360;
@@ -100,6 +103,7 @@ void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a,
         if (goal_point - current_loc < distance_threshold) {
             pwm = Msg::pwm_FULL_OFF;
             CommandThrusterAt(pwm);
+            Serial.println(home_coords.lat);
             goal_point = home_coords;
             waypoint_id = 1;
         }
@@ -120,7 +124,7 @@ void WaypointTest(milliseconds duration, double kp_a, double ki_a, double kd_a,
         Serial.println(pwm.DR);  
     }
     Serial.println("done");
-
+}
 /**
  * Duration_forward should be at MOST 10000 ms
 */
@@ -221,7 +225,10 @@ void FlipTest(milliseconds duration, double Kp, double Ki, double Kd) {
     while (!t.IsExpired()) {
         auto pwm = o_con_.CalculateControlEffort(imu_.GetData());
         CommandThrusterAt(pwm);
+        Serial.print(imu_.GetData().x); Serial.print(",");
+        Serial.print(imu_.GetData().y); Serial.print(",");
         Serial.print(imu_.GetData().z); Serial.print(",");
+        Serial.print(depth_sensor_.GetDepth()); Serial.print(",");
         Serial.print(pwm.FL); Serial.print(",");
         Serial.print(pwm.FR); Serial.print(",");
         Serial.print(pwm.DL); Serial.print(",");
