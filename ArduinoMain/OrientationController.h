@@ -4,7 +4,6 @@
 #include "Msgs.h"
 #include "IMUDriver.h"
 
-// ONLY controls ___ (insert whatever axis we're controlling)
 class OrientationController {
     public: //aliases
         enum class AXES {X, Y, Z};

@@ -108,7 +108,7 @@ namespace Msg {
     } StateMachineInput;
 
     const static PWM pwm_FULL_OFF{1500, 1500, 1500, 1500};
-    const static PWM pwm_FULL_FORWARD{1700, 1700, 1500, 1500};
+    const static PWM pwm_FULL_FORWARD{1800, 1800, 1500, 1500};
     const static PWM pwm_FULL_BACKWARD{1100, 1100, 1500, 1500};
 
     const static GNSS gnss_INVALID{-99.0, -99.0, -99.0};
