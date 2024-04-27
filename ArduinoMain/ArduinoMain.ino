@@ -19,14 +19,6 @@ MS5837Driver depth_sensor_;
 Servo FL, FR, DL, DR;
 _GPSDriver gps_;
 
-
-void FlipTest(milliseconds duration, double Kp, double Ki, double Kd);
-void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double Kd);
-bool PressureTest(milliseconds duration, mmHg maximum_deviation=1.0);
-void FlipUnflipTest(milliseconds duration_vertical, double Kp, double Ki, double Kd,  
-                    milliseconds duration_forward, int pwm_forward);
-void CommandThrusterAt(const Msg::PWM& pwm);
-void StopThrusters();
 #define PRESSURE_GOOD true
 #define PRESSURE_BAD false
 
@@ -69,7 +61,9 @@ void loop() {
             PressureTest(params.duration, params.max_deviation);
         break;
         case DIVE:
-            DiveTest(params.duration, params.target_depth, params.Kp, params.Ki, params.Kd);
+            DiveTest(params.Kp, params.Ki, params.Kd, 
+                    params.Kp2, params.Ki2, params.Kd2, 
+                    params.duration, params.target_depth);
         break;
         case FLIP:
             FlipTest(params.duration, params.Kp, params.Ki, params.Kd);
@@ -193,19 +187,30 @@ bool PressureTest(milliseconds duration, mmHg maximum_deviation) {
     return PRESSURE_GOOD;
 }
 
-void DiveTest(milliseconds duration, meters depth, double Kp, double Ki, double Kd) {
+void DiveTest(double Kp_dive, double Ki_dive, double Kd_dive,
+            double Kp_o, double Ki_o, double Kd_o, 
+            milliseconds duration, meters depth) {
     meters surface_depth{0};
+    // Depth con gains should be LOW!!! Especially integral gain!!
+    depth_con_.SetGains(Kp_dive, Ki_dive, Kd_dive);
+    o_con_.SetGains(Kp_o, Ki_o, Kd_o, OrientationController::PITCH);
     depth_con_.SetDesiredDepth(depth);
-    depth_con_.SetGains(Kp, Ki, Kd);
     o_con_.SetDesiredToVertical();
     Timer t(duration);
-     
     while (!t.IsExpired()) {
         auto pwm_orientation = o_con_.CalculateControlEffort(imu_.GetData());
-        auto pwm_depth = (o_con_.IsVertical(imu_.GetData()), 5)? depth_con_.CalculateControlEffort(depth_sensor_.GetDepth()) : Msg::PWM{};
-        auto pwm = pwm_depth.SaturatePWM(pwm_depth, pwm_orientation);
+        Msg::PWM pwm_depth;
+        if (o_con_.IsVertical(imu_.GetData(), 10)) {
+            pwm_depth = depth_con_.CalculateControlEffort(depth_sensor_.GetDepth());
+        } else {
+            depth_con_.ResetIntegratedError();
+            pwm_depth = Msg::pwm_FULL_OFF;
+        }
+        auto pwm = pwm_depth + pwm_orientation;
         CommandThrusterAt(pwm);
         Serial.print(depth_sensor_.GetDepth()); Serial.print(",");
+        Serial.print(imu_.GetData().x); Serial.print(",");
+        Serial.print(imu_.GetData().y); Serial.print(",");
         Serial.print(imu_.GetData().z); Serial.print(",");
         Serial.print(pwm.FL); Serial.print(",");
         Serial.print(pwm.FR); Serial.print(",");
