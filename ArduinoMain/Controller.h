@@ -11,7 +11,7 @@ class Controller {
         constexpr static double ZERO = 0.0;
 
     public: // Constructors
-        Controller(double kp, double ki, double kd, double kol=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol), integrated_error_{}{};
+        Controller(double kp, double ki, double kd, double kol=0.0, double margin=0.0): k_p_(kp), k_i_(ki), k_d_(kd), k_ol_(kol), integrated_error_{}, margin_{margin}{};
 
     public: // methods
         double CalculateControlEffort(double current_state, bool is_angle_diff=false);
@@ -34,6 +34,7 @@ class Controller {
 
     private: // member vars
         double desired_;
+        double margin_;
         double current_;
 
         double k_p_, k_i_, k_d_, k_ol_;

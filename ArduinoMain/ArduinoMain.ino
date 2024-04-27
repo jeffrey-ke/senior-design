@@ -76,6 +76,7 @@ void loop() {
         break;
         }
         params.Reset();
+        o_con_.ResetIntegratedError();
         StopThrusters();
     }
 }

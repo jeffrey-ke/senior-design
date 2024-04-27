@@ -16,9 +16,6 @@ TestParams SerialParser::ParseLine(class String &line) {
         auto Kp_orientation = strtod(strtok(NULL, ","), NULL);
         auto Ki_orientation = strtod(strtok(NULL, ","), NULL);
         auto Kd_orientation = strtod(strtok(NULL, ","), NULL);
-        auto Kp_orientation2 = strtod(strtok(NULL, ","), NULL);
-        auto Ki_orientation2 = strtod(strtok(NULL, ","), NULL);
-        auto Kd_orientation2 = strtod(strtok(NULL, ","), NULL);
         auto duration = strtod(strtok(NULL, ","), NULL);
         auto target_depth = strtod(strtok(NULL, ","), NULL);
 

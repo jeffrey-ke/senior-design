@@ -3,6 +3,9 @@
 
 double Controller::CalculateError(double actual, bool is_angle_diff) {
     auto err = desired_ - actual;
+    if (fabs(err) < margin_) {
+        return 0.0;
+    }
     if (is_angle_diff){
         if (err > 180) {
             err -= 360;

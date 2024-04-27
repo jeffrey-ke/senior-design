@@ -11,7 +11,8 @@ class OrientationController {
         static constexpr auto ROLL = AXES::Y;
         static constexpr auto PITCH = AXES::Z;
     public: //methods
-        OrientationController(): con_x_(0, 0, 0), con_y_(0, 0, 0), con_z_(0, 0, 0){}
+        OrientationController(): con_x_(0, 0, 0, 0, 10), con_y_(0, 0, 0, 0, 10), con_z_(0, 0, 0, 0, 10){}
+        void ResetIntegratedError() {con_x_.ResetIntegratedError(); con_y_.ResetIntegratedError(); con_z_.ResetIntegratedError(); }
         void SetDesiredToVertical();
         void SetDesiredToHorizontal();
         void SetDesiredOrientation(degrees desired, AXES axis);
