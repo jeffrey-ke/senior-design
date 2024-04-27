@@ -1,5 +1,4 @@
 #include "OrientationController.h"
-
 void OrientationController::SetDesiredToVertical() {
     con_z_.SetDesired(Msg::rpy_VERTICAL.z);
 }

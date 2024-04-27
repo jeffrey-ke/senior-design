@@ -9,9 +9,9 @@ enum TestType {PRESSURE, DIVE, FLIP, FUN, WAYPOINT, NONE};
 
 typedef struct TestParams {
     TestType type;
-    double Kp;
-    double Ki;
-    double Kd;
+    double Kp, Kp2, Kp3;
+    double Ki, Ki2, Ki3;
+    double Kd, Kd2, Kd3;
     milliseconds duration;
     milliseconds duration2;
     meters distance_threshold;

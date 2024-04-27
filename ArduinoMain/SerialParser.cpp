@@ -1,7 +1,7 @@
 #include "SerialParser.h"
 #include <Arduino.h>
     /*
-        Dive: "DIVE,P,I,D,DURATION,TARGET_DEPTH"
+        Dive: "DIVE,P,I,D,P2,I2,D2,P3,I3,D3,DURATION,TARGET_DEPTH"
         Flip: "FLIP,P,I,D,DURATION"
         Pressure: "PRESSURE,DURATION,DEVIATION"
         Waypoint: "WAYPOINT,P,I,D,DURATION,DISTANCE_THRESHOLD,HEADING_THRESHOLD,GOAL_LAT,GOAL_LON"
@@ -10,12 +10,29 @@ TestParams SerialParser::ParseLine(class String &line) {
     char* line_cstr = line.c_str();
     char *type = strtok(line_cstr, ",");
     if (CStringsEqual(type, "DIVE")) {
-        auto Kp = strtod(strtok(NULL, ","), NULL);
-        auto Ki = strtod(strtok(NULL, ","), NULL);
-        auto Kd = strtod(strtok(NULL, ","), NULL);
+        auto Kp_dive = strtod(strtok(NULL, ","), NULL);
+        auto Ki_dive = strtod(strtok(NULL, ","), NULL);
+        auto Kd_dive = strtod(strtok(NULL, ","), NULL);
+        auto Kp_orientation = strtod(strtok(NULL, ","), NULL);
+        auto Ki_orientation = strtod(strtok(NULL, ","), NULL);
+        auto Kd_orientation = strtod(strtok(NULL, ","), NULL);
+        auto Kp_orientation2 = strtod(strtok(NULL, ","), NULL);
+        auto Ki_orientation2 = strtod(strtok(NULL, ","), NULL);
+        auto Kd_orientation2 = strtod(strtok(NULL, ","), NULL);
         auto duration = strtod(strtok(NULL, ","), NULL);
         auto target_depth = strtod(strtok(NULL, ","), NULL);
-        return TestParams(DIVE, Kp, Ki, Kd, duration, target_depth, 0.0, 0, 0);
+
+        TestParams p;
+        p.type = DIVE;
+        p.Kp = Kp_dive;
+        p.Ki = Ki_dive;
+        p.Kd = Kd_dive;
+        p.Kp2 = Kp_orientation;
+        p.Ki2 = Ki_orientation;
+        p.Kd2 = Kd_orientation;
+        p.duration = duration;
+        p.target_depth = target_depth;
+        return p;
 
     } else if (CStringsEqual(type, "FLIP")) {
         auto Kp = strtod(strtok(NULL, ","), NULL);
