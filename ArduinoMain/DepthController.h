@@ -11,6 +11,7 @@ class DepthController {
         void SetDesiredDepth(meters depth);
         void SetGains(double Kp, double Ki, double Kd);
         Msg::PWM CalculateControlEffort(meters current_depth);
+        void ResetIntegratedError();
 
     public: //getters
         meters GetDesiredDepth() const {return con_.GetDesired();}

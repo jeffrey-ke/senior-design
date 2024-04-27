@@ -17,3 +17,7 @@ Msg::PWM DepthController::CalculateControlEffort(meters current_depth) {
     auto effort = static_cast<int>(con_.CalculateControlEffort(current_depth) / 2); 
     return Msg::PWM{1500 + effort, 1500 + effort, 1500, 1500};
 }
+
+void DepthController::ResetIntegratedError() {
+    con_.ResetIntegratedError();
+}
