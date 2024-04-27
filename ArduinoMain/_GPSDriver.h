@@ -19,10 +19,10 @@ public:
 
   double test_SetLatLongHeading(double lat, double lon, double hed) {fix_ = true; lat_ = lat; long_ = lon; heading_ = hed;}
   double test_SetFixFalse() {fix_ = false;}
+  void Refresh();
 private:
   Adafruit_GPS GPS;
   degrees lat_{INVALID}, long_{INVALID}, heading_{INVALID};
   bool fix_{false};
-  void Refresh();
 };
 #endif
